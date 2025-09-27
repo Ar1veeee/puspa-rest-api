@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Therapist extends Model
+{
+    use HasUlids;
+
+    protected $table = 'therapists';
+
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    public $timestamps = true;
+
+    protected $fillable = [
+        'user_id',
+        'therapist_name',
+        'therapist_section',
+        'therapist_phone',
+    ];
+
+    protected $casts = [
+        'therapist_phone' => 'encrypted',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function observations(): HasMany
+    {
+        return $this->hasMany(Observation::class, 'therapist_id', 'id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) \Symfony\Component\Uid\Ulid::generate();
+            }
+        });
+    }
+}
