@@ -23,24 +23,7 @@ class AdminService
 
     public function getAllAdmin()
     {
-        $admins = $this->adminRepository->getAll();
-        $adminsData = [];
-
-        foreach ($admins as $admin) {
-            $adminsData[] = [
-                'id' => $admin->id,
-                'user_id' => $admin->user_id,
-                'email' => $admin->user->email,
-                'username' => $admin->user->username,
-                'admin_name' => $admin->admin_name,
-                'admin_section' => $admin->admin_section,
-                'admin_phone' => $admin->admin_phone,
-                'created_at' => $admin->created_at,
-                'updated_at' => $admin->updated_at,
-            ];
-        }
-
-        return $adminsData;
+        return $this->adminRepository->getAll();
     }
 
     public function getAdminDetail(string $id)
@@ -51,17 +34,7 @@ class AdminService
             throw new ModelNotFoundException('Data admin tidak ditemukan.');
         }
 
-        return [
-            'id' => $admin->id,
-            'user_id' => $admin->user_id,
-            'email' => $admin->user->email,
-            'username' => $admin->user->username,
-            'admin_name' => $admin->admin_name,
-            'admin_section' => $admin->admin_section,
-            'admin_phone' => $admin->admin_phone,
-            'created_at' => $admin->created_at,
-            'updated_at' => $admin->updated_at,
-        ];
+        return $admin;
     }
 
     public function createAdmin(array $data): void

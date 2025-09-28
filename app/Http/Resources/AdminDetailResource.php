@@ -31,8 +31,8 @@ class AdminDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'email' => $this->email,
-            'username' => $this->username,
+            'email' => $this->user->email,
+            'username' => $this->user->username,
             'admin_name' => $this->admin_name,
             'admin_phone' => $this->admin_phone,
             'created_at' => $this->created_at,

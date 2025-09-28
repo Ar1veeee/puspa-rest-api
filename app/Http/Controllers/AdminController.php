@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
+use App\Http\Resources\AdminDetailResource;
 use App\Http\Resources\AdminsResource;
 use App\Http\Services\AdminService;
 use Illuminate\Http\JsonResponse;
@@ -41,8 +42,8 @@ class AdminController extends Controller
      */
     public function index(): JsonResponse
     {
-        $adminsData = $this->adminService->getAllAdmin();
-        $resourceData = AdminsResource::collection($adminsData);
+        $admins = $this->adminService->getAllAdmin();
+        $resourceData = AdminsResource::collection($admins);
 
         return $this->successResponse($resourceData, 'Daftar Semua Admin', 200);
     }
@@ -97,7 +98,7 @@ class AdminController extends Controller
     public function show(string $adminId): JsonResponse
     {
         $admin = $this->adminService->getAdminDetail($adminId);
-        $resourceData = new adminsResource($admin);
+        $resourceData = new AdminDetailResource($admin);
 
         return $this->successResponse($resourceData, 'Detail Admin', 200);
     }

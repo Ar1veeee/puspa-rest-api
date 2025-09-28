@@ -31,8 +31,8 @@ class AdminsResource extends JsonResource
         return [
             'id' => $this['id'] ?? null,
             'user_id' => $this['user_id'] ?? null,
-            'email' => $this['email'] ?? null,
-            'username' => $this['username'] ?? null,
+            'email' => $this->user['email'] ?? null,
+            'username' => $this->user['username'] ?? null,
             'admin_name' => $this['admin_name'] ?? null,
             'admin_phone' => $this['admin_phone'] ?? null,
             'createdAt' => $this['created_at'] ?? null,
