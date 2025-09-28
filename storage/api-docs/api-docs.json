@@ -19,6 +19,183 @@
         }
     ],
     "paths": {
+        "/admins": {
+            "get": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Mendapatkan daftar semua admin",
+                "operationId": "getAdminsList",
+                "responses": {
+                    "200": {
+                        "description": "Operasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AdminResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (bukan super admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Membuat data admin baru",
+                "operationId": "storeAdmin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdminCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Admin berhasil dibuat"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admins/{adminId}": {
+            "get": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Mendapatkan detail satu admin",
+                "operationId": "getAdminById",
+                "parameters": [
+                    {
+                        "name": "adminId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data admin tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Memperbarui data admin",
+                "operationId": "updateAdmin",
+                "parameters": [
+                    {
+                        "name": "adminId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdminUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update berhasil"
+                    },
+                    "404": {
+                        "description": "Data admin tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admins"
+                ],
+                "summary": "Menghapus data admin",
+                "operationId": "deleteAdmin",
+                "parameters": [
+                    {
+                        "name": "adminId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data berhasil dihapus"
+                    },
+                    "404": {
+                        "description": "Data admin tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/auth/register": {
             "post": {
                 "tags": [
@@ -548,6 +725,70 @@
     },
     "components": {
         "schemas": {
+            "AdminCreateRequest": {
+                "required": [
+                    "username",
+                    "email",
+                    "password",
+                    "admin_name",
+                    "admin_phone"
+                ],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "superadmin"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "super.admin@example.com"
+                    },
+                    "password": {
+                        "description": "Min. 8 karakter, 1 huruf besar, 1 angka, 1 simbol",
+                        "type": "string",
+                        "format": "password",
+                        "example": "Password123!"
+                    },
+                    "admin_name": {
+                        "type": "string",
+                        "example": "Super Admin"
+                    },
+                    "admin_phone": {
+                        "type": "string",
+                        "example": "081234567890"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminUpdateRequest": {
+                "description": "Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "superadmin_updated"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "super.admin.new@example.com"
+                    },
+                    "password": {
+                        "description": "Kirim hanya jika ingin mengubah password",
+                        "type": "string",
+                        "format": "password",
+                        "example": "NewPassword123!"
+                    },
+                    "admin_name": {
+                        "type": "string",
+                        "example": "Super Admin Name Updated"
+                    },
+                    "admin_phone": {
+                        "type": "string",
+                        "example": "081234567891"
+                    }
+                },
+                "type": "object"
+            },
             "RegistrationRequest": {
                 "required": [
                     "child_name",
@@ -789,6 +1030,86 @@
                 },
                 "type": "object"
             },
+            "AdminDetailResource": {
+                "properties": {
+                    "id": {
+                        "description": "Admin profile ID",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "User ID terkait",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email admin",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "description": "Username admin",
+                        "type": "string"
+                    },
+                    "admin_name": {
+                        "description": "Nama lengkap admin",
+                        "type": "string"
+                    },
+                    "admin_phone": {
+                        "description": "Nomor telepon admin",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Update timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "AdminResource": {
+                "properties": {
+                    "id": {
+                        "description": "Admin profile ID",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "User ID terkait",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email admin",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "description": "Username admin",
+                        "type": "string"
+                    },
+                    "admin_name": {
+                        "description": "Nama lengkap admin",
+                        "type": "string"
+                    },
+                    "admin_phone": {
+                        "description": "Nomor telepon admin",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Update timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "LoginResource": {
                 "properties": {
                     "id": {
@@ -928,6 +1249,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Admins",
+            "description": "Admins"
+        },
         {
             "name": "Authentication",
             "description": "Authentication"

@@ -5,6 +5,18 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Schema(
+ * schema="AdminCreateRequest",
+ * type="object",
+ * required={"username", "email", "password", "admin_name", "admin_phone"},
+ * @OA\Property(property="username", type="string", example="superadmin"),
+ * @OA\Property(property="email", type="string", format="email", example="super.admin@example.com"),
+ * @OA\Property(property="password", type="string", format="password", example="Password123!", description="Min. 8 karakter, 1 huruf besar, 1 angka, 1 simbol"),
+ * @OA\Property(property="admin_name", type="string", example="Super Admin"),
+ * @OA\Property(property="admin_phone", type="string", example="081234567890")
+ * )
+ */
 class AdminCreateRequest extends FormRequest
 {
     /**
