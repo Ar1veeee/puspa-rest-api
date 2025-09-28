@@ -75,7 +75,7 @@ class TherapistController extends Controller
 
     /**
      * @OA\Get(
-     * path="/therapists/{therapistId}",
+     * path="/therapists/{therapist_id}",
      * operationId="getTherapistById",
      * tags={"Therapists"},
      * summary="Mendapatkan detail satu terapis",
@@ -104,7 +104,7 @@ class TherapistController extends Controller
 
     /**
      * @OA\Put(
-     * path="/therapists/{therapistId}",
+     * path="/therapists/{therapist_id}",
      * operationId="updateTherapist",
      * tags={"Therapists"},
      * summary="Memperbarui data terapis",
@@ -137,7 +137,7 @@ class TherapistController extends Controller
 
     /**
      * @OA\Delete(
-     * path="/therapists/{therapistId}",
+     * path="/therapists/{therapist_id}",
      * operationId="deleteTherapist",
      * tags={"Therapists"},
      * summary="Menghapus data terapis",
