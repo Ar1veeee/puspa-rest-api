@@ -69,14 +69,14 @@ class TherapistService
         $existingUsername = $this->userRepository->checkExistingUsername($data['username']);
         if ($existingUsername) {
             throw ValidationException::withMessages([
-                'error' => ['Username sudah digunakan'],
+                'nama_pengguna' => ['Nama pengguna sudah digunakan'],
             ]);
         }
 
         $existingEmail = $this->userRepository->checkExistingEmail($data['email']);
         if ($existingEmail) {
             throw ValidationException::withMessages([
-                'error' => ['Eamil sudah digunakan'],
+                'email' => ['Email sudah digunakan'],
             ]);
         }
 
