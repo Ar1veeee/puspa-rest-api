@@ -162,6 +162,11 @@ class TherapistService
 
     public function deleteTherapist(string $id)
     {
+        $therapist = $this->therapistRepository->getById($id);
+        if (! $therapist) {
+            throw new ModelNotFoundException('Data terapis tidak ditemukan.');
+        }
+        
         return $this->therapistRepository->delete($id);
     }
 }
