@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('child_name', 100);
             $table->string('child_birth_place', 100);
             $table->date('child_birth_date');
-            $table->integer('child_age');
             $table->text('child_address');
             $table->string('child_complaint', 200);
             $table->string('child_school', 100)->nullable();
