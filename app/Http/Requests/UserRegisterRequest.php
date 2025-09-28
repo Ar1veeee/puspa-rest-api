@@ -42,11 +42,11 @@ class UserRegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.required' => 'Username wajib diisi.',
-            'username.alpha_num' => 'Username hanya berisi huruf dan angka.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak benar.',
-            'password.required' => 'Password wajib diisi.',
+            'username.required' => 'Nama pengguna tidak boleh kosong.',
+            'username.alpha_num' => 'Nama pengguna hanya berisi huruf dan angka.',
+            'email.required' => 'Email tidak boleh kosong.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password tidak boleh kosong.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
         ];

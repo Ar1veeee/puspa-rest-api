@@ -48,17 +48,17 @@ class TherapistUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.required' => 'Username wajib diisi.',
-            'username.alpha_num' => 'Username hanya berisi huruf dan angka.',
-            'username.min' => 'Username minimal 3 karakter.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak benar.',
-            'password.required' => 'Password wajib diisi.',
+            'username.required' => 'Nama pengguna tidak boleh kosong.',
+            'username.alpha_num' => 'Nama pengguna hanya berisi huruf dan angka.',
+            'username.min' => 'Nama pengguna minimal 3 karakter.',
+            'email.required' => 'Email tidak boleh kosong.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password tidak boleh kosong.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
-            'therapist_name.required' => 'Nama terapis wajib diisi.',
-            'therapist_section.required' => 'Bagian terapis wajib diisi.',
-            'therapist_phone.required' => 'Telepon terapis wajib diisi.',
+            'therapist_name.required' => 'Nama terapis tidak boleh kosong.',
+            'therapist_section.required' => 'Bagian terapis tidak boleh kosong.',
+            'therapist_phone.required' => 'Telepon terapis tidak boleh kosong.',
         ];
     }
 }
