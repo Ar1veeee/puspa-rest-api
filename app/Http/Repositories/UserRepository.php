@@ -25,14 +25,14 @@ class UserRepository
             ->first();
     }
 
-    public function checkExistingUsername(string $username)
+    public function checkExistingUsername(string $username): bool
     {
-        return $this->model->where('username', $username)->first();
+        return $this->model->where('username', $username)->exists();
     }
 
-    public function checkExistingEmail(string $email)
+    public function checkExistingEmail(string $email): bool
     {
-        return $this->model->where('email', $email)->first();
+        return $this->model->where('email', $email)->exists();
     }
 
     public function create(array $data)
