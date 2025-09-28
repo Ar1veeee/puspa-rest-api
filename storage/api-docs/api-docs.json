@@ -84,7 +84,7 @@
                 ]
             }
         },
-        "/admins/{adminId}": {
+        "/admins/{admin_id}": {
             "get": {
                 "tags": [
                     "Admins"
@@ -529,7 +529,7 @@
                 ]
             }
         },
-        "/therapists/{therapistId}": {
+        "/therapists/{therapist_id}": {
             "get": {
                 "tags": [
                     "Therapists"
