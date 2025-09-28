@@ -35,6 +35,20 @@ class UserRepository
         return $this->model->where('email', $email)->exists();
     }
 
+    public function isUsernameTakenByAnother(string $username, string $idToExclude): bool
+    {
+        return $this->model->where('username', $username)
+            ->where('id', '!=', $idToExclude)
+            ->exists();
+    }
+
+    public function isEmailTakenByAnother(string $email, string $idToExclude): bool
+    {
+        return $this->model->where('email', $email)
+            ->where('id', '!=', $idToExclude)
+            ->exists();
+    }
+
     public function create(array $data)
     {
         return $this->model->create($data);
