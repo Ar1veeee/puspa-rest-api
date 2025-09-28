@@ -15,7 +15,7 @@ return new class extends Migration
             $table->char('id', 26)->primary();
             $table->char('user_id', 26)->nullable(false);
             $table->string('therapist_name', 100)->nullable(false);
-            $table->enum('therapist_section', ['Okupasi', 'Fisio', 'Wicara', 'Paedagog'])->nullable(false);
+            $table->enum('therapist_section', ['okupasi', 'fisio', 'wicara', 'paedagog'])->nullable(false);
             $table->string('therapist_phone', 500)->nullable(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
