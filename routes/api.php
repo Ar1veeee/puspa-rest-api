@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
@@ -41,6 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/admins', [AdminController::class, 'index']);
+    Route::post('/admins', [AdminController::class, 'store']);
+    Route::get('/admins/{admin_id}', [AdminController::class, 'show']);
+    Route::put('/admins/{admin_id}', [AdminController::class, 'update']);
+    Route::delete('/admins/{admin_id}', [AdminController::class, 'destroy']);
+
     Route::get('/therapists', [TherapistController::class, 'index']);
     Route::post('/therapists', [TherapistController::class, 'store']);
     Route::get('/therapists/{therapist_id}', [TherapistController::class, 'show']);

@@ -38,6 +38,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
     ];
 
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class, 'user_id', 'id');
+    }
+
     public function therapist(): HasOne
     {
         return $this->hasOne(Therapist::class, 'user_id', 'id');

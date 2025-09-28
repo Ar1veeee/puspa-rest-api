@@ -33,7 +33,10 @@ class TherapistServiceTest extends TestCase
         $this->therapist = Therapist::factory()->create(['user_id' => $this->therapistUser->id]);
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing show all therapist success.
+     */
     public function getAllTherapistShouldReturnFormattedArrayOfTherapists(): void
     {
         $result = $this->therapistService->getAllTherapist();
@@ -44,7 +47,10 @@ class TherapistServiceTest extends TestCase
         $this->assertEquals($this->therapist->therapist_name, $result[0]['therapist_name']);
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing get therapist detail success.
+     */
     public function getTherapistDetailShouldReturnFormattedData(): void
     {
         $result = $this->therapistService->getTherapistDetail($this->therapist->id);
@@ -54,7 +60,10 @@ class TherapistServiceTest extends TestCase
         $this->assertEquals($this->therapist->id, $result['id']);
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing get therapist detail failed with invalid id.
+     */
     public function getTherapistDetailShouldThrowExceptionForInvalidId(): void
     {
         $this->expectException(ModelNotFoundException::class);
@@ -63,7 +72,10 @@ class TherapistServiceTest extends TestCase
         $this->therapistService->getTherapistDetail('non-existent-id');
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing create therapist success with valid data.
+     */
     public function createTherapistShouldSucceedWithValidData(): void
     {
         $data = [
@@ -81,7 +93,10 @@ class TherapistServiceTest extends TestCase
         $this->assertDatabaseHas('therapists', ['therapist_name' => 'Dr. Baru']);
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing update therapist success with valid data.
+     */
     public function updateTherapistShouldSucceedWithValidData(): void
     {
         $updateData = [
@@ -99,7 +114,10 @@ class TherapistServiceTest extends TestCase
         $this->assertTrue(Hash::check('newPassword123', $updatedUser->password));
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing update therapist failed with duplicate email.
+     */
     public function updateTherapistShouldThrowExceptionForDuplicateEmail(): void
     {
         $this->expectException(ValidationException::class);
@@ -110,7 +128,10 @@ class TherapistServiceTest extends TestCase
         $this->therapistService->updateTherapist($updateData, $this->therapist->id);
     }
 
-    /** @test */
+    /**
+     * @test
+     * Testing delete therapist success.
+     */
     public function deleteTherapistShouldOnlyDeleteTherapistRecord(): void
     {
         $therapistId = $this->therapist->id;
