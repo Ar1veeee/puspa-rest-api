@@ -2,9 +2,11 @@
 
 namespace Tests\Unit\Services;
 
+use App\Http\Repositories\GuardianRepository;
 use App\Notifications\EmailVerificationNotification;
 use App\Http\Repositories\UserRepository;
 use App\Http\Services\AuthService;
+use App\Models\Guardian;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +24,10 @@ class AuthServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->authService = new AuthService(new UserRepository(new User()));
+        $this->authService = new AuthService(
+            new UserRepository(new User()),
+            new GuardianRepository(new Guardian()),
+        );
     }
 
     /**
@@ -32,6 +37,11 @@ class AuthServiceTest extends TestCase
     public function registerShouldCreateUserAndReturnIdSuccessfully(): void
     {
         Notification::fake();
+
+        $guardian = Guardian::factory()->create([
+            'temp_email' => 'test@example.com',
+            'user_id' => null,
+        ]);
 
         $registerData = [
             'username' => 'testuser',
@@ -47,10 +57,16 @@ class AuthServiceTest extends TestCase
             'email' => 'test@example.com',
         ]);
 
-        Notification::assertSentTo(
-            User::find($userId),
-            EmailVerificationNotification::class
-        );
+        $this->assertDatabaseHas('guardians', [
+            'id' => $guardian->id,
+            'user_id' => $userId,
+            'temp_email' => null,
+        ]);
+
+        $user = User::find($userId);
+        $this->assertNotNull($user->email_verified_at);
+
+        Notification::assertSentTo($user, EmailVerificationNotification::class);
     }
 
     /**
@@ -61,6 +77,7 @@ class AuthServiceTest extends TestCase
     {
         $this->expectException(ValidationException::class);
 
+        Guardian::factory()->create(['temp_email' => 'test@example.com']);
         User::factory()->create(['username' => 'existinguser']);
 
         $registerData = [
@@ -122,7 +139,7 @@ class AuthServiceTest extends TestCase
     public function loginShouldThrowAuthenticationExceptionForWrongPassword(): void
     {
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Username atau password salah.');
+        $this->expectExceptionMessage('Username atau password salah. Coba lagi!');
 
         User::factory()->create([
             'username' => 'testuser',
@@ -146,7 +163,7 @@ class AuthServiceTest extends TestCase
     public function loginShouldThrowAuthenticationExceptionForInactiveUser(): void
     {
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Akun belum aktif, silahkan lakukan verifikasi email !');
+        $this->expectExceptionMessage('Akun belum aktif. Silahkan melakukan verifikasi!');
 
         User::factory()->create([
             'username' => 'inactiveuser',

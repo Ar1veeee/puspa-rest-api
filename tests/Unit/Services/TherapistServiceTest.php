@@ -103,7 +103,7 @@ class TherapistServiceTest extends TestCase
     public function updateTherapistShouldThrowExceptionForDuplicateEmail(): void
     {
         $this->expectException(ValidationException::class);
-        $otherUser = User::factory()->create(['email' => 'taken@email.com']);
+        User::factory()->create(['email' => 'taken@email.com']);
 
         $updateData = ['email' => 'taken@email.com'];
 
