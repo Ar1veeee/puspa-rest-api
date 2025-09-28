@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         return $this->successResponse(
             ['user_id' => $userId],
-            'Registrasi berhasil. Silakan melakukan verifikasi!',
+            'Daftar akun berhasil. Silakan melakukan verifikasi!',
             201
         );
     }
