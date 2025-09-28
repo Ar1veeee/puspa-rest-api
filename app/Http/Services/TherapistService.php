@@ -124,7 +124,7 @@ class TherapistService
         }
 
         if (isset($data['email']) && $data['email'] !== $user->email) {
-            if ($this->userRepository->isEmailTakenByAnother($data['username'], $user->id)) {
+            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
                 throw ValidationException::withMessages([
                     'email' => ['Email sudah digunakan'],
                 ]);
