@@ -237,6 +237,56 @@
                 }
             }
         },
+        "/registration": {
+            "post": {
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "Pendaftaran Keluarga Baru",
+                "description": "Mendaftarkan satu keluarga baru (wali & anak) dan secara otomatis membuat jadwal observasi awal.",
+                "operationId": "storeNewFamilyRegistration",
+                "requestBody": {
+                    "description": "Data lengkap pendaftaran",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pendaftaran Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pendaftaran Berhasil"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": []
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error (misal: email sudah ada, atau data tidak valid)"
+                    }
+                }
+            }
+        },
         "/therapists": {
             "get": {
                 "tags": [
@@ -498,6 +548,84 @@
     },
     "components": {
         "schemas": {
+            "RegistrationRequest": {
+                "required": [
+                    "child_name",
+                    "child_gender",
+                    "child_birth_place",
+                    "child_birth_date",
+                    "child_address",
+                    "child_complaint",
+                    "child_service_choice",
+                    "email",
+                    "guardian_name",
+                    "guardian_phone",
+                    "guardian_type"
+                ],
+                "properties": {
+                    "child_name": {
+                        "type": "string",
+                        "example": "Citra Lestari"
+                    },
+                    "child_gender": {
+                        "type": "string",
+                        "enum": [
+                            "Laki-laki",
+                            "Perempuan"
+                        ],
+                        "example": "Perempuan"
+                    },
+                    "child_birth_place": {
+                        "type": "string",
+                        "example": "Surakarta"
+                    },
+                    "child_birth_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2018-05-20"
+                    },
+                    "child_school": {
+                        "type": "string",
+                        "example": "SDN 1 Pagi",
+                        "nullable": true
+                    },
+                    "child_address": {
+                        "type": "string",
+                        "example": "Jl. Merdeka No. 10"
+                    },
+                    "child_complaint": {
+                        "type": "string",
+                        "example": "Sulit berkonsentrasi saat belajar"
+                    },
+                    "child_service_choice": {
+                        "type": "string",
+                        "example": "Terapi Okupasi"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "wali.baru@example.com"
+                    },
+                    "guardian_name": {
+                        "type": "string",
+                        "example": "Budi Santoso"
+                    },
+                    "guardian_phone": {
+                        "type": "string",
+                        "example": "081234567890"
+                    },
+                    "guardian_type": {
+                        "type": "string",
+                        "enum": [
+                            "ayah",
+                            "ibu",
+                            "wali"
+                        ],
+                        "example": "ayah"
+                    }
+                },
+                "type": "object"
+            },
             "ResetPasswordRequest": {
                 "required": [
                     "token",
@@ -807,6 +935,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Registration",
+            "description": "Registration"
         },
         {
             "name": "Therapists",

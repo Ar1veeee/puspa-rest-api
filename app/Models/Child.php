@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +29,6 @@ class Child extends Model
         'child_name',
         'child_birth_place',
         'child_birth_date',
-        'child_age',
         'child_address',
         'child_complaint',
         'child_school',
@@ -49,6 +49,23 @@ class Child extends Model
     public function observation(): HasOne
     {
         return $this->hasOne(Observation::class, 'child_id', 'id');
+    }
+
+    public static function calculateAgeAndCategory(string $birthDate): array
+    {
+        $age = Carbon::parse($birthDate)->age;
+
+        $category = match (true) {
+            $age <= 5 => 'balita',
+            $age <= 12 => 'anak-anak',
+            $age <= 17 => 'remaja',
+            default => 'lainya',
+        };
+
+        return [
+            'age' => $age,
+            'category' => $category,
+        ];
     }
 
     protected static function boot()
