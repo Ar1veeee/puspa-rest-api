@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Helpers\ResponseFormatter as HelpersResponseFormatter;
+use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\TherapistCreateRequest;
 use App\Http\Requests\TherapistUpdateRequest;
 use App\Http\Resources\TherapistsResource;
@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 
 class TherapistController extends Controller
 {
-    use HelpersResponseFormatter;
+    use ResponseFormatter;
 
     protected $therapistService;
 

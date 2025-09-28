@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Helpers\ResponseFormatter as HelpersResponseFormatter;
+use App\Http\Helpers\ResponseFormatter;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    use HelpersResponseFormatter;
+    use ResponseFormatter;
 
     /**
      * Handle an incoming request.
