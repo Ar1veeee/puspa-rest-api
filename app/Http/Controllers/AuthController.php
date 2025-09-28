@@ -22,29 +22,33 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new user.
      * @OA\Post(
-     *     path="/auth/register",
-     *     summary="Register a new user",
-     *     tags={"Auth"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UserRegisterRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Successful registration",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="user_id", type="string", description="User ID")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation errors"
-     *     )
+     * path="/auth/register",
+     * operationId="registerUser",
+     * tags={"Authentication"},
+     * summary="Registrasi pengguna baru",
+     * description="Mendaftarkan pengguna baru dan mengirimkan email verifikasi.",
+     * @OA\RequestBody(
+     * required=true,
+     * description="Data registrasi pengguna",
+     * @OA\JsonContent(ref="#/components/schemas/UserRegisterRequest")
+     * ),
+     * @OA\Response(
+     * response=201,
+     * description="Registrasi berhasil",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="Registrasi berhasil. Silakan melakukan verifikasi!"),
+     * @OA\Property(property="data", type="object",
+     * @OA\Property(property="user_id", type="string", description="ULID dari pengguna yang baru dibuat")
      * )
-     *
-     * @param UserRegisterRequest $request
+     * )
+     * ),
+     * @OA\Response(
+     * response=422,
+     * description="Validation Error"
+     * )
+     * )
      */
     public function register(UserRegisterRequest $request): JsonResponse
     {
@@ -59,32 +63,29 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user and return token.
      * @OA\Post(
-     *     path="/auth/login",
-     *     summary="Login user",
-     *     tags={"Auth"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UserLoginRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful login",
-     *         @OA\JsonContent(ref="#/components/schemas/LoginResource")
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Invalid credentials"
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Account not active"
-     *     )
+     * path="/auth/login",
+     * operationId="loginUser",
+     * tags={"Authentication"},
+     * summary="Login pengguna",
+     * description="Mengautentikasi pengguna dan mengembalikan access token.",
+     * @OA\RequestBody(
+     * required=true,
+     * description="Kredensial login",
+     * @OA\JsonContent(ref="#/components/schemas/UserLoginRequest")
+     * ),
+     * @OA\Response(
+     * response=200,
+     * description="Login berhasil",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="message", type="string", example="Login berhasil"),
+     * @OA\Property(property="data", ref="#/components/schemas/LoginResource")
      * )
-     *
-     * @param UserLoginRequest $request
-     * @return JsonResponse
+     * ),
+     * @OA\Response(response=401, description="Kredensial tidak valid"),
+     * @OA\Response(response=403, description="Akun belum aktif atau belum diverifikasi")
+     * )
      */
     public function login(UserLoginRequest $request): JsonResponse
     {
@@ -96,19 +97,18 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user (Revoke the token).
      * @OA\Post(
-     *     path="/auth/logout",
-     *     summary="Logout user",
-     *     tags={"Auth"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful logout"
-     *     )
+     * path="/auth/logout",
+     * operationId="logoutUser",
+     * tags={"Authentication"},
+     * summary="Logout pengguna",
+     * description="Mencabut (revoke) token pengguna yang sedang login.",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Logout berhasil"
      * )
-     *
-     * @return JsonResponse
+     * )
      */
     public function logout(): JsonResponse
     {

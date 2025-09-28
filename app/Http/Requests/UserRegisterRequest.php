@@ -6,12 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @OA\Schema(
- *     schema="UserRegisterRequest",
- *     type="object",
- *     required={"username", "email", "password"},
- *     @OA\Property(property="username", type="string", example="johndoe"),
- *     @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- *     @OA\Property(property="password", type="string", format="password", example="secret"),
+ * schema="UserRegisterRequest",
+ * type="object",
+ * required={"username", "email", "password"},
+ * @OA\Property(property="username", type="string", example="johndoe"),
+ * @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ * @OA\Property(property="password", type="string", format="password", example="Password123!", description="Min. 8 karakter, 1 huruf besar, 1 angka, 1 simbol"),
+ * @OA\Property(property="password_confirmation", type="string", format="password", example="Password123!")
  * )
  */
 class UserRegisterRequest extends FormRequest

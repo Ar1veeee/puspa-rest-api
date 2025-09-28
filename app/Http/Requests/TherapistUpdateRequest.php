@@ -5,6 +5,19 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Schema(
+ * schema="TherapistUpdateRequest",
+ * type="object",
+ * description="Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
+ * @OA\Property(property="username", type="string", example="dr.johndoe.updated"),
+ * @OA\Property(property="email", type="string", format="email", example="dr.johndoe.new@example.com"),
+ * @OA\Property(property="password", type="string", format="password", example="NewPassword123!", description="Kirim hanya jika ingin mengubah password"),
+ * @OA\Property(property="therapist_name", type="string", example="Dr. John Doe, S.Psi"),
+ * @OA\Property(property="therapist_section", type="string", enum={"Okupasi", "Fisio", "Wicara", "Paedagog"}, example="Fisio"),
+ * @OA\Property(property="therapist_phone", type="string", example="081234567891")
+ * )
+ */
 class TherapistUpdateRequest extends FormRequest
 {
     /**

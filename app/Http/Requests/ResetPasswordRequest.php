@@ -4,6 +4,17 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @OA\Schema(
+ * schema="ResetPasswordRequest",
+ * type="object",
+ * required={"token", "email", "password", "password_confirmation"},
+ * @OA\Property(property="token", type="string", description="Token yang diterima dari email"),
+ * @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ * @OA\Property(property="password", type="string", format="password", example="NewPassword123!"),
+ * @OA\Property(property="password_confirmation", type="string", format="password", example="NewPassword123!")
+ * )
+ */
 class ResetPasswordRequest extends FormRequest
 {
     /**

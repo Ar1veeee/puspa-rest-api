@@ -19,17 +19,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgotPassword'])
+    ->name('password.email');
+Route::post('/auth/reset-password', [PasswordResetController::class, 'resetPassword'])
+    ->name('password.reset');
 
 Route::get('/email/verify/{id}', [VerificationController::class, 'verify'])
     ->middleware('signed')
     ->name('verification.verify');
-
 Route::post('/email/verification-notification', [VerificationController::class, 'resendNotification'])
     ->middleware('throttle:6,1')
     ->name('verification.send');
-
-Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])->name('password.email');
-Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.reset');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('verified')->group(function () {

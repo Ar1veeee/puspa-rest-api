@@ -1,10 +1,10 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Nama Aplikasi Anda API",
-        "description": "Dokumentasi API untuk Aplikasi X",
+        "title": "Puspa API Documentation",
+        "description": "Dokumentasi API lengkap untuk layanan Puspa",
         "contact": {
-            "email": "admin@aplikasianda.com"
+            "email": "admin@puspa.sinus.ac.id"
         },
         "license": {
             "name": "Apache 2.0",
@@ -22,12 +22,13 @@
         "/auth/register": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
-                "summary": "Register a new user",
-                "description": "Register a new user.",
-                "operationId": "ed42f392010c301892e640067141676e",
+                "summary": "Registrasi pengguna baru",
+                "description": "Mendaftarkan pengguna baru dan mengirimkan email verifikasi.",
+                "operationId": "registerUser",
                 "requestBody": {
+                    "description": "Data registrasi pengguna",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -39,14 +40,27 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Successful registration",
+                        "description": "Registrasi berhasil",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "user_id": {
-                                            "description": "User ID",
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registrasi berhasil. Silakan melakukan verifikasi!"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user_id": {
+                                                    "description": "ULID dari pengguna yang baru dibuat",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -55,7 +69,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation errors"
+                        "description": "Validation Error"
                     }
                 }
             }
@@ -63,12 +77,13 @@
         "/auth/login": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
-                "summary": "Login user",
-                "description": "Login user and return token.",
-                "operationId": "8cb7742ae98d0990acb2907c4e00bf24",
+                "summary": "Login pengguna",
+                "description": "Mengautentikasi pengguna dan mengembalikan access token.",
+                "operationId": "loginUser",
                 "requestBody": {
+                    "description": "Kredensial login",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -80,20 +95,33 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful login",
+                        "description": "Login berhasil",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/LoginResource"
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/LoginResource"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Invalid credentials"
+                        "description": "Kredensial tidak valid"
                     },
                     "403": {
-                        "description": "Account not active"
+                        "description": "Akun belum aktif atau belum diverifikasi"
                     }
                 }
             }
@@ -101,14 +129,14 @@
         "/auth/logout": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
-                "summary": "Logout user",
-                "description": "Logout user (Revoke the token).",
-                "operationId": "0d29c740dc06d77602af8095bf4654cc",
+                "summary": "Logout pengguna",
+                "description": "Mencabut (revoke) token pengguna yang sedang login.",
+                "operationId": "logoutUser",
                 "responses": {
                     "200": {
-                        "description": "Successful logout"
+                        "description": "Logout berhasil"
                     }
                 },
                 "security": [
@@ -137,10 +165,453 @@
                     }
                 ]
             }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Kirim link reset password",
+                "description": "Mengirim email berisi link untuk mereset password pengguna.",
+                "operationId": "forgotPassword",
+                "requestBody": {
+                    "description": "Email pengguna yang terdaftar",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Link berhasil dikirim"
+                    },
+                    "404": {
+                        "description": "Pengguna dengan email tersebut tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Email tidak valid"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset password pengguna",
+                "description": "Mengatur ulang password pengguna menggunakan token dari email.",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "description": "Data untuk reset password",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetPasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password berhasil diatur ulang"
+                    },
+                    "422": {
+                        "description": "Data tidak valid (misal: token salah, email tidak cocok, atau validasi password gagal)"
+                    }
+                }
+            }
+        },
+        "/therapists": {
+            "get": {
+                "tags": [
+                    "Therapists"
+                ],
+                "summary": "Mendapatkan daftar semua terapis",
+                "operationId": "getTherapistsList",
+                "responses": {
+                    "200": {
+                        "description": "Operasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TherapistResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (bukan admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Therapists"
+                ],
+                "summary": "Membuat data terapis baru",
+                "operationId": "storeTherapist",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TherapistCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Terapis berhasil dibuat"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/therapists/{therapistId}": {
+            "get": {
+                "tags": [
+                    "Therapists"
+                ],
+                "summary": "Mendapatkan detail satu terapis",
+                "operationId": "getTherapistById",
+                "parameters": [
+                    {
+                        "name": "therapistId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Operasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TherapistResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data terapis tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Therapists"
+                ],
+                "summary": "Memperbarui data terapis",
+                "operationId": "updateTherapist",
+                "parameters": [
+                    {
+                        "name": "therapistId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TherapistUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update berhasil"
+                    },
+                    "404": {
+                        "description": "Data terapis tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Therapists"
+                ],
+                "summary": "Menghapus data terapis",
+                "operationId": "deleteTherapist",
+                "parameters": [
+                    {
+                        "name": "therapistId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data berhasil dihapus"
+                    },
+                    "404": {
+                        "description": "Data terapis tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/email/verify/{id}/{hash}": {
+            "get": {
+                "tags": [
+                    "Email Verification"
+                ],
+                "summary": "Verifikasi alamat email pengguna",
+                "description": "Endpoint ini diakses dari link yang dikirim ke email pengguna. Memerlukan signature yang valid.",
+                "operationId": "verifyEmail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "hash",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "expires",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email berhasil diverifikasi"
+                    },
+                    "400": {
+                        "description": "Tautan tidak valid atau kadaluwarsa"
+                    },
+                    "404": {
+                        "description": "Pengguna tidak ditemukan"
+                    }
+                }
+            }
+        },
+        "/email/resend-verification": {
+            "post": {
+                "tags": [
+                    "Email Verification"
+                ],
+                "summary": "Kirim ulang email verifikasi",
+                "description": "Mengirim ulang email verifikasi ke pengguna yang sedang login.",
+                "operationId": "resendVerification",
+                "responses": {
+                    "202": {
+                        "description": "Link baru berhasil dikirim"
+                    },
+                    "200": {
+                        "description": "Email sudah terverifikasi sebelumnya"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "schemas": {
+            "ResetPasswordRequest": {
+                "required": [
+                    "token",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "token": {
+                        "description": "Token yang diterima dari email",
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "NewPassword123!"
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "NewPassword123!"
+                    }
+                },
+                "type": "object"
+            },
+            "TherapistCreateRequest": {
+                "required": [
+                    "username",
+                    "email",
+                    "password",
+                    "therapist_name",
+                    "therapist_section",
+                    "therapist_phone"
+                ],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "dr.johndoe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "dr.johndoe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "Password123!"
+                    },
+                    "therapist_name": {
+                        "type": "string",
+                        "example": "Dr. John Doe"
+                    },
+                    "therapist_section": {
+                        "type": "string",
+                        "enum": [
+                            "Okupasi",
+                            "Fisio",
+                            "Wicara",
+                            "Paedagog"
+                        ],
+                        "example": "Okupasi"
+                    },
+                    "therapist_phone": {
+                        "type": "string",
+                        "example": "081234567890"
+                    }
+                },
+                "type": "object"
+            },
+            "TherapistUpdateRequest": {
+                "description": "Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "dr.johndoe.updated"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "dr.johndoe.new@example.com"
+                    },
+                    "password": {
+                        "description": "Kirim hanya jika ingin mengubah password",
+                        "type": "string",
+                        "format": "password",
+                        "example": "NewPassword123!"
+                    },
+                    "therapist_name": {
+                        "type": "string",
+                        "example": "Dr. John Doe, S.Psi"
+                    },
+                    "therapist_section": {
+                        "type": "string",
+                        "enum": [
+                            "Okupasi",
+                            "Fisio",
+                            "Wicara",
+                            "Paedagog"
+                        ],
+                        "example": "Fisio"
+                    },
+                    "therapist_phone": {
+                        "type": "string",
+                        "example": "081234567891"
+                    }
+                },
+                "type": "object"
+            },
             "UserLoginRequest": {
                 "required": [
                     "identifier",
@@ -148,13 +619,14 @@
                 ],
                 "properties": {
                     "identifier": {
+                        "description": "Bisa berupa username atau email",
                         "type": "string",
                         "example": "johndoe"
                     },
                     "password": {
                         "type": "string",
                         "format": "password",
-                        "example": "secret"
+                        "example": "Password123!"
                     }
                 },
                 "type": "object"
@@ -176,9 +648,15 @@
                         "example": "john.doe@example.com"
                     },
                     "password": {
+                        "description": "Min. 8 karakter, 1 huruf besar, 1 angka, 1 simbol",
                         "type": "string",
                         "format": "password",
-                        "example": "secret"
+                        "example": "Password123!"
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "Password123!"
                     }
                 },
                 "type": "object"
@@ -222,19 +700,121 @@
                     }
                 },
                 "type": "object"
+            },
+            "TherapistDetailResource": {
+                "properties": {
+                    "id": {
+                        "description": "Therapist ID",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "User ID",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email address",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "description": "Username",
+                        "type": "string"
+                    },
+                    "therapist_name": {
+                        "description": "Therapist name",
+                        "type": "string"
+                    },
+                    "therapist_section": {
+                        "description": "Therapist section",
+                        "type": "string"
+                    },
+                    "therapist_phone": {
+                        "description": "Therapist phone number",
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "description": "Creation date",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "description": "Update date",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "TherapistResource": {
+                "properties": {
+                    "id": {
+                        "description": "Therapist ID",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "User ID terkait",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email terapis",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "username": {
+                        "description": "Username terapis",
+                        "type": "string"
+                    },
+                    "therapist_name": {
+                        "description": "Nama lengkap terapis",
+                        "type": "string"
+                    },
+                    "therapist_section": {
+                        "description": "Bagian/spesialisasi terapis",
+                        "type": "string"
+                    },
+                    "therapist_phone": {
+                        "description": "Nomor telepon terapis",
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Update timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "Masukkan token Bearer Anda",
+                "bearerFormat": "Sanctum",
                 "scheme": "bearer"
             }
         }
     },
     "tags": [
         {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Therapists",
+            "description": "Therapists"
+        },
+        {
+            "name": "Email Verification",
+            "description": "Email Verification"
         }
     ]
 }

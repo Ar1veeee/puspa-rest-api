@@ -9,10 +9,10 @@ use Illuminate\Routing\Controller as BaseController;
 /**
  * @OA\Info(
  * version="1.0.0",
- * title="Nama Aplikasi Anda API",
- * description="Dokumentasi API untuk Aplikasi X",
+ * title="Puspa API Documentation",
+ * description="Dokumentasi API lengkap untuk layanan Puspa",
  * @OA\Contact(
- * email="admin@aplikasianda.com"
+ * email="admin@puspa.sinus.ac.id"
  * ),
  * @OA\License(
  * name="Apache 2.0",
@@ -28,7 +28,9 @@ use Illuminate\Routing\Controller as BaseController;
  * @OA\SecurityScheme(
  * securityScheme="bearerAuth",
  * type="http",
- * scheme="bearer"
+ * scheme="bearer",
+ * bearerFormat="Sanctum",
+ * description="Masukkan token Bearer Anda"
  * )
  */
 class Controller extends BaseController

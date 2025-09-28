@@ -5,6 +5,21 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @OA\Schema(
+ *     schema="TherapistDetailResource",
+ *     type="object",
+ *     @OA\Property(property="id", type="string", description="Therapist ID"),
+ *     @OA\Property(property="user_id", type="string", description="User ID"),
+ *     @OA\Property(property="email", type="string", format="email", description="Email address"),
+ *     @OA\Property(property="username", type="string", description="Username"),
+ *     @OA\Property(property="therapist_name", type="string", description="Therapist name"),
+ *     @OA\Property(property="therapist_section", type="string", description="Therapist section"),
+ *     @OA\Property(property="therapist_phone", type="string", description="Therapist phone number"),
+ *     @OA\Property(property="createdAt", type="string", format="date-time", description="Creation date"),
+ *     @OA\Property(property="updatedAt", type="string", format="date-time", description="Update date")
+ * )
+ */
 class TherapistDetailResource extends JsonResource
 {
     /**

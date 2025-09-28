@@ -8,11 +8,11 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 /**
  * @OA\Schema(
- *     schema="UserLoginRequest",
- *     type="object",
- *     required={"identifier", "password"},
- *     @OA\Property(property="identifier", type="string", example="johndoe"),
- *     @OA\Property(property="password", type="string", format="password", example="secret")
+ * schema="UserLoginRequest",
+ * type="object",
+ * required={"identifier", "password"},
+ * @OA\Property(property="identifier", type="string", description="Bisa berupa username atau email", example="johndoe"),
+ * @OA\Property(property="password", type="string", format="password", example="Password123!")
  * )
  */
 class UserLoginRequest extends FormRequest
@@ -30,11 +30,6 @@ class UserLoginRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
