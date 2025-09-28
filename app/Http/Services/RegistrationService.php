@@ -36,9 +36,11 @@ class RegistrationService
     public function registration(array $data)
     {
         $existingEmail = $this->userRepository->checkExistingEmail($data['email']);
-        if ($existingEmail) {
+        $existingTempEmail = $this->guardianRepository->checkExistingEmail($data['email']);
+
+        if ($existingEmail || $existingTempEmail) {
             throw ValidationException::withMessages([
-                'error' => ['Eamil sudah digunakan'],
+                'email' => ['Email sudah digunakan'],
             ]);
         }
 
