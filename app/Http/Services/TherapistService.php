@@ -116,19 +116,17 @@ class TherapistService
         }
 
         if (isset($data['username']) && $data['username'] !== $user->username) {
-            $existingUsername = $this->userRepository->checkExistingUsername($data['username']);
-            if ($existingUsername && $existingUsername->id !== $user->id) {
+            if ($this->userRepository->isUsernameTakenByAnother($data['username'], $user->id)) {
                 throw ValidationException::withMessages([
-                    'error' => ['Username sudah digunakan'],
+                    'nama_pengguna' => ['Nama pengguna sudah digunakan'],
                 ]);
             }
         }
 
         if (isset($data['email']) && $data['email'] !== $user->email) {
-            $existingEmail = $this->userRepository->checkExistingEmail($data['email']);
-            if ($existingEmail && $existingEmail->id !== $user->id) {
+            if ($this->userRepository->isEmailTakenByAnother($data['username'], $user->id)) {
                 throw ValidationException::withMessages([
-                    'error' => ['Email sudah digunakan'],
+                    'email' => ['Email sudah digunakan'],
                 ]);
             }
         }
