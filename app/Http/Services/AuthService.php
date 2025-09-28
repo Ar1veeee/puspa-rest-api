@@ -2,45 +2,66 @@
 
 namespace App\Http\Services;
 
+use App\Http\Repositories\GuardianRepository;
 use App\Http\Repositories\UserRepository;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
     protected $userRepository;
+    protected $guardianRepository;
 
-    public function __construct(UserRepository $userRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        GuardianRepository $guardianRepository,
+    ) {
         $this->userRepository = $userRepository;
+        $this->guardianRepository = $guardianRepository;
     }
 
     public function register(array $data): string
     {
         if ($this->userRepository->checkExistingUsername($data['username'])) {
             throw ValidationException::withMessages([
-                'error' => ['Username sudah digunakan'],
+                'nama_pengguna' => ['Nama pengguna sudah digunakan'],
             ]);
         }
 
         if ($this->userRepository->checkExistingEmail($data['email'])) {
             throw ValidationException::withMessages([
-                'error' => ['Email sudah digunakan'],
+                'email' => ['Email sudah digunakan'],
             ]);
         }
 
-        $userData = [
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => 'user',
-        ];
+        if (!$this->guardianRepository->checkExistingEmail($data['email'])) {
+            throw ValidationException::withMessages([
+                'email' => ['Email belum terdaftar. Silakan melakukan pendaftaran!'],
+            ]);
+        }
 
-        $user = $this->userRepository->create($userData);
-        $user->sendEmailVerificationNotification();
+        return DB::transaction(function () use ($data) {
+            $userData = [
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => 'user',
+            ];
 
-        return $user->id;
+            $user = $this->userRepository->create($userData);
+            $userId = $user->id;
+
+            $this->guardianRepository->updateUserIdByEmail($data['email'], $userId);
+            $this->guardianRepository->removeTempEmail($userId);
+
+            $user->markEmailAsVerified();
+
+            $user->sendEmailVerificationNotification();
+
+            return $user->id;
+        });
     }
 
     public function login(array $data): array
@@ -48,11 +69,11 @@ class AuthService
         $user = $this->userRepository->getByIdentifier($data['identifier']);
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
-            throw new AuthenticationException('Username atau password salah.');
+            throw new AuthenticationException('Username atau password salah. Coba lagi!');
         }
 
         if (! $user->is_active) {
-            throw new AuthenticationException('Akun belum aktif, silahkan lakukan verifikasi email !');
+            throw new AuthenticationException('Akun belum aktif. Silahkan melakukan verifikasi!');
         }
 
         $user->tokens()->delete();
