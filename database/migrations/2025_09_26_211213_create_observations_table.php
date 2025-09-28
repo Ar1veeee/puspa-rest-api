@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
             $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->date('scheduled_date');
-            $table->enum('age_category', ['Balita', 'Anak-anak', 'Remaja', 'Lainya']);
+            $table->enum('age_category', ['balita', 'anak-anak', 'remaja', 'lainya']);
             $table->integer('total_score')->nullable();
             $table->text('conclusion')->nullable();
             $table->text('recommendation')->nullable();
-            $table->enum('status', ['Pending', 'Scheduled', 'Completed'])->default('Pending');
+            $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
             $table->timestamps();
         });
     }

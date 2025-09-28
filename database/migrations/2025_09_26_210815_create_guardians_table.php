@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUlid('family_id')->constrained('families')->cascadeOnDelete();
             $table->foreignUlid('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('temp_email', 100)->unique();
-            $table->enum('guardian_type', ['Ayah', 'Ibu', 'Wali']);
+            $table->enum('guardian_type', ['ayah', 'ibu', 'wali']);
             $table->string('guardian_name', 100);
             $table->string('guardian_phone', 100);
             $table->integer('guardian_age')->nullable();

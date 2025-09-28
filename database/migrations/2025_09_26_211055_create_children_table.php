@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('child_complaint', 200);
             $table->string('child_school', 100)->nullable();
             $table->string('child_service_choice', 250);
-            $table->enum('child_religion', ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu', 'Lainnya'])->nullable();
+            $table->enum(
+                'child_religion',
+                ['islam', 'kristen', 'katolik', 'hindu', 'budha', 'konghucu', 'lainnya']
+            )->nullable();
             $table->timestamps();
         });
     }
