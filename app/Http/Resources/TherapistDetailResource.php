@@ -32,8 +32,8 @@ class TherapistDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'email' => $this->email,
-            'username' => $this->username,
+            'email' => $this->user->email,
+            'username' => $this->user->username,
             'therapist_name' => $this->therapist_name,
             'therapist_section' => $this->therapist_section,
             'therapist_phone' => $this->therapist_phone,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\TherapistCreateRequest;
 use App\Http\Requests\TherapistUpdateRequest;
+use App\Http\Resources\TherapistDetailResource;
 use App\Http\Resources\TherapistsResource;
 use App\Http\Services\TherapistService;
 use Illuminate\Http\JsonResponse;
@@ -41,8 +42,8 @@ class TherapistController extends Controller
      */
     public function index(): JsonResponse
     {
-        $therapistsData = $this->therapistService->getAllTherapist();
-        $resourceData = TherapistsResource::collection($therapistsData);
+        $therapists = $this->therapistService->getAllTherapist();
+        $resourceData = TherapistsResource::collection($therapists);
 
         return $this->successResponse($resourceData, 'Daftar Semua Terapis', 200);
     }
@@ -97,7 +98,7 @@ class TherapistController extends Controller
     public function show(string $therapistId): JsonResponse
     {
         $therapist = $this->therapistService->getTherapistDetail($therapistId);
-        $resourceData = new TherapistsResource($therapist);
+        $resourceData = new TherapistDetailResource($therapist);
 
         return $this->successResponse($resourceData, 'Detail Terapis', 200);
     }

@@ -32,8 +32,8 @@ class TherapistsResource extends JsonResource
         return [
             'id' => $this['id'] ?? null,
             'user_id' => $this['user_id'] ?? null,
-            'email' => $this['email'] ?? null,
-            'username' => $this['username'] ?? null,
+            'email' => $this->user['email'] ?? null,
+            'username' => $this->user['username'] ?? null,
             'therapist_name' => $this['therapist_name'] ?? null,
             'therapist_section' => $this['therapist_section'] ?? null,
             'therapist_phone' => $this['therapist_phone'] ?? null,

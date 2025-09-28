@@ -23,24 +23,7 @@ class TherapistService
 
     public function getAllTherapist()
     {
-        $therapists = $this->therapistRepository->getAll();
-        $therapistsData = [];
-
-        foreach ($therapists as $therapist) {
-            $therapistsData[] = [
-                'id' => $therapist->id,
-                'user_id' => $therapist->user_id,
-                'email' => $therapist->user->email,
-                'username' => $therapist->user->username,
-                'therapist_name' => $therapist->therapist_name,
-                'therapist_section' => $therapist->therapist_section,
-                'therapist_phone' => $therapist->therapist_phone,
-                'created_at' => $therapist->created_at,
-                'updated_at' => $therapist->updated_at,
-            ];
-        }
-
-        return $therapistsData;
+        return $this->therapistRepository->getAll();
     }
 
     public function getTherapistDetail(string $id)
@@ -51,17 +34,7 @@ class TherapistService
             throw new ModelNotFoundException('Data terapis tidak ditemukan.');
         }
 
-        return [
-            'id' => $therapist->id,
-            'user_id' => $therapist->user_id,
-            'email' => $therapist->user->email,
-            'username' => $therapist->user->username,
-            'therapist_name' => $therapist->therapist_name,
-            'therapist_section' => $therapist->therapist_section,
-            'therapist_phone' => $therapist->therapist_phone,
-            'created_at' => $therapist->created_at,
-            'updated_at' => $therapist->updated_at,
-        ];
+        return $therapist;
     }
 
     public function createTherapist(array $data): void
