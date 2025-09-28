@@ -13,7 +13,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * "email", "guardian_name", "guardian_phone", "guardian_type"
  * },
  * @OA\Property(property="child_name", type="string", example="Citra Lestari"),
- * @OA\Property(property="child_gender", type="string", enum={"Laki-laki", "Perempuan"}, example="Perempuan"),
+ * @OA\Property(property="child_gender", type="string", enum={"laki-laki", "perempuan"}, example="Perempuan"),
  * @OA\Property(property="child_birth_place", type="string", example="Surakarta"),
  * @OA\Property(property="child_birth_date", type="string", format="date", example="2018-05-20"),
  * @OA\Property(property="child_school", type="string", nullable=true, example="SDN 1 Pagi"),
@@ -45,7 +45,7 @@ class RegistrationRequest extends FormRequest
     {
         return [
             'child_name' => ['required', 'string', 'max:100'],
-            'child_gender' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+            'child_gender' => ['required', 'string', 'in:laki-laki,perempuan'],
             'child_birth_place' => ['required', 'string', 'max:100'],
             'child_birth_date' => ['required', 'date'],
             'child_school' => ['string', 'max:100'],

@@ -29,6 +29,7 @@ class Child extends Model
         'child_name',
         'child_birth_place',
         'child_birth_date',
+        'child_gender',
         'child_address',
         'child_complaint',
         'child_school',
