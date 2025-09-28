@@ -166,7 +166,7 @@ class TherapistService
         if (! $therapist) {
             throw new ModelNotFoundException('Data terapis tidak ditemukan.');
         }
-        
+
         return $this->therapistRepository->delete($id);
     }
 }
