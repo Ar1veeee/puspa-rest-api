@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Services;
+
+use App\Http\Repositories\ObservationRepository;
+use App\Http\Repositories\ObservationQuestionRepository;
+use App\Http\Repositories\ObservationAnswerRepository;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class ObservationService
+{
+    protected $observationRepository;
+    protected $observationQuestionRepository;
+    protected $observationAnswerRepository;
+
+    public function __construct(
+        ObservationRepository $observationRepository,
+        ObservationQuestionRepository $observationQuestionRepository,
+        ObservationAnswerRepository $observationAnswerRepository,
+    ) {
+        $this->observationRepository = $observationRepository;
+        $this->observationQuestionRepository = $observationQuestionRepository;
+        $this->observationAnswerRepository = $observationAnswerRepository;
+    }
+
+    public function getObservationsPending()
+    {
+        return $this->observationRepository->getByPendingStatus();
+    }
+
+    public function getObservationsScheduled()
+    {
+        return $this->observationRepository->getByScheduledStatus();
+    }
+
+    public function getObservationsCompleted()
+    {
+        return $this->observationRepository->getByCompletedStatus();
+    }
+
+    public function getObservationScheduledDetail(int $id)
+    {
+        $detailScheduled = $this->observationRepository->getByScheduledDetail($id);
+
+        if (!$detailScheduled) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+
+        return $detailScheduled;
+    }
+
+    public function getObservationCompletedDetail(int $id)
+    {
+        $detaiCompleted = $this->observationRepository->getByCompletedDetail($id);
+
+        if (!$detaiCompleted) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+
+        return $detaiCompleted;
+    }
+
+    public function getObservationQuestions(int $id)
+    {
+        $observation = $this->observationRepository->getById($id);
+        if (!$observation) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+
+        $questions = $this->observationQuestionRepository->getByAgeCategory($observation->age_category);
+        return $questions;
+    }
+
+    public function updateObservationDate(array $data, int $id)
+    {
+        $observation = $this->observationRepository->getById($id);
+        if (!$observation) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+
+        $updateData = [];
+
+        if (isset($data['scheduled_date']) && !empty($data['scheduled_date'])) {
+            $updateData['scheduled_date'] = $data['scheduled_date'];
+
+            if ($observation->status === 'pending') {
+                $updateData['status'] = 'scheduled';
+            }
+        }
+
+        if (!empty($updateData)) {
+            $this->observationRepository->update($id, $updateData);
+        }
+    }
+
+    public function submitObservation(array $data, int $id)
+    {
+        $observation = $this->observationRepository->getById($id);
+        if (!$observation) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+        if ($observation->status === 'completed') {
+            throw new Exception('Observasi ini sudah diselesaikan dan tidak bisa diubah.');
+        }
+
+        $loggedInUser = Auth::user();
+
+        $therapist = $loggedInUser->therapist;
+        if (!$therapist) {
+            throw new Exception('Profil terapis tidak ditemukan untuk pengguna ini.');
+        }
+
+        $questionIds = array_column($data['answers'], 'question_id');
+        $questions = $this->observationQuestionRepository->getQuestionsByIds($questionIds)->keyBy('id');
+
+        DB::transaction(function () use ($data, $id, $therapist, $questions, $observation) {
+            $totalScore = 0;
+            $answerToInsert = [];
+
+            foreach ($data['answers'] as $answerData) {
+                $question = $questions->get($answerData['question_id']);
+
+                $scoreEarned = ($question && $answerData['answer'] === true) ? $question->score : 0;
+                $totalScore += $scoreEarned;
+
+                $answerToInsert[] = [
+                    'observation_id' => $id,
+                    'question_id' => $answerData['question_id'],
+                    'answer' => $answerData['answer'],
+                    'score_earned' => $scoreEarned,
+                    'note' => $answerData['note'],
+                ];
+            }
+
+            if (!empty($answerToInsert)) {
+                $this->observationAnswerRepository->createMany($answerToInsert);
+            }
+
+            $observationUpdateData = [
+                'therapist_id' => $therapist->id,
+                'total_score' => $totalScore,
+                'conclusion' => $data['conclusion'],
+                'recommendation' => $data['recommendation'],
+                'status' => 'completed',
+            ];
+
+            $observation->update($observationUpdateData);
+        });
+    }
+}

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TherapistController;
@@ -37,20 +38,36 @@ Route::post('/email/verification-notification', [VerificationController::class, 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('verified')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduled']);
         Route::get('/auth/protected', [AuthController::class, 'protected']);
     });
 });
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::get('/admins', [AdminController::class, 'index']);
-    Route::post('/admins', [AdminController::class, 'store']);
-    Route::get('/admins/{admin_id}', [AdminController::class, 'show']);
-    Route::put('/admins/{admin_id}', [AdminController::class, 'update']);
-    Route::delete('/admins/{admin_id}', [AdminController::class, 'destroy']);
+Route::middleware(['auth:sanctum', 'role:admin'])->group(
+    function () {
+        Route::get('/admins', [AdminController::class, 'index']);
+        Route::post('/admins', [AdminController::class, 'store']);
+        Route::get('/admins/{admin_id}', [AdminController::class, 'show']);
+        Route::put('/admins/{admin_id}', [AdminController::class, 'update']);
+        Route::delete('/admins/{admin_id}', [AdminController::class, 'destroy']);
 
-    Route::get('/therapists', [TherapistController::class, 'index']);
-    Route::post('/therapists', [TherapistController::class, 'store']);
-    Route::get('/therapists/{therapist_id}', [TherapistController::class, 'show']);
-    Route::put('/therapists/{therapist_id}', [TherapistController::class, 'update']);
-    Route::delete('/therapists/{therapist_id}', [TherapistController::class, 'destroy']);
-});
+        Route::get('/therapists', [TherapistController::class, 'index']);
+        Route::post('/therapists', [TherapistController::class, 'store']);
+        Route::get('/therapists/{therapist_id}', [TherapistController::class, 'show']);
+        Route::put('/therapists/{therapist_id}', [TherapistController::class, 'update']);
+        Route::delete('/therapists/{therapist_id}', [TherapistController::class, 'destroy']);
+
+        Route::get('/observations/pending', [ObservationController::class, 'indexPending']);
+        Route::put('/observations/{observation_id}', [ObservationController::class, 'update']);
+    }
+);
+
+Route::middleware(['auth:sanctum', 'role:terapis'])->group(
+    function () {
+        Route::get('/observations/scheduled/{observation_id}', [ObservationController::class, 'showScheduled']);
+        Route::get('/observations/question/{observation_id}', [ObservationController::class, 'showQuestion']);
+        Route::post('/observations/submit/{observation_id}', [ObservationController::class, 'submit']);
+        Route::get('/observations/completed', [ObservationController::class, 'indexCompleted']);
+        Route::get('/observations/completed/{observation_id}', [ObservationController::class, 'showCompleted']);
+    }
+);
