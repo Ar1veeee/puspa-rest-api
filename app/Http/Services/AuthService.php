@@ -56,8 +56,6 @@ class AuthService
             $this->guardianRepository->updateUserIdByEmail($data['email'], $userId);
             $this->guardianRepository->removeTempEmail($userId);
 
-            $user->markEmailAsVerified();
-
             $user->sendEmailVerificationNotification();
 
             return $user->id;
