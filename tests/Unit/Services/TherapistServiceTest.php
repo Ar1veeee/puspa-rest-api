@@ -7,6 +7,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Services\TherapistService;
 use App\Models\Therapist;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -41,10 +42,12 @@ class TherapistServiceTest extends TestCase
     {
         $result = $this->therapistService->getAllTherapist();
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(1, $result);
-        $this->assertEquals($this->therapistUser->email, $result[0]['email']);
-        $this->assertEquals($this->therapist->therapist_name, $result[0]['therapist_name']);
+
+        $firstTherapist = $result->first();
+        $this->assertEquals($this->therapistUser->email, $firstTherapist->user->email);
+        $this->assertEquals($this->therapist->therapist_name, $firstTherapist->therapist_name);
     }
 
     /**
@@ -55,9 +58,9 @@ class TherapistServiceTest extends TestCase
     {
         $result = $this->therapistService->getTherapistDetail($this->therapist->id);
 
-        $this->assertIsArray($result);
-        $this->assertEquals($this->therapistUser->username, $result['username']);
-        $this->assertEquals($this->therapist->id, $result['id']);
+        $this->assertInstanceOf(Therapist::class, $result);
+        $this->assertEquals($this->therapistUser->username, $result->user->username);
+        $this->assertEquals($this->therapist->id, $result->id);
     }
 
     /**

@@ -30,15 +30,15 @@ class TherapistsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this['id'] ?? null,
-            'user_id' => $this['user_id'] ?? null,
-            'email' => $this->user['email'] ?? null,
-            'username' => $this->user['username'] ?? null,
-            'therapist_name' => $this['therapist_name'] ?? null,
-            'therapist_section' => $this['therapist_section'] ?? null,
-            'therapist_phone' => $this['therapist_phone'] ?? null,
-            'createdAt' => $this['created_at'] ?? null,
-            'updatedAt' => $this['updated_at'] ?? null,
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'email' => $this->user->email,
+            'username' => $this->user->username,
+            'therapist_name' => $this->therapist_name,
+            'therapist_section' => $this->therapist_section,
+            'therapist_phone' => $this->therapist_phone,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

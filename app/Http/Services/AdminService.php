@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\AdminRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\Admin;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +23,12 @@ class AdminService
         $this->adminRepository = $adminRepository;
     }
 
-    public function getAllAdmin()
+    public function getAllAdmin(): Collection
     {
         return $this->adminRepository->getAll();
     }
 
-    public function getAdminDetail(string $id)
+    public function getAdminDetail(string $id): Admin
     {
         $admin = $this->adminRepository->getDetailById($id);
 

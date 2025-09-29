@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\TherapistRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\Therapist;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +23,12 @@ class TherapistService
         $this->therapistRepository = $therapistRepository;
     }
 
-    public function getAllTherapist()
+    public function getAllTherapist(): Collection
     {
         return $this->therapistRepository->getAll();
     }
 
-    public function getTherapistDetail(string $id)
+    public function getTherapistDetail(string $id): Therapist
     {
         $therapist = $this->therapistRepository->getDetailById($id);
 

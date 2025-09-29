@@ -7,6 +7,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Services\AdminService;
 use App\Models\Admin;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -40,22 +41,24 @@ class AdminServiceTest extends TestCase
     {
         $result = $this->adminService->getAllAdmin();
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(1, $result);
-        $this->assertEquals($this->adminUser->email, $result[0]['email']);
-        $this->assertEquals($this->admin->admin_name, $result[0]['admin_name']);
+
+        $firstAdmin = $result->first();
+        $this->assertEquals($this->adminUser->email, $firstAdmin->user->email);
+        $this->assertEquals($this->admin->admin_name, $firstAdmin->admin_name);
     }
 
     /** @test
      * Testing get admin detail success.
      */
-    public function getAdminDetailShouldReturnFormattedData(): void
+    public function getAdminDetailShouldReturnAdminModel(): void
     {
         $result = $this->adminService->getAdminDetail($this->admin->id);
 
-        $this->assertIsArray($result);
-        $this->assertEquals($this->adminUser->username, $result['username']);
-        $this->assertEquals($this->admin->id, $result['id']);
+        $this->assertInstanceOf(Admin::class, $result);
+        $this->assertEquals($this->adminUser->username, $result->user->username);
+        $this->assertEquals($this->admin->id, $result->id);
     }
 
     /** @test
