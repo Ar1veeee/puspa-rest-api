@@ -29,14 +29,15 @@ class LoginResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'username' => $this->username,
-            'email' => $this->email,
-            'role' => $this->role,
-            'tokenType' => $this->token_type,
-            'accessToken' => $this->access_token,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+            'id' => $this->resource['user']->id,
+            'username' => $this->resource['user']->username,
+            'email' => $this->resource['user']->email,
+            'role' => $this->resource['user']->role,
+            'tokenType' => 'Bearer',
+            'token' => $this->resource['token'],
+            'expires_at' => now()->addDays(7)->toDateTimeString(),
+            'created_at' => $this->resource['user']->created_at,
+            'updated_at' => $this->resource['user']->updated_at,
         ];
     }
 }

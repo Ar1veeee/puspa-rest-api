@@ -64,7 +64,7 @@ class AuthService
         });
     }
 
-    public function login(array $data): array
+    public function login(array $data)
     {
         $user = $this->userRepository->getByIdentifier($data['identifier']);
 
@@ -81,16 +81,21 @@ class AuthService
         $token = $user->createToken('api-token', ['*'], now()->addDays(7))->plainTextToken;
 
         return [
-            'id' => $user->id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'role' => $user->role,
-            'token_type' => 'Bearer',
-            'access_token' => $token,
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at,
+            'user' => $user,
+            'token' => $token,
         ];
     }
+
+    // return [
+    //     'id' => $user->id,
+    //     'username' => $user->username,
+    //     'email' => $user->email,
+    //     'role' => $user->role,
+    //     'token_type' => 'Bearer',
+    //     'access_token' => $token,
+    //     'created_at' => $user->created_at,
+    //     'updated_at' => $user->updated_at,
+    // ];
 
     public function logout(): void
     {

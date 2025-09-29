@@ -91,9 +91,9 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $loginData = $this->authService->login($data);
-        $resourceData = new LoginResource((object) $loginData);
+        $response = new LoginResource($loginData);
 
-        return $this->successResponse($resourceData, 'Login berhasil', 200);
+        return $this->successResponse($response, 'Login berhasil', 200);
     }
 
     /**

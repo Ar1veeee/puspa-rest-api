@@ -114,7 +114,7 @@ class AuthServiceTest extends TestCase
      */
     public function loginShouldReturnAuthDataWithCorrectCredentials(): void
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'username' => 'testuser',
             'password' => Hash::make('password123'),
             'is_active' => true,
@@ -128,8 +128,15 @@ class AuthServiceTest extends TestCase
         $result = $this->authService->login($loginData);
 
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('access_token', $result);
-        $this->assertEquals('testuser', $result['username']);
+        $this->assertArrayHasKey('user', $result);
+        $this->assertArrayHasKey('token', $result);
+
+        $this->assertInstanceOf(User::class, $result['user']);
+        $this->assertEquals('testuser', $result['user']->username);
+        $this->assertEquals($user->id, $result['user']->id);
+
+        $this->assertIsString($result['token']);
+        $this->assertNotEmpty($result['token']);
     }
 
     /**
