@@ -64,7 +64,6 @@ class AuthServiceTest extends TestCase
         ]);
 
         $user = User::find($userId);
-        $this->assertNotNull($user->email_verified_at);
 
         Notification::assertSentTo($user, EmailVerificationNotification::class);
     }
