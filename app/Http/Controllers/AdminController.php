@@ -43,9 +43,9 @@ class AdminController extends Controller
     public function index(): JsonResponse
     {
         $admins = $this->adminService->getAllAdmin();
-        $resourceData = AdminsResource::collection($admins);
+        $response = AdminsResource::collection($admins);
 
-        return $this->successResponse($resourceData, 'Daftar Semua Admin', 200);
+        return $this->successResponse($response, 'Daftar Semua Admin', 200);
     }
 
     /**
@@ -98,9 +98,9 @@ class AdminController extends Controller
     public function show(string $adminId): JsonResponse
     {
         $admin = $this->adminService->getAdminDetail($adminId);
-        $resourceData = new AdminDetailResource($admin);
+        $response = new AdminDetailResource($admin);
 
-        return $this->successResponse($resourceData, 'Detail Admin', 200);
+        return $this->successResponse($response, 'Detail Admin', 200);
     }
 
     /**

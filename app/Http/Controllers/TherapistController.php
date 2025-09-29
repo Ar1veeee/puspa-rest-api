@@ -43,9 +43,9 @@ class TherapistController extends Controller
     public function index(): JsonResponse
     {
         $therapists = $this->therapistService->getAllTherapist();
-        $resourceData = TherapistsResource::collection($therapists);
+        $response = TherapistsResource::collection($therapists);
 
-        return $this->successResponse($resourceData, 'Daftar Semua Terapis', 200);
+        return $this->successResponse($response, 'Daftar Semua Terapis', 200);
     }
 
     /**
@@ -98,9 +98,9 @@ class TherapistController extends Controller
     public function show(string $therapistId): JsonResponse
     {
         $therapist = $this->therapistService->getTherapistDetail($therapistId);
-        $resourceData = new TherapistDetailResource($therapist);
+        $response = new TherapistDetailResource($therapist);
 
-        return $this->successResponse($resourceData, 'Detail Terapis', 200);
+        return $this->successResponse($response, 'Detail Terapis', 200);
     }
 
     /**
