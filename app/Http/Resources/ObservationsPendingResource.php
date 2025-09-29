@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,18 +30,14 @@ class ObservationsPendingResource extends JsonResource
     public function toArray(Request $request): array
     {
         $guardian = $this->child?->family?->guardians?->first();
-        $age = null;
-        if ($this->child && $this->child->child_birth_date) {
-            $ageInfo = Child::calculateAgeAndCategory($this->child->child_birth_date);
-            $age = $ageInfo['age'];
-        }
 
         return [
             "id" => $this->id,
             'child_name' => $this->child->child_name,
-            'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
+            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child->child_gender,
             'child_school' => $this->child->child_school,
+            'guardian_type' => $guardian->guardian_type,
             'guardian_name' => $guardian->guardian_name,
             'guardian_phone' => $guardian->guardian_phone,
             'scheduled_date' => $this->scheduled_date->toDateString(),

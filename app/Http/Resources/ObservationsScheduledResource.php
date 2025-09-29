@@ -33,7 +33,7 @@ class ObservationsScheduledResource extends JsonResource
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
             'child_gender' => $this->child->child_gender,
-            'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
+            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
             'scheduled_date' => $this->scheduled_date->toDateString(),
             'status' => $this->status,

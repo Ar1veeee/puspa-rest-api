@@ -33,8 +33,8 @@ class ObservationCompletedDetailResource extends JsonResource
         return [
             "id" => $this->id,
             'child_name' => $this->child->child_name,
-            'child_birth_place_date' => $this->child_birth_place . ', ' . $this->child_birth_date->format('d F Y'),
-            'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
+            'child_birth_place_date' => $this->child->child_birth_place . ', ' . $this->child->child_birth_date->format('d F Y'),
+            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child->child_gender,
             'child_school' => $this->child->child_school,
             'child_address' => $this->child->child_address,

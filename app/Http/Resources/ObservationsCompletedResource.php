@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,18 +28,12 @@ class ObservationsCompletedResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $age = null;
-        if ($this->child && $this->child->child_birth_date) {
-            $ageInfo = Child::calculateAgeAndCategory($this->child->child_birth_date);
-            $age = $ageInfo['age'];
-        }
-
         return [
             "id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
             'observer' => $this->therapist->therapist_name,
-            'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
+            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
             'scheduled_date' => $this->scheduled_date->toDateString(),
             'status' => $this->status,
