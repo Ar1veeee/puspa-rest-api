@@ -66,7 +66,10 @@ class AuthService
     {
         $user = $this->userRepository->getByIdentifier($data['identifier']);
 
-        if (! $user || ! Hash::check($data['password'], $user->password)) {
+        if (!$user) {
+            throw new AuthenticationException('Username atau password salah. Coba lagi!');
+        }
+        if (!Hash::check($data['password'], $user->password)) {
             throw new AuthenticationException('Username atau password salah. Coba lagi!');
         }
 
