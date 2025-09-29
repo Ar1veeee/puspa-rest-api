@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
@@ -50,6 +51,9 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(
         Route::get('/admins/{admin_id}', [AdminController::class, 'show']);
         Route::put('/admins/{admin_id}', [AdminController::class, 'update']);
         Route::delete('/admins/{admin_id}', [AdminController::class, 'destroy']);
+
+        Route::get('/children', [ChildController::class, 'index']);
+        Route::get('/children/{child_id}', [ChildController::class, 'show']);
 
         Route::get('/therapists', [TherapistController::class, 'index']);
         Route::post('/therapists', [TherapistController::class, 'store']);
