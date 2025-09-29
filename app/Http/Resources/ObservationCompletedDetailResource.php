@@ -11,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * type="object",
  * @OA\Property(property="id", type="integer", description="Observation ID"),
  * @OA\Property(property="child_name", type="string", description="Child's full name"),
- * @OA\Property(property="child_birth_place", type="string", description="Child's birth place and date"),
+ * @OA\Property(property="child_birth_place_date", type="string", description="Child's birth place and date"),
  * @OA\Property(property="child_age", type="integer", description="Child's current age in years"),
  * @OA\Property(property="child_gender", type="string", description="Child's gender"),
  * @OA\Property(property="child_school", type="string", nullable=true, description="Child's school"),

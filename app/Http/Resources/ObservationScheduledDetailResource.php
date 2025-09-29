@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Property(property="id", type="integer", description="Observation ID"),
  * @OA\Property(property="child_name", type="string", description="Nama lengkap anak"),
  * @OA\Property(property="child_birth_date", type="string", format="date", description="Tanggal lahir anak"),
- * @OA\Property(property="child_age", type="integer", description="Usia anak saat ini (tahun)"),
+ * @OA\Property(property="child_age", type="integer", description="Usia anak saat ini"),
  * @OA\Property(property="child_gender", type="string", description="Jenis kelamin anak"),
  * @OA\Property(property="child_school", type="string", nullable=true, description="Sekolah anak"),
  * @OA\Property(property="child_address", type="string", description="Alamat rumah anak"),
