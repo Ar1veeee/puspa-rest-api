@@ -24,6 +24,23 @@ class ObservationController extends Controller
         $this->observationService = $observationService;
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/pending",
+     * operationId="getPendingObservations",
+     * tags={"Observations"},
+     * summary="Daftar observasi berstatus 'Pending'",
+     * description="Mengambil daftar semua observasi yang menunggu penjadwalan. (Khusus Admin)",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ObservationsPendingResource"))
+     * ),
+     * @OA\Response(response=401, description="Unauthenticated"),
+     * @OA\Response(response=403, description="Forbidden")
+     * )
+     */
     public function indexPending()
     {
         $observations = $this->observationService->getObservationsPending();
@@ -32,6 +49,21 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Daftar Observasi Pending', 200);
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/scheduled",
+     * operationId="getScheduledObservations",
+     * tags={"Observations"},
+     * summary="Daftar observasi berstatus 'Scheduled'",
+     * description="Mengambil daftar semua observasi yang sudah dijadwalkan.",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ObservationsScheduledResource"))
+     * )
+     * )
+     */
     public function indexScheduled()
     {
         $observations = $this->observationService->getObservationsScheduled();
@@ -40,6 +72,21 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Daftar Observasi Scheduled', 200);
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/completed",
+     * operationId="getCompletedObservations",
+     * tags={"Observations"},
+     * summary="Daftar observasi berstatus 'Completed'",
+     * description="Mengambil daftar semua observasi yang sudah selesai. (Khusus Terapis)",
+     * security={{"bearerAuth":{}}},
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ObservationsCompletedResource"))
+     * )
+     * )
+     */
     public function indexCompleted()
     {
         $observations = $this->observationService->getObservationsCompleted();
@@ -48,6 +95,22 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Daftar Observasi Completed', 200);
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/scheduled/{observationId}",
+     * operationId="getScheduledObservationDetail",
+     * tags={"Observations"},
+     * summary="Detail observasi yang sudah dijadwalkan",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="observationId", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(ref="#/components/schemas/ObservationScheduledDetailResource")
+     * ),
+     * @OA\Response(response=404, description="Tidak ditemukan")
+     * )
+     */
     public function showScheduled(int $observationsId)
     {
         $observation = $this->observationService->getObservationScheduledDetail($observationsId);
@@ -56,6 +119,22 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Observasi Scheduled Detail', 200);
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/completed/{observationId}",
+     * operationId="getCompletedObservationDetail",
+     * tags={"Observations"},
+     * summary="Detail observasi yang sudah selesai",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="observationId", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(ref="#/components/schemas/ObservationCompletedDetailResource")
+     * ),
+     * @OA\Response(response=404, description="Tidak ditemukan")
+     * )
+     */
     public function showCompleted(int $observationsId)
     {
         $observation = $this->observationService->getObservationCompletedDetail($observationsId);
@@ -64,6 +143,22 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Observasi Completed Detail', 200);
     }
 
+    /**
+     * @OA\Get(
+     * path="/observations/question/{observationId}",
+     * operationId="getObservationQuestions",
+     * tags={"Observations"},
+     * summary="Daftar pertanyaan untuk sebuah observasi",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="observationId", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(
+     * response=200,
+     * description="Berhasil mengambil data",
+     * @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ObservationQuestionResource"))
+     * ),
+     * @OA\Response(response=404, description="Observasi tidak ditemukan")
+     * )
+     */
     public function showQuestion(int $observationsId)
     {
         $questions = $this->observationService->getObservationQuestions($observationsId);
@@ -72,6 +167,21 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Pertanyaan Observasi', 200);
     }
 
+    /**
+     * @OA\Put(
+     * path="/observations/{observationId}",
+     * operationId="updateObservationDate",
+     * tags={"Observations"},
+     * summary="Update tanggal jadwal observasi",
+     * description="Memperbarui tanggal jadwal untuk observasi yang berstatus 'Pending'. (Khusus Admin)",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="observationId", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/ObservationUpdateRequest")),
+     * @OA\Response(response=200, description="Berhasil diperbarui"),
+     * @OA\Response(response=404, description="Tidak ditemukan"),
+     * @OA\Response(response=422, description="Validation Error")
+     * )
+     */
     public function update(ObservationUpdateRequest $request, string $observationId)
     {
         $data = $request->validated();
@@ -80,6 +190,20 @@ class ObservationController extends Controller
         return $this->successResponse([], 'Jadwal Observasi Berhasil Diperbarui', 200);
     }
 
+    /**
+     * @OA\Post(
+     * path="/observations/submit/{observationId}",
+     * operationId="submitObservation",
+     * tags={"Observations"},
+     * summary="Submit hasil observasi",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="observationId", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/ObservationSubmitRequest")),
+     * @OA\Response(response=200, description="Berhasil disimpan"),
+     * @OA\Response(response=403, description="Observasi sudah selesai"),
+     * @OA\Response(response=404, description="Observasi tidak ditemukan")
+     * )
+     */
     public function submit(ObservationSubmitRequest $request, int $observationId)
     {
         $data = $request->validated();

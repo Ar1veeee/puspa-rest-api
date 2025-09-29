@@ -6,10 +6,6 @@
         "contact": {
             "email": "admin@puspa.sinus.ac.id"
         },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "1.0.0"
     },
     "servers": [
@@ -334,6 +330,313 @@
                 "responses": {
                     "200": {
                         "description": "Successful"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/pending": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Daftar observasi berstatus 'Pending'",
+                "description": "Mengambil daftar semua observasi yang menunggu penjadwalan. (Khusus Admin)",
+                "operationId": "getPendingObservations",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ObservationsPendingResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/scheduled": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Daftar observasi berstatus 'Scheduled'",
+                "description": "Mengambil daftar semua observasi yang sudah dijadwalkan.",
+                "operationId": "getScheduledObservations",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ObservationsScheduledResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/completed": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Daftar observasi berstatus 'Completed'",
+                "description": "Mengambil daftar semua observasi yang sudah selesai. (Khusus Terapis)",
+                "operationId": "getCompletedObservations",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ObservationsCompletedResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/scheduled/{observationId}": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Detail observasi yang sudah dijadwalkan",
+                "operationId": "getScheduledObservationDetail",
+                "parameters": [
+                    {
+                        "name": "observationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ObservationScheduledDetailResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/completed/{observationId}": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Detail observasi yang sudah selesai",
+                "operationId": "getCompletedObservationDetail",
+                "parameters": [
+                    {
+                        "name": "observationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ObservationCompletedDetailResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/question/{observationId}": {
+            "get": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Daftar pertanyaan untuk sebuah observasi",
+                "operationId": "getObservationQuestions",
+                "parameters": [
+                    {
+                        "name": "observationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ObservationQuestionResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Observasi tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/{observationId}": {
+            "put": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Update tanggal jadwal observasi",
+                "description": "Memperbarui tanggal jadwal untuk observasi yang berstatus 'Pending'. (Khusus Admin)",
+                "operationId": "updateObservationDate",
+                "parameters": [
+                    {
+                        "name": "observationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ObservationUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Berhasil diperbarui"
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/observations/submit/{observationId}": {
+            "post": {
+                "tags": [
+                    "Observations"
+                ],
+                "summary": "Submit hasil observasi",
+                "operationId": "submitObservation",
+                "parameters": [
+                    {
+                        "name": "observationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ObservationSubmitRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Berhasil disimpan"
+                    },
+                    "403": {
+                        "description": "Observasi sudah selesai"
+                    },
+                    "404": {
+                        "description": "Observasi tidak ditemukan"
                     }
                 },
                 "security": [
@@ -789,6 +1092,69 @@
                 },
                 "type": "object"
             },
+            "ObservationSubmitRequest": {
+                "required": [
+                    "answers",
+                    "conclusion",
+                    "recommendation"
+                ],
+                "properties": {
+                    "answers": {
+                        "description": "Daftar jawaban untuk setiap pertanyaan",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "question_id",
+                                "answer"
+                            ],
+                            "properties": {
+                                "question_id": {
+                                    "description": "ID dari pertanyaan yang dijawab",
+                                    "type": "integer",
+                                    "example": 27
+                                },
+                                "answer": {
+                                    "description": "Jawaban (true/false) untuk pertanyaan",
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "note": {
+                                    "description": "Catatan opsional untuk jawaban",
+                                    "type": "string",
+                                    "example": "Anak menunjukkan kemajuan.",
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "conclusion": {
+                        "description": "Kesimpulan akhir dari terapis",
+                        "type": "string",
+                        "example": "Anak menunjukkan perkembangan yang baik sesuai usianya."
+                    },
+                    "recommendation": {
+                        "description": "Rekomendasi tindak lanjut dari terapis",
+                        "type": "string",
+                        "example": "Disarankan untuk melanjutkan sesi terapi motorik halus."
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationUpdateRequest": {
+                "required": [
+                    "scheduled_date"
+                ],
+                "properties": {
+                    "scheduled_date": {
+                        "description": "Tanggal baru untuk jadwal observasi",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-10-15"
+                    }
+                },
+                "type": "object"
+            },
             "RegistrationRequest": {
                 "required": [
                     "child_name",
@@ -811,8 +1177,8 @@
                     "child_gender": {
                         "type": "string",
                         "enum": [
-                            "Laki-laki",
-                            "Perempuan"
+                            "laki-laki",
+                            "perempuan"
                         ],
                         "example": "Perempuan"
                     },
@@ -1150,6 +1516,265 @@
                 },
                 "type": "object"
             },
+            "ObservationCompletedDetailResource": {
+                "properties": {
+                    "id": {
+                        "description": "Observation ID",
+                        "type": "integer"
+                    },
+                    "child_name": {
+                        "description": "Child's full name",
+                        "type": "string"
+                    },
+                    "child_birth_date": {
+                        "description": "Child's birth date",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "child_age": {
+                        "description": "Child's current age in years",
+                        "type": "integer"
+                    },
+                    "child_gender": {
+                        "description": "Child's gender",
+                        "type": "string"
+                    },
+                    "child_school": {
+                        "description": "Child's school",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "child_address": {
+                        "description": "Child's home address",
+                        "type": "string"
+                    },
+                    "total_score": {
+                        "description": "Total score accumulated from the answers",
+                        "type": "integer"
+                    },
+                    "recommendation": {
+                        "description": "Therapist's recommendation after the observation",
+                        "type": "string"
+                    },
+                    "conclusion": {
+                        "description": "Therapist's conclusion after the observation",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationQuestionResource": {
+                "properties": {
+                    "id": {
+                        "description": "Question ID",
+                        "type": "integer"
+                    },
+                    "question_code": {
+                        "description": "Unique code for the question",
+                        "type": "string"
+                    },
+                    "age_category": {
+                        "description": "Applicable age category for the question",
+                        "type": "string"
+                    },
+                    "question_number": {
+                        "description": "Sequential number of the question within its category",
+                        "type": "integer"
+                    },
+                    "question_text": {
+                        "description": "The text of the question",
+                        "type": "string"
+                    },
+                    "score": {
+                        "description": "The score value of the question if answered positively",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationScheduledDetailResource": {
+                "properties": {
+                    "id": {
+                        "description": "Observation ID",
+                        "type": "integer"
+                    },
+                    "child_name": {
+                        "description": "Nama lengkap anak",
+                        "type": "string"
+                    },
+                    "child_birth_date": {
+                        "description": "Tanggal lahir anak",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "child_age": {
+                        "description": "Usia anak saat ini (tahun)",
+                        "type": "integer"
+                    },
+                    "child_gender": {
+                        "description": "Jenis kelamin anak",
+                        "type": "string"
+                    },
+                    "child_school": {
+                        "description": "Sekolah anak",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "child_address": {
+                        "description": "Alamat rumah anak",
+                        "type": "string"
+                    },
+                    "scheduled_date": {
+                        "description": "Tanggal jadwal observasi",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "parent_name": {
+                        "description": "Nama wali",
+                        "type": "string"
+                    },
+                    "parent_type": {
+                        "description": "Tipe wali (cth: ayah, ibu)",
+                        "type": "string"
+                    },
+                    "parent_phone": {
+                        "description": "Nomor telepon wali",
+                        "type": "string"
+                    },
+                    "child_complaint": {
+                        "description": "Keluhan awal anak",
+                        "type": "string"
+                    },
+                    "child_service_choice": {
+                        "description": "Pilihan layanan untuk anak",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationsCompletedResource": {
+                "properties": {
+                    "id": {
+                        "description": "Observation ID",
+                        "type": "integer"
+                    },
+                    "age_category": {
+                        "description": "Kategori usia saat observasi",
+                        "type": "string"
+                    },
+                    "child_name": {
+                        "description": "Nama anak",
+                        "type": "string"
+                    },
+                    "observer": {
+                        "description": "Nama terapis yang mengobservasi",
+                        "type": "string"
+                    },
+                    "child_age": {
+                        "description": "Usia anak saat observasi",
+                        "type": "integer"
+                    },
+                    "child_school": {
+                        "description": "Sekolah anak",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "scheduled_date": {
+                        "description": "Tanggal observasi dilakukan",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Completed"
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationsPendingResource": {
+                "properties": {
+                    "id": {
+                        "description": "Observation ID",
+                        "type": "integer"
+                    },
+                    "child_name": {
+                        "description": "Nama anak",
+                        "type": "string"
+                    },
+                    "child_age": {
+                        "description": "Usia anak (tahun)",
+                        "type": "integer"
+                    },
+                    "child_gender": {
+                        "description": "Jenis kelamin anak",
+                        "type": "string"
+                    },
+                    "child_school": {
+                        "description": "Sekolah anak",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "guardian_name": {
+                        "description": "Nama wali",
+                        "type": "string"
+                    },
+                    "guardian_phone": {
+                        "description": "Nomor telepon wali",
+                        "type": "string"
+                    },
+                    "scheduled_date": {
+                        "description": "Tanggal jadwal observasi",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "description": "Status observasi",
+                        "type": "string",
+                        "example": "Pending"
+                    }
+                },
+                "type": "object"
+            },
+            "ObservationsScheduledResource": {
+                "properties": {
+                    "id": {
+                        "description": "Observation ID",
+                        "type": "integer"
+                    },
+                    "age_category": {
+                        "description": "Kategori usia saat observasi",
+                        "type": "string"
+                    },
+                    "child_name": {
+                        "description": "Nama anak",
+                        "type": "string"
+                    },
+                    "child_gender": {
+                        "description": "Jenis kelamin anak",
+                        "type": "string"
+                    },
+                    "child_age": {
+                        "description": "Usia anak (tahun)",
+                        "type": "integer"
+                    },
+                    "child_school": {
+                        "description": "Sekolah anak",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "scheduled_date": {
+                        "description": "Tanggal jadwal observasi",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "description": "Status observasi",
+                        "type": "string",
+                        "example": "Scheduled"
+                    }
+                },
+                "type": "object"
+            },
             "TherapistDetailResource": {
                 "properties": {
                     "id": {
@@ -1243,19 +1868,31 @@
             "bearerAuth": {
                 "type": "http",
                 "description": "Masukkan token Bearer Anda",
-                "bearerFormat": "Sanctum",
+                "bearerFormat": "JWT",
                 "scheme": "bearer"
             }
         }
     },
     "tags": [
         {
-            "name": "Admins",
-            "description": "Admins"
+            "name": "Authentication",
+            "description": "Endpoint untuk otentikasi, registrasi, dan manajemen password."
         },
         {
-            "name": "Authentication",
-            "description": "Authentication"
+            "name": "Email Verification",
+            "description": "Endpoint untuk verifikasi email pengguna."
+        },
+        {
+            "name": "Admins",
+            "description": "Endpoint untuk mengelola data admin (khusus Super Admin)."
+        },
+        {
+            "name": "Therapists",
+            "description": "Endpoint untuk mengelola data terapis (khusus Admin)."
+        },
+        {
+            "name": "Observations",
+            "description": "Endpoint untuk melihat dan mengelola data observasi."
         },
         {
             "name": "Auth",
@@ -1264,14 +1901,6 @@
         {
             "name": "Registration",
             "description": "Registration"
-        },
-        {
-            "name": "Therapists",
-            "description": "Therapists"
-        },
-        {
-            "name": "Email Verification",
-            "description": "Email Verification"
         }
     ]
 }

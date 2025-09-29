@@ -6,6 +6,20 @@ use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @OA\Schema(
+ * schema="ObservationsScheduledResource",
+ * type="object",
+ * @OA\Property(property="id", type="integer", description="Observation ID"),
+ * @OA\Property(property="age_category", type="string", description="Kategori usia saat observasi"),
+ * @OA\Property(property="child_name", type="string", description="Nama anak"),
+ * @OA\Property(property="child_gender", type="string", description="Jenis kelamin anak"),
+ * @OA\Property(property="child_age", type="integer", description="Usia anak (tahun)"),
+ * @OA\Property(property="child_school", type="string", nullable=true, description="Sekolah anak"),
+ * @OA\Property(property="scheduled_date", type="string", format="date", description="Tanggal jadwal observasi"),
+ * @OA\Property(property="status", type="string", example="Scheduled", description="Status observasi")
+ * )
+ */
 class ObservationsScheduledResource extends JsonResource
 {
     /**
