@@ -10,41 +10,45 @@ use App\Http\Controllers\TherapistController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+Route::post('/registration', [RegistrationController::class, 'store'])
+    ->middleware('throttle:register');
 
-Route::post('/registration', [RegistrationController::class, 'store']);
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register'])
+    ->middleware('throttle:register');
+
+Route::post('/auth/login', [AuthController::class, 'login'])
+    ->middleware('throttle:login');
+
 Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgotPassword'])
-    ->name('password.email');
+    ->name('password.email')
+    ->middleware('throttle:forgot-password');
+
 Route::post('/auth/reset-password', [PasswordResetController::class, 'resetPassword'])
-    ->name('password.reset');
+    ->name('password.reset')
+    ->middleware('throttle:reset-password');
 
 Route::get('/email/verify/{id}', [VerificationController::class, 'verify'])
-    ->middleware('signed')
+    ->middleware(['signed', 'throttle:verification'])
     ->name('verification.verify');
+
 Route::post('/email/verification-notification', [VerificationController::class, 'resendNotification'])
-    ->middleware('throttle:6,1')
+    ->middleware('throttle:verification-resend')
     ->name('verification.send');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('verified')->group(function () {
-        Route::post('/auth/logout', [AuthController::class, 'logout']);
-        Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduled']);
-        Route::get('/auth/protected', [AuthController::class, 'protected']);
+        Route::post('/auth/logout', [AuthController::class, 'logout'])
+            ->middleware('throttle:logout');
+
+        Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduled'])
+            ->middleware('throttle:authenticated');
+
+        Route::get('/auth/protected', [AuthController::class, 'protected'])
+            ->middleware('throttle:authenticated');
     });
 });
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(
+Route::middleware(['auth:sanctum', 'role:admin', 'throttle:admin'])->group(
     function () {
         Route::get('/admins', [AdminController::class, 'index']);
         Route::post('/admins', [AdminController::class, 'store']);
@@ -66,7 +70,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(
     }
 );
 
-Route::middleware(['auth:sanctum', 'role:terapis'])->group(
+Route::middleware(['auth:sanctum', 'role:terapis', 'throttle:therapist'])->group(
     function () {
         Route::get('/observations/scheduled/{observation_id}', [ObservationController::class, 'showScheduled']);
         Route::get('/observations/question/{observation_id}', [ObservationController::class, 'showQuestion']);
