@@ -11,7 +11,7 @@ use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/registration', [RegistrationController::class, 'store'])
-    ->middleware('throttle:registration');
+    ->middleware('throttle:api');
 
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('throttle:register');
