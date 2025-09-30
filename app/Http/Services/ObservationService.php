@@ -5,16 +5,25 @@ namespace App\Http\Services;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
+use App\Traits\ClearsCaches;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ObservationService
 {
+    use ClearsCaches;
+
     protected $observationRepository;
     protected $observationQuestionRepository;
     protected $observationAnswerRepository;
+
+    public const CACHE_TTL_QUESTIONS = null;
+    public const CACHE_TTL_PENDING = 600;
+    public const CACHE_TTL_SCHEDULED = 600;
 
     public function __construct(
         ObservationRepository $observationRepository,
@@ -28,12 +37,27 @@ class ObservationService
 
     public function getObservationsPending()
     {
-        return $this->observationRepository->getByPendingStatus();
+        $cacheKey = 'observations_pending';
+
+        return Cache::remember(
+            $cacheKey,
+            self::CACHE_TTL_PENDING,
+            fn() => $this->observationRepository->getByPendingStatus()
+        );
     }
 
     public function getObservationsScheduled()
     {
-        return $this->observationRepository->getByScheduledStatus();
+        $userId = Auth::id();
+        $cacheKey = "observations_scheduled_{$userId}";
+
+        $result = Cache::remember(
+            $cacheKey,
+            self::CACHE_TTL_SCHEDULED,
+            fn() => $this->observationRepository->getByScheduledStatus()
+        );
+
+        return $result;
     }
 
     public function getObservationsCompleted()
@@ -70,8 +94,18 @@ class ObservationService
             throw new ModelNotFoundException('Observasi tidak ditemukan.');
         }
 
-        $questions = $this->observationQuestionRepository->getByAgeCategory($observation->age_category);
-        return $questions;
+        $ageCategory = $observation->age_category;
+        $cacheKey = "observation_questions_{$ageCategory}";
+
+
+        $result = Cache::rememberForever(
+            $cacheKey,
+            function () use ($ageCategory) {
+                return $this->observationQuestionRepository->getByAgeCategory($ageCategory);
+            }
+        );
+
+        return $result;
     }
 
     public function updateObservationDate(array $data, int $id)
@@ -93,6 +127,7 @@ class ObservationService
 
         if (!empty($updateData)) {
             $this->observationRepository->update($id, $updateData);
+            $this->clearObservationCaches();
         }
     }
 
@@ -149,5 +184,7 @@ class ObservationService
 
             $observation->update($observationUpdateData);
         });
+
+        $this->clearObservationCaches();
     }
 }

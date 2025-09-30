@@ -8,11 +8,14 @@ use App\Http\Repositories\GuardianRepository;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\Child;
+use App\Traits\ClearsCaches;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class RegistrationService
 {
+    use ClearsCaches;
+
     private $userRepository;
     protected $familyRepository;
     protected $guardianRepository;
@@ -83,6 +86,7 @@ class RegistrationService
             ];
 
             $this->observationRepository->create($observationData);
+            $this->clearObservationCaches();
         });
     }
 }
