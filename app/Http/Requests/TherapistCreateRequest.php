@@ -40,7 +40,7 @@ class TherapistCreateRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:100'],
             'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
             'therapist_name' => ['required', 'string', 'min:3', 'max:100'],
-            'therapist_section' => 'required|in:kupasi,fisio,wicara,paedagog',
+            'therapist_section' => 'required|in:okupasi,fisio,wicara,paedagog',
             'therapist_phone' => 'required|string|max:100',
         ];
     }
