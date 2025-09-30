@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,17 +14,10 @@ class ChildDetailResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // $age = null;
-        // if ($this->child && $this->child->child_birth_date) {
-        //     $ageInfo = Child::calculateAgeAndCategory($this->child->child_birth_date);
-        //     $age = $ageInfo['age'];
-        // }
-
         $response = [
             'child_name' => $this->child_name,
             'child_birth_info' => $this->child_birth_place . ', ' . $this->child_birth_date->format('d F Y'),
             'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
-            // 'child_age' => $age,
             'child_gender' => $this->child_gender,
             'child_religion' => $this->child_religion ?? '-',
             'child_school' => $this->child_school,
