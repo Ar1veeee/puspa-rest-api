@@ -49,7 +49,7 @@ class RegistrationRequest extends FormRequest
             'child_birth_place' => ['required', 'string', 'max:100'],
             'child_birth_date' => ['required', 'date'],
             'child_school' => ['string', 'max:100'],
-            'child_address' => ['required', 'string', 'max:100'],
+            'child_address' => ['required', 'string', 'max:150'],
             'child_complaint' => ['required', 'string'],
             'child_service_choice' => ['required', 'string'],
             'email' => ['required', 'string', 'email', 'max:100'],
