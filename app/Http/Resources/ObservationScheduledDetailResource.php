@@ -17,9 +17,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Property(property="child_school", type="string", nullable=true, description="Sekolah anak"),
  * @OA\Property(property="child_address", type="string", description="Alamat rumah anak"),
  * @OA\Property(property="scheduled_date", type="string", format="date", description="Tanggal jadwal observasi"),
- * @OA\Property(property="parent_name", type="string", description="Nama wali"),
- * @OA\Property(property="parent_type", type="string", description="Tipe wali (cth: ayah, ibu)"),
- * @OA\Property(property="parent_phone", type="string", description="Nomor telepon wali"),
+ * @OA\Property(property="parent_name", type="string", description="Nama orang tua"),
+ * @OA\Property(property="parent_type", type="string", description="Tipe orang tua (cth: ayah, ibu)"),
+ * @OA\Property(property="parent_phone", type="string", description="Nomor telepon orang tua"),
  * @OA\Property(property="child_complaint", type="string", description="Keluhan awal anak"),
  * @OA\Property(property="child_service_choice", type="string", description="Pilihan layanan untuk anak")
  * )

@@ -16,6 +16,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Property(property="child_gender", type="string", description="Child's gender"),
  * @OA\Property(property="child_school", type="string", nullable=true, description="Child's school"),
  * @OA\Property(property="child_address", type="string", description="Child's home address"),
+ * @OA\Property(property="parent_name", type="string", description="Nama orang tua"),
+ * @OA\Property(property="parent_type", type="string", description="Tipe orang tua (cth: ayah, ibu)"),
  * @OA\Property(property="total_score", type="integer", description="Total score accumulated from the answers"),
  * @OA\Property(property="recommendation", type="string", description="Therapist's recommendation after the observation"),
  * @OA\Property(property="conclusion", type="string", description="Therapist's conclusion after the observation")
@@ -30,6 +32,8 @@ class ObservationCompletedDetailResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $guardian = $this->child?->family?->guardians?->first();
+
         return [
             "id" => $this->id,
             'child_name' => $this->child->child_name,
@@ -38,6 +42,8 @@ class ObservationCompletedDetailResource extends JsonResource
             'child_gender' => $this->child->child_gender,
             'child_school' => $this->child->child_school,
             'child_address' => $this->child->child_address,
+            'parent_name' => $guardian->guardian_name,
+            'parent_type' => $guardian->guardian_type,
             'total_score' => $this->total_score,
             'recommendation' => $this->recommendation,
             'conclusion' => $this->conclusion,
