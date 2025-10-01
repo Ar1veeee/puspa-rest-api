@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 trait ClearsCaches
@@ -14,7 +13,7 @@ trait ClearsCaches
     {
         Cache::forget('observations_pending');
 
-        Cache::forget("observations_scheduled_" . Auth::id());
+        Cache::forget("observations_scheduled");
     }
 
     /**

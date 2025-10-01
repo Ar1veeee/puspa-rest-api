@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ObservationService
 {
@@ -48,8 +47,7 @@ class ObservationService
 
     public function getObservationsScheduled()
     {
-        $userId = Auth::id();
-        $cacheKey = "observations_scheduled_{$userId}";
+        $cacheKey = "observations_scheduled";
 
         $result = Cache::remember(
             $cacheKey,
@@ -129,6 +127,8 @@ class ObservationService
             $this->observationRepository->update($id, $updateData);
             $this->clearObservationCaches();
         }
+
+        $this->clearObservationCaches();
     }
 
     public function submitObservation(array $data, int $id)
