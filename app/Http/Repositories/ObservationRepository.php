@@ -129,6 +129,14 @@ class ObservationRepository
                         'child_school',
                         'child_address'
                     );
+                },
+                'child.family.guardians' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'guardian_name',
+                        'guardian_type',
+                    );
                 }
             ])
             ->find($id);
