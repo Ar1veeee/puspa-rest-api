@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Resources\AdminsUnverifiedResource;
+use App\Http\Resources\TherapistUnverifiedResource;
 use App\Http\Services\OwnerService;
 use App\Http\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +33,7 @@ class OwnerController extends Controller
     public function indexTherapist(): JsonResponse
     {
         $therapistsUnverified = $this->ownerService->getAllTherapistUnverified();
-        $response = AdminsUnverifiedResource::collection($therapistsUnverified);
+        $response = TherapistUnverifiedResource::collection($therapistsUnverified);
 
         return $this->successResponse($response, 'Daftar Terapis Belum Terverifikasi', 200);
     }

@@ -23,7 +23,7 @@ class ObservationAnswer extends Model
     protected $fillable = [
         'observation_id',
         'question_id',
-        'asnwer',
+        'answer',
         'score_earned',
         'note',
     ];
@@ -33,7 +33,7 @@ class ObservationAnswer extends Model
         return $this->belongsTo(Observation::class, 'observation_id', 'id');
     }
 
-    public function question(): BelongsTo
+    public function observationQuestion(): BelongsTo
     {
         return $this->belongsTo(ObservationQuestion::class, 'question_id', 'id');
     }
