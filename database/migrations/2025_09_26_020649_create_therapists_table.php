@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('therapist_name', 100)->nullable(false);
             $table->enum('therapist_section', ['okupasi', 'fisio', 'wicara', 'paedagog'])->nullable(false);
             $table->string('therapist_phone', 500)->nullable(false);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->index('user_id', 'user_id_idx');

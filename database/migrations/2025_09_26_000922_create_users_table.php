@@ -19,8 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('role', ['owner', 'admin', 'terapis', 'user'])->nullable(false)->default('user');
             $table->boolean('is_active')->nullable(false)->default(false);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->timestamps();
 
             $table->index(['username', 'email'], 'username_email_idx');
         });
