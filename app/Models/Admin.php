@@ -33,6 +33,8 @@ class Admin extends Model
         'admin_phone' => 'encrypted',
     ];
 
+    protected $touches = ['user'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
