@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('observation_questions', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('question_code', 6)->unique();
             $table->enum('age_category', ['balita', 'anak-anak', 'remaja', 'lainya']);
             $table->integer('question_number');

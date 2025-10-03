@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('children', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->char('id', 26)->primary();
             $table->foreignUlid('family_id')->constrained('families')->cascadeOnDelete();
             $table->string('child_name', 100);
             $table->string('child_birth_place', 100);

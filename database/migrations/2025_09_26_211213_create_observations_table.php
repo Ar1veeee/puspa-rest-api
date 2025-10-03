@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('observations', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
             $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->date('scheduled_date');
