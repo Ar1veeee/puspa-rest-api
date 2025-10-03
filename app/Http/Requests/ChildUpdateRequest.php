@@ -28,25 +28,28 @@ class ChildUpdateRequest extends FormRequest
             'child_religion' => ['required', 'string', 'in:islam,kristen,katolik,hindu,budha,konghucu,lainnya'],
             'child_gender' => ['required', 'string', 'in:laki-laki,perempuan'],
             'child_school' => ['required', 'string', 'min:3', 'max:100'],
-            'child_address' => ['required', 'string', 'min:3', 'max:100'],
+            'child_address' => ['required', 'string', 'min:3', 'max:150'],
 
             'father_name' => ['required', 'string', 'min:3', 'max:100'],
             'father_relationship' => ['required', 'string'],
-            'father_age' => ['required', 'integer'],
+            'father_birth_date' => ['required', 'date'],
             'father_occupation' => ['required'],
             'father_phone' => ['required'],
 
             'mother_name' => ['required'],
             'mother_relationship' => ['required'],
-            'mother_age' => ['required'],
+            'mother_birth_date' => ['required', 'date'],
             'mother_occupation' => ['required'],
             'mother_phone' => ['required'],
 
-            'guardian_name' => [''],
-            'guardian_relationship' => [''],
-            'guardian_age' => [''],
-            'guardian_occupation' => [''],
-            'guardian_phone' => [''],
+            'guardian_name' => ['required', 'string', 'min:3', 'max:100'],
+            'guardian_relationship' => ['required', 'string', 'min:3', 'max:100'],
+            'guardian_birth_date' => ['required', 'date'],
+            'guardian_occupation' => ['required', 'string', 'min:3', 'max:100'],
+            'guardian_phone' => ['required', 'string', 'min:3', 'max:100'],
+
+            'child_complaint' => ['required', 'string', 'min:3', 'max:100'],
+            'child_service_choice' => ['required', 'string', 'min:3', 'max:150'],
         ];
     }
 }

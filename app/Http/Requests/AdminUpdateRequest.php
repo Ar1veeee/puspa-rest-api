@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
  * description="Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
  * @OA\Property(property="username", type="string", example="superadmin_updated"),
  * @OA\Property(property="email", type="string", format="email", example="super.admin.new@example.com"),
- * @OA\Property(property="password", type="string", format="password", example="NewPassword123!", description="Kirim hanya jika ingin mengubah password"),
  * @OA\Property(property="admin_name", type="string", example="Super Admin Name Updated"),
  * @OA\Property(property="admin_phone", type="string", example="081234567891")
  * )
@@ -37,7 +36,6 @@ class AdminUpdateRequest extends FormRequest
         return [
             'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:100'],
-            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
             'admin_name' => ['required', 'string', 'min:3', 'max:100'],
             'admin_phone' => 'required|string|max:100',
         ];
@@ -51,9 +49,6 @@ class AdminUpdateRequest extends FormRequest
             'username.min' => 'Nama pengguna minimal 3 karakter.',
             'email.required' => 'Email tidak boleh kosong.',
             'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password tidak boleh kosong.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
             'admin_name.required' => 'Nama admin tidak boleh kosong.',
             'admin_phone.required' => 'Telepon admin tidak boleh kosong.',
         ];

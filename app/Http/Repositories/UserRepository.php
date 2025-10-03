@@ -3,6 +3,7 @@
 namespace App\Http\Repositories;
 
 use App\Models\User;
+use Carbon\Carbon;
 
 class UserRepository
 {
@@ -23,6 +24,28 @@ class UserRepository
         return $this->model->where('email', $identifier)
             ->orWhere('username', $identifier)
             ->first();
+    }
+
+    public function getAllAdminUnverified()
+    {
+        return $this->model
+            ->with(['admin' => function ($query) {
+                $query->select('id', 'user_id', 'admin_name', 'admin_phone');
+            }])
+            ->where('is_active', 0)
+            ->where('role', 'admin')
+            ->get();
+    }
+
+    public function getAllTherapistUnverified()
+    {
+        return $this->model
+            ->with(['therapist' => function ($query) {
+                $query->select('id', 'user_id', 'therapist_name', 'therapist_phone');
+            }])
+            ->where('is_active', 0)
+            ->where('role', 'terapis')
+            ->get();
     }
 
     public function checkExistingUsername(string $username): bool
@@ -65,4 +88,13 @@ class UserRepository
 
         return null;
     }
+
+    public function activation(string $id)
+    {
+        return $this->model->find($id)->update([
+            'is_active' => 1,
+            'email_verified_at' => Carbon::now()
+        ]);
+    }
+
 }

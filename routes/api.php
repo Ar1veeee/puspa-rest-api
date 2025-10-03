@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ObservationController;
+use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TherapistController;
@@ -47,6 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('throttle:authenticated');
     });
 });
+
+Route::middleware(['auth:sanctum', 'role:owner'])->group(
+    function () {
+        Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
+        Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
+        Route::get('/users/verified/{user_id}', [OwnerController::class, 'activateAccount']);
+    }
+);
 
 Route::middleware(['auth:sanctum', 'role:admin', 'throttle:admin'])->group(
     function () {

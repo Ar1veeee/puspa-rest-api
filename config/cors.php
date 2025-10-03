@@ -17,7 +17,11 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => [
+        'http://localhost:3000',   // dev frontend
+        'http://127.0.0.1:5173',   // dev vite
+        '*' // mobile app
+    ],
 
     'allowed_origins' => ['*'],
 
@@ -29,6 +33,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
