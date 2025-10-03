@@ -160,6 +160,6 @@ class AdminController extends Controller
     {
         $this->adminService->deleteAdmin($adminId);
 
-        return $this->successResponse([], 'Data Terapis Berhasil Terhapus', 200);
+        return $this->successResponse([], 'Data Admin Berhasil Terhapus', 200);
     }
 }
