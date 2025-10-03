@@ -35,8 +35,8 @@ class AdminDetailResource extends JsonResource
             'username' => $this->user->username,
             'admin_name' => $this->admin_name,
             'admin_phone' => $this->admin_phone,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at->format('d F Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d F Y H:i:s'),
         ];
     }
 }

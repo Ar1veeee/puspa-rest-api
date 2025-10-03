@@ -22,8 +22,8 @@ class ChildDetailResource extends JsonResource
             'child_religion' => $this->child_religion ?? '-',
             'child_school' => $this->child_school,
             'child_address' => $this->child_address,
-            'created_at' => $this->created_at->format('Y-m-d'),
-            'updated_at' => $this->updated_at->format('Y-m-d'),
+            'created_at' => $this->created_at->format('d F Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d F Y H:i:s'),
 
             'father_name' => '-',
             'father_relationship' => '-',
