@@ -12,9 +12,8 @@ use Illuminate\Support\Facades\Auth;
  * description="Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
  * @OA\Property(property="username", type="string", example="dr.johndoe.updated"),
  * @OA\Property(property="email", type="string", format="email", example="dr.johndoe.new@example.com"),
- * @OA\Property(property="password", type="string", format="password", example="NewPassword123!", description="Kirim hanya jika ingin mengubah password"),
  * @OA\Property(property="therapist_name", type="string", example="Dr. John Doe, S.Psi"),
- * @OA\Property(property="therapist_section", type="string", enum={"Okupasi", "Fisio", "Wicara", "Paedagog"}, example="Fisio"),
+ * @OA\Property(property="therapist_section", type="string", enum={"okupasi", "fisio", "wicara", "paedagog"}, example="fisio"),
  * @OA\Property(property="therapist_phone", type="string", example="081234567891")
  * )
  */
@@ -38,9 +37,8 @@ class TherapistUpdateRequest extends FormRequest
         return [
             'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:100'],
-            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
             'therapist_name' => ['required', 'string', 'min:3', 'max:100'],
-            'therapist_section' => 'required|in:Okupasi,Fisio,Wicara,Paedagog',
+            'therapist_section' => 'required|in:okupasi,fisio,wicara,paedagog',
             'therapist_phone' => 'required|string|max:100',
         ];
     }
@@ -58,6 +56,7 @@ class TherapistUpdateRequest extends FormRequest
             'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
             'therapist_name.required' => 'Nama terapis tidak boleh kosong.',
             'therapist_section.required' => 'Bagian terapis tidak boleh kosong.',
+            'therapist_section.in' => 'Bagian terapis tidak tersedia.',
             'therapist_phone.required' => 'Telepon terapis tidak boleh kosong.',
         ];
     }
