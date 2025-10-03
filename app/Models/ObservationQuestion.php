@@ -29,7 +29,7 @@ class ObservationQuestion extends Model
         'is_active',
     ];
 
-    public function observationAnswer(): HasMany
+    public function observation_answers(): HasMany
     {
         return $this->hasMany(ObservationAnswer::class, 'question_id', 'id');
     }

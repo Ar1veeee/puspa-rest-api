@@ -33,7 +33,7 @@ class ObservationAnswer extends Model
         return $this->belongsTo(Observation::class, 'observation_id', 'id');
     }
 
-    public function observationQuestion(): BelongsTo
+    public function observation_question(): BelongsTo
     {
         return $this->belongsTo(ObservationQuestion::class, 'question_id', 'id');
     }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Observation extends Model
 {
@@ -36,9 +36,9 @@ class Observation extends Model
         'scheduled_date' => 'date',
     ];
 
-    public function observationAnswer(): HasOne
+    public function observation_answer(): HasMany
     {
-        return $this->hasOne(ObservationAnswer::class, 'observation_id', 'id');
+        return $this->hasMany(ObservationAnswer::class, 'observation_id', 'id');
     }
 
     public function child(): BelongsTo
