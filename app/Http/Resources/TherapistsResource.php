@@ -37,8 +37,7 @@ class TherapistsResource extends JsonResource
             'therapist_name' => $this->therapist_name,
             'therapist_section' => $this->therapist_section,
             'therapist_phone' => $this->therapist_phone,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+            'is_active' => $this->user->is_active,
         ];
     }
 }

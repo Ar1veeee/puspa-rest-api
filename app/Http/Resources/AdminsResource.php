@@ -35,8 +35,7 @@ class AdminsResource extends JsonResource
             'username' => $this->user->username,
             'admin_name' => $this->admin_name,
             'admin_phone' => $this->admin_phone,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
+            'is_active' => $this->user->is_active,
         ];
     }
 }
