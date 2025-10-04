@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
             $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->boolean('fisio')->nullable()->default(false);

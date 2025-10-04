@@ -21,6 +21,7 @@ class Assessment extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'observation_id',
         'child_id',
         'therapist_id',
         'scheduled_date',
@@ -38,6 +39,11 @@ class Assessment extends Model
         'paedagog' => 'boolean',
         'okupasi' => 'boolean',
     ];
+
+    public function assessment(): BelongsTo
+    {
+        return $this->belongsTo(ObservationAnswer::class, 'observation_id', 'id');
+    }
 
     public function child(): BelongsTo
     {

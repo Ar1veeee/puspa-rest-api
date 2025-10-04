@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Observation extends Model
 {
@@ -41,6 +42,11 @@ class Observation extends Model
     public function observation_answer(): HasMany
     {
         return $this->hasMany(ObservationAnswer::class, 'observation_id', 'id');
+    }
+
+    public function assessment(): HasOne
+    {
+        return $this->hasOne(ObservationAnswer::class, 'observation_id', 'id');
     }
 
     public function child(): BelongsTo
