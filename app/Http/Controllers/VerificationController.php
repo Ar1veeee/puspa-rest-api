@@ -34,11 +34,12 @@ class VerificationController extends Controller
      * @OA\Response(response=404, description="Pengguna tidak ditemukan")
      * )
      */
-    public function verify(string $id): JsonResponse
+    public function verify(string $id, $hash)
     {
+        $this->verificationService->validateHash($id, $hash);
         $this->verificationService->verifyEmail($id);
 
-        return $this->successResponse([], 'Email berhasil diverifikasi. Silakan login.', 200);
+        return redirect(env('FRONTEND_URL'). '/auth/email_verifed');
     }
 
     /**

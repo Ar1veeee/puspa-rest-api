@@ -4,9 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Repositories\UserRepository;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\URL;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class VerificationService
 {
@@ -19,16 +18,33 @@ class VerificationService
         $this->userRepository = $userRepository;
     }
 
+    public function validateHash(string $userId, string $hash): void
+    {
+        $user = $this->userRepository->getById($userId);
+
+        if (!$user) {
+            throw new ModelNotFoundException('User tidak ditemukan');
+        }
+
+        if (!hash_equals(sha1($user->getEmailForVerification()), (string)$hash)) {
+            throw new AuthorizationException('Tautan verifikasi tidak valid');
+        }
+    }
+
     public function verifyEmail(string $userId)
     {
         $user = $this->userRepository->getById($userId);
 
-        if (! $user) {
-            throw new ModelNotFoundException('Data user tidak ditemukan');
+        if (!$user) {
+            throw new ModelNotFoundException('User tidak ditemukan');
         }
 
-        if (! URL::hasValidSignature(request())) {
-            throw new BadRequestException('Tautan verifikasi tidak valid atau kadaluwarsa. Silakan minta tautan baru.');
+        if ($user->hasVerifiedEmail()) {
+            return [
+                'status' => 200,
+                'message' => 'Email sudah terverifikasi.',
+                'data' => [],
+            ];
         }
 
         $user->markEmailAsVerified();
@@ -38,7 +54,7 @@ class VerificationService
     {
         $user = $this->userRepository->getById($userId);
 
-        if (! $user) {
+        if (!$user) {
             throw new ModelNotFoundException('Data user tidak ditemukan');
         }
 

@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
         ->name('password.reset')
         ->middleware('throttle:reset-password');
 
-    Route::get('/email/verify/{id}', [VerificationController::class, 'verify'])
+    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
         ->middleware(['signed', 'throttle:verification'])
         ->name('verification.verify');
 
