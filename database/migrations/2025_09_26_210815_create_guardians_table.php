@@ -23,6 +23,10 @@ return new class extends Migration
             $table->string('guardian_occupation', 100)->nullable();
             $table->string('relationship_with_child', 100)->nullable();
             $table->timestamps();
+
+            $table->index(['family_id'], 'family_id_idx');
+            $table->index(['user_id'], 'user_id_idx');
+            $table->index(['temp_email'], 'temp_email_idx');
         });
     }
 

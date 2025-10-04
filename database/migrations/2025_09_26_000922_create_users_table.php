@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['username', 'email'], 'username_email_idx');
+            $table->index(['email'], 'email_idx');
         });
     }
 
