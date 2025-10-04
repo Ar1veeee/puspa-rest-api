@@ -15,9 +15,10 @@ class AuthService
     protected $guardianRepository;
 
     public function __construct(
-        UserRepository $userRepository,
+        UserRepository     $userRepository,
         GuardianRepository $guardianRepository,
-    ) {
+    )
+    {
         $this->userRepository = $userRepository;
         $this->guardianRepository = $guardianRepository;
     }
@@ -42,12 +43,19 @@ class AuthService
             ]);
         }
 
+        if (!$this->guardianRepository->hasObservationContinuedToAssessment($data['email'])) {
+            throw ValidationException::withMessages([
+                'email' => ['Anda belum memiliki observasi yang disetujui untuk dilanjutkan ke assessment. Silakan hubungi terapis.']
+            ]);
+        }
+
         return DB::transaction(function () use ($data) {
             $userData = [
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'role' => 'user',
+                'is_active' => false,
             ];
 
             $user = $this->userRepository->create($userData);
@@ -73,7 +81,7 @@ class AuthService
             throw new AuthenticationException('Username atau password salah. Coba lagi!');
         }
 
-        if (! $user->is_active) {
+        if (!$user->is_active) {
             throw new AuthenticationException('Akun belum aktif. Silahkan melakukan verifikasi!');
         }
 

@@ -30,10 +30,12 @@ class Observation extends Model
         'conclusion',
         'recommendation',
         'status',
+        'is_continued_to_assessment',
     ];
 
     protected $casts = [
         'scheduled_date' => 'date',
+        'is_continued_to_assessment' => 'boolean',
     ];
 
     public function observation_answer(): HasMany

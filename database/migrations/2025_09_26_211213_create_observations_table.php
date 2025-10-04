@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('conclusion')->nullable();
             $table->text('recommendation')->nullable();
             $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
+            $table->boolean('is_continued_to_assessment')->nullable()->default(false);
             $table->timestamps();
         });
     }
