@@ -142,6 +142,25 @@ class ObservationRepository
             ->find($id);
     }
 
+    public function getDetailAnswer(int $id)
+    {
+        return $this->model
+            ->with([
+                'observation_answer' => function ($query) {
+                    $query->with([
+                        'observation_question' => function ($subQuery) {
+                            $subQuery->select(
+                                'id',
+                                'question_number',
+                                'question_text',
+                            );
+                        }
+                    ]);
+                }
+            ])
+            ->find($id);
+    }
+
     public function update(int $id, array $data): ?bool
     {
         $observation = $this->model->find($id);

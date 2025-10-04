@@ -6,6 +6,7 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\ObservationSubmitRequest;
 use App\Http\Requests\ObservationUpdateRequest;
 use App\Http\Resources\ObservationCompletedDetailResource;
+use App\Http\Resources\ObservationDetailAnswerResource;
 use App\Http\Resources\ObservationQuestionsResource;
 use App\Http\Resources\ObservationScheduledDetailResource;
 use App\Http\Resources\ObservationsCompletedResource;
@@ -141,6 +142,14 @@ class ObservationController extends Controller
         $response = new ObservationCompletedDetailResource($observation);
 
         return $this->successResponse($response, 'Observasi Completed Detail', 200);
+    }
+
+    public function showDetailAnswer(int $observationsId)
+    {
+        $observation = $this->observationService->getObservationDetailAnswer($observationsId);
+        $response = new ObservationDetailAnswerResource($observation);
+
+        return $this->successResponse($response, 'Observasi Detail Answer', 200);
     }
 
     /**

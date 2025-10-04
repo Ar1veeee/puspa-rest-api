@@ -85,6 +85,17 @@ class ObservationService
         return $detaiCompleted;
     }
 
+    public function getObservationDetailAnswer(int $id)
+    {
+        $observationAnswer = $this->observationRepository->getDetailAnswer($id);
+
+        if (!$observationAnswer) {
+            throw new ModelNotFoundException('Observasi tidak ditemukan.');
+        }
+
+        return $observationAnswer;
+    }
+
     public function getObservationQuestions(int $id)
     {
         $observation = $this->observationRepository->getById($id);
