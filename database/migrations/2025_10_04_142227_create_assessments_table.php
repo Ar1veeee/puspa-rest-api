@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
-            $table->foreignUlid('therapist_id')->constrained('therapists')->nullOnDelete()();
+            $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->boolean('fisio')->nullable()->default(false);
             $table->boolean('wicara')->nullable()->default(false);
             $table->boolean('paedagog')->nullable()->default(false);
