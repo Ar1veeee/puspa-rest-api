@@ -50,6 +50,10 @@ class ObservationSubmitRequest extends FormRequest
             'answers.*.note' => ['nullable', 'string'],
             'conclusion' => ['required', 'string', 'min:10'],
             'recommendation' => ['required', 'string', 'min:10'],
+            'fisio' => ['boolean', 'nullable'],
+            'wicara' => ['boolean', 'nullable'],
+            'paedagog' => ['boolean', 'nullable'],
+            'okupasi' => ['boolean', 'nullable'],
         ];
     }
 }

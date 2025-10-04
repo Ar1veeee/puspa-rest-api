@@ -52,6 +52,11 @@ class Child extends Model
         return $this->hasOne(Observation::class, 'child_id', 'id');
     }
 
+    public function assessments(): HasOne
+    {
+        return $this->hasOne(Assessment::class, 'therapist_id', 'id');
+    }
+
     public static function calculateAgeAndCategory(string $birthDate): array
     {
         $age = Carbon::parse($birthDate)->age;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
@@ -19,19 +20,23 @@ class ObservationService
     protected $observationRepository;
     protected $observationQuestionRepository;
     protected $observationAnswerRepository;
+    protected $assessmentRepository;
 
     public const CACHE_TTL_QUESTIONS = null;
     public const CACHE_TTL_PENDING = 600;
     public const CACHE_TTL_SCHEDULED = 600;
 
     public function __construct(
-        ObservationRepository $observationRepository,
+        ObservationRepository         $observationRepository,
         ObservationQuestionRepository $observationQuestionRepository,
-        ObservationAnswerRepository $observationAnswerRepository,
-    ) {
+        ObservationAnswerRepository   $observationAnswerRepository,
+        AssessmentRepository          $assessmentRepository
+    )
+    {
         $this->observationRepository = $observationRepository;
         $this->observationQuestionRepository = $observationQuestionRepository;
         $this->observationAnswerRepository = $observationAnswerRepository;
+        $this->assessmentRepository = $assessmentRepository;
     }
 
     public function getObservationsPending()
@@ -194,6 +199,17 @@ class ObservationService
             ];
 
             $observation->update($observationUpdateData);
+
+            $assessmentData = [
+                'child_id' => $observation->child_id,
+                'therapist_id' => null,
+                'fisio' => $data['fisio'],
+                'wicara' => $data['wicara'],
+                'paedagog' => $data['paedagog'],
+                'okupasi' => $data['okupasi'],
+            ];
+
+            $this->assessmentRepository->create($assessmentData);
         });
 
         $this->clearObservationCaches();

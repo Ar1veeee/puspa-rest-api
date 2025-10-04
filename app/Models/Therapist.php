@@ -47,6 +47,11 @@ class Therapist extends Model
         return $this->hasMany(Observation::class, 'therapist_id', 'id');
     }
 
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(Assessment::class, 'therapist_id', 'id');
+    }
+
     protected static function boot()
     {
         parent::boot();
