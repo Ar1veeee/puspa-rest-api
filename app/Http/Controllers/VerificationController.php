@@ -46,23 +46,11 @@ class VerificationController extends Controller
      */
     public function verify(string $id, string $hash)
     {
-        try {
-            $this->verificationService->validateHash($id, $hash);
-            $result = $this->verificationService->verifyEmail($id);
+        $this->verificationService->validateHash($id, $hash);
+        $result = $this->verificationService->verifyEmail($id);
 
-
-            $status = $result['success'] ? 'success' : 'already';
-            return redirect("{$this->frontendUrl}/auth/email-verified?status={$status}");
-
-        } catch (ModelNotFoundException) {
-            return redirect("{$this->frontendUrl}/auth/email-verified?status=not_found");
-
-        } catch (AuthorizationException) {
-            return redirect("{$this->frontendUrl}/auth/email-verified?status=invalid");
-
-        } catch (Exception) {
-            return redirect("{$this->frontendUrl}/auth/email-verified?status=error");
-        }
+        $status = $result['success'] ? 'success' : 'already';
+        return redirect("{$this->frontendUrl}/auth/email-verify?status={$status}");
     }
 
     /**

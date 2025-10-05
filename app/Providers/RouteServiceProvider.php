@@ -82,7 +82,7 @@ class RouteServiceProvider extends ServiceProvider
             $email = $request->input('email');
 
             return [
-                Limit::perMinutes(5, 1)
+                Limit::perMinutes(5, 2)
                     ->by($email)
                     ->response(function () {
                         return response()->json([

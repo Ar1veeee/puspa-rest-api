@@ -108,7 +108,7 @@ class VerificationService
         }
     }
 
-    private function checkRateLimits(string $userId): void
+    public function checkRateLimits(string $userId): void
     {
         $cooldownKey = $this->getCooldownCacheKey($userId);
 

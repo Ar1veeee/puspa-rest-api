@@ -114,7 +114,7 @@ class VerificationServiceTest extends TestCase
     public function resendVerificationNotificationShouldThrowExceptionWhenUserNotFound(): void
     {
         $this->expectException(ModelNotFoundException::class);
-        $this->expectExceptionMessage('Data user tidak ditemukan');
+        $this->expectExceptionMessage('Pengguna tidak ditemukan');
 
         $this->verificationService->resendVerificationNotification('non-existent-user-id');
     }

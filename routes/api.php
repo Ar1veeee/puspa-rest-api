@@ -19,30 +19,36 @@ Route::prefix('v1')->group(function () {
     Route::post('/registration', [RegistrationController::class, 'store'])
         ->middleware('throttle:api');
 
-    Route::post('/auth/register', [AuthController::class, 'register'])
-        ->middleware('throttle:register');
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
 
-    Route::post('/auth/login', [AuthController::class, 'login'])
-        ->middleware('throttle:login');
+        Route::get('/email-verify/{id}/{hash}', [VerificationController::class, 'verify'])
+            ->middleware(['signed', 'throttle:verification'])
+            ->name('verification.verify');
 
-    Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgotPassword'])
-        ->name('password.email')
-        ->middleware('throttle:forgot-password');
-
-    Route::post('/auth/reset-password', [PasswordResetController::class, 'resetPassword'])
-        ->name('password.reset')
-        ->middleware('throttle:reset-password');
-
-    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-        ->middleware(['signed', 'throttle:verification'])
-        ->name('verification.verify');
-
-    Route::prefix('email')->group(function () {
         Route::post('/resend-verification/{user_id}', [VerificationController::class, 'resendNotification'])
             ->name('verification.resend');
 
         Route::get('/resend-status/{user_id}', [VerificationController::class, 'checkResendStatus'])
             ->name('verification.status');
+
+        Route::post('/login', [AuthController::class, 'login'])
+            ->middleware('throttle:login');
+
+        Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])
+            ->name('password.email')
+            ->middleware('throttle:forgot-password');
+
+        Route::post('/resend-reset/{email}', [PasswordResetController::class, 'resendResetLink'])
+            ->middleware('throttle:forgot-password')
+            ->name('password.resend');
+
+        Route::get('/resend-reset-status', [PasswordResetController::class, 'checkResendStatus'])
+            ->name('password.resend.status');
+
+        Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
+            ->name('password.reset')
+            ->middleware('throttle:reset-password');
     });
 
     Route::middleware('auth:sanctum')->group(function () {

@@ -47,8 +47,7 @@
                                             <tr>
                                                 <td style="background-color: #2ab3a2; border-radius: 25px; padding: 0;">
                                                     <a href="{{ $url }}"
-                                                        style="display: block; padding: 15px 30px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; text-align: center;">Reset
-                                                        Password Saya</a>
+                                                        style="display: block; padding: 15px 30px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; text-align: center;">Reset Password Saya</a>
                                                 </td>
                                             </tr>
                                         </table>

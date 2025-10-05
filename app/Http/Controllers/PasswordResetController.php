@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Services\PasswordResetService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Exception;
 
 class PasswordResetController extends Controller
 {
@@ -47,12 +49,70 @@ class PasswordResetController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $response = $this->passwordResetService->sendResetLinkEmail($request->email);
+        try {
+            $data = $this->passwordResetService->sendResetLinkEmail($request->email);
 
-        if ($response['success']) {
-            return $this->successResponse($response['data'], $response['message'], $response['status']);
-        } else {
-            return $this->errorResponse($response['message'], $response['data'], $response['status']);
+            return $this->successResponse(
+                $data,
+                'Tautan reset password telah dikirim ke email Anda.'
+            );
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), [], 400);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     * path="/auth/resend-reset",
+     * summary="Kirim ulang link reset password",
+     * tags={"Authentication"}
+     * )
+     */
+    public function resendResetLink(string $email): JsonResponse
+    {
+        try {
+            $this->passwordResetService->resendResetLink($email);
+
+            return $this->successResponse(
+                'Link reset password baru telah dikirim. Cek email Anda.'
+            );
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), [], 429);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     * path="/auth/resend-reset-status",
+     * summary="Cek status cooldown resend reset password",
+     * tags={"Authentication"}
+     * )
+     */
+    public function checkResendStatus(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        try {
+            $email = $request->email;
+
+            $canResend = $this->passwordResetService->canResend($email);
+            $remainingSeconds = $this->passwordResetService->getRemainingCooldown($email);
+
+            return $this->successResponse(
+                [
+                    'can_resend' => $canResend,
+                    'remaining_seconds' => $remainingSeconds,
+                ],
+                $canResend ? 'Anda dapat meminta ulang link reset password.' : "Tunggu {$remainingSeconds} detik lagi.",
+                200
+            );
+
+        } catch (Exception $e) {
+            return $this->errorResponse('Gagal mengambil status.', [], 500);
         }
     }
 
@@ -77,9 +137,19 @@ class PasswordResetController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $response = $this->passwordResetService->resetPassword($data['token'], $data['email'], $data['password']);
+        try {
+            $data = $this->passwordResetService->resetPassword(
+                $request->token,
+                $request->email,
+                $request->password
+            );
 
-        return $this->successResponse($response['data'], $response['message'], $response['status']);
+            return $this->successResponse(
+                $data,
+                'Password berhasil diatur ulang. Silakan login.'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), [], 422);
+        }
     }
 }

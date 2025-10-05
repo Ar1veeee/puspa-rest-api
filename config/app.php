@@ -4,9 +4,6 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
 return [
-
-    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -57,6 +54,7 @@ return [
     |
     */
 
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
     'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL'),
