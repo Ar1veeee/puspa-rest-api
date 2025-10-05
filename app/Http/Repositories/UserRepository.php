@@ -97,4 +97,17 @@ class UserRepository
         ]);
     }
 
+    public function delete($id)
+    {
+        $user = $this->model->find($id);
+
+        if ($user) {
+            $user->delete();
+
+            return $user;
+        }
+
+        return null;
+    }
+
 }

@@ -25,11 +25,11 @@ class AdminRepository
         return $this->model->find($id);
     }
 
-    public function getDetailById($id)
+    public function getDetailByIdOrFail($id)
     {
         return $this->model->with(['user' => function ($query) {
             $query->select('id', 'username', 'email');
-        }])->find($id);
+        }])->findOrFail($id);
     }
 
     public function create(array $data)

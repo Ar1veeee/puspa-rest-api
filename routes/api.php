@@ -37,9 +37,13 @@ Route::prefix('v1')->group(function () {
         ->middleware(['signed', 'throttle:verification'])
         ->name('verification.verify');
 
-    Route::post('/email/verification-notification', [VerificationController::class, 'resendNotification'])
-        ->middleware('throttle:verification-resend')
-        ->name('verification.send');
+    Route::prefix('email')->group(function () {
+        Route::post('/resend-verification/{user_id}', [VerificationController::class, 'resendNotification'])
+            ->name('verification.resend');
+
+        Route::get('/resend-status/{user_id}', [VerificationController::class, 'checkResendStatus'])
+            ->name('verification.status');
+    });
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('verified')->group(function () {

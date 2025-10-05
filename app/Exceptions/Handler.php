@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -73,6 +74,18 @@ class Handler extends ExceptionHandler
                     'Anda tidak memiliki izin untuk mengakses resource ini.',
                     403
                 );
+            }
+        });
+
+        $this->renderable(function (RouteNotFoundException $e, $request) {
+            if ($this->isApiRequest($request)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email belum terverifikasi.',
+                    'errors' => [
+                        'verified' => false,
+                    ],
+                ], 403);
             }
         });
 

@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Exception;
 
 class AdminService
 {
     protected $userRepository;
-
     protected $adminRepository;
 
     public function __construct(UserRepository $userRepository, AdminRepository $adminRepository)
@@ -23,76 +23,216 @@ class AdminService
         $this->adminRepository = $adminRepository;
     }
 
+    /**
+     * Get all admins
+     *
+     * @return Collection
+     */
     public function getAllAdmin(): Collection
     {
         return $this->adminRepository->getAll();
     }
 
-    public function getAdminDetail(string $id): Admin
+    /**
+     * Get admin detail by ID
+     *
+     * @param string $id
+     * @return Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Model
+     * @throws ModelNotFoundException
+     */
+    public function getAdminDetail(string $id)
     {
-        $admin = $this->adminRepository->getDetailById($id);
+        return $this->adminRepository->getDetailByIdOrFail($id);
+    }
 
-        if (! $admin) {
+    /**
+     * Create new admin
+     *
+     * @param array $data
+     * @return Admin
+     * @throws ValidationException
+     */
+    public function createAdmin(array $data): Admin
+    {
+        $this->validateUniqueCredentials($data);
+
+        DB::beginTransaction();
+        try {
+            $user = $this->createUserForAdmin($data);
+            $admin = $this->createAdminProfile($user->id, $data);
+
+            DB::commit();
+
+            return $admin->load('user');
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Update existing admin
+     *
+     * @param array $data
+     * @param string $id
+     * @return Admin
+     * @throws ModelNotFoundException|ValidationException
+     */
+    public function updateAdmin(array $data, string $id): Admin
+    {
+        $admin = $this->findAdminOrFail($id);
+        $user = $this->findUserOrFail($admin->user_id);
+
+        $this->validateUpdateCredentials($data, $user);
+
+        DB::beginTransaction();
+        try {
+            $this->updateUserData($user, $data);
+            $this->updateAdminData($admin, $data);
+
+            DB::commit();
+
+            return $admin->fresh()->load('user');
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete admin and associated user
+     *
+     * @param string $id
+     * @return bool
+     * @throws ModelNotFoundException
+     */
+    public function deleteAdmin(string $id): bool
+    {
+        $admin = $this->findAdminOrFail($id);
+        $userId = $admin->user_id;
+
+        DB::beginTransaction();
+        try {
+            $this->adminRepository->delete($id);
+
+            $this->userRepository->delete($userId);
+
+            DB::commit();
+
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    // ========== Private Helper Methods ==========
+
+    /**
+     * Find admin or throw exception
+     *
+     * @param string $id
+     * @return Admin
+     * @throws ModelNotFoundException
+     */
+    private function findAdminOrFail(string $id): Admin
+    {
+        $admin = $this->adminRepository->getById($id);
+
+        if (!$admin) {
             throw new ModelNotFoundException('Data admin tidak ditemukan.');
         }
 
         return $admin;
     }
 
-    public function createAdmin(array $data): void
+    /**
+     * Find user or throw exception
+     *
+     * @param string $id
+     * @return \App\Models\User
+     * @throws ModelNotFoundException
+     */
+    private function findUserOrFail(string $id)
     {
-        $existingUsername = $this->userRepository->checkExistingUsername($data['username']);
-        if ($existingUsername) {
-            throw ValidationException::withMessages([
-                'nama_pengguna' => ['Nama pengguna sudah digunakan'],
-            ]);
+        $user = $this->userRepository->getById($id);
+
+        if (!$user) {
+            throw new ModelNotFoundException('User tidak ditemukan.');
         }
 
-        $existingEmail = $this->userRepository->checkExistingEmail($data['email']);
-        if ($existingEmail) {
-            throw ValidationException::withMessages([
-                'email' => ['Email sudah digunakan'],
-            ]);
-        }
-
-        DB::transaction(function () use ($data) {
-            $userData = [
-                'username' => $data['username'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'role' => 'admin',
-            ];
-
-            $newUser = $this->userRepository->create($userData);
-
-            $userId = $newUser->id;
-
-            $adminData = [
-                'user_id' => $userId,
-                'admin_name' => $data['admin_name'],
-                'admin_phone' => $data['admin_phone'],
-            ];
-
-            $this->adminRepository->create($adminData);
-        });
+        return $user;
     }
 
-    public function updateAdmin(array $data, string $id)
+    /**
+     * Create user account for admin
+     *
+     * @param array $data
+     * @return \App\Models\User
+     */
+    private function createUserForAdmin(array $data)
     {
-        $admin = $this->adminRepository->getById($id);
-        if (! $admin) {
-            throw new ModelNotFoundException('Data admin tidak ditemukan.');
+        return $this->userRepository->create([
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => 'admin',
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Create admin profile
+     *
+     * @param string $userId
+     * @param array $data
+     * @return Admin
+     */
+    private function createAdminProfile(string $userId, array $data): Admin
+    {
+        return $this->adminRepository->create([
+            'user_id' => $userId,
+            'admin_name' => $data['admin_name'],
+            'admin_phone' => $data['admin_phone'],
+        ]);
+    }
+
+    /**
+     * Validate unique credentials for new admin
+     *
+     * @param array $data
+     * @return void
+     * @throws ValidationException
+     */
+    private function validateUniqueCredentials(array $data): void
+    {
+        if ($this->userRepository->checkExistingUsername($data['username'])) {
+            throw ValidationException::withMessages([
+                'username' => ['Username sudah digunakan.'],
+            ]);
         }
 
-        $user = $this->userRepository->getById($admin->user_id);
-        if (! $user) {
-            throw new ModelNotFoundException('Data user terkait tidak ditemukan.');
+        if ($this->userRepository->checkExistingEmail($data['email'])) {
+            throw ValidationException::withMessages([
+                'email' => ['Email sudah digunakan.'],
+            ]);
         }
+    }
 
+    /**
+     * Validate credentials for admin update
+     *
+     * @param array $data
+     * @param \App\Models\User $user
+     * @return void
+     * @throws ValidationException
+     */
+    private function validateUpdateCredentials(array $data, $user): void
+    {
         if (isset($data['username']) && $data['username'] !== $user->username) {
             if ($this->userRepository->isUsernameTakenByAnother($data['username'], $user->id)) {
                 throw ValidationException::withMessages([
-                    'nama_pengguna' => ['Nama pengguna sudah digunakan'],
+                    'username' => ['Username sudah digunakan.'],
                 ]);
             }
         }
@@ -100,44 +240,48 @@ class AdminService
         if (isset($data['email']) && $data['email'] !== $user->email) {
             if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
                 throw ValidationException::withMessages([
-                    'email' => ['Email sudah digunakan'],
+                    'email' => ['Email sudah digunakan.'],
                 ]);
             }
         }
+    }
 
-        $userData = [];
-        if (isset($data['username'])) {
-            $userData['username'] = $data['username'];
-        }
-        if (isset($data['email'])) {
-            $userData['email'] = $data['email'];
-        }
-        if (isset($data['password'])) {
-            $userData['password'] = Hash::make($data['password']);
-        }
-        if (! empty($userData)) {
+    /**
+     * Update user data
+     *
+     * @param \App\Models\User $user
+     * @param array $data
+     * @return void
+     */
+    private function updateUserData($user, array $data): void
+    {
+        $userData = array_filter([
+            'username' => $data['username'] ?? null,
+            'email' => $data['email'] ?? null,
+            'password' => isset($data['password']) ? Hash::make($data['password']) : null,
+        ], fn($value) => $value !== null);
+
+        if (!empty($userData)) {
             $this->userRepository->update($userData, $user->id);
-        }
-
-        $adminData = [];
-        if (isset($data['admin_name'])) {
-            $adminData['admin_name'] = $data['admin_name'];
-        }
-        if (isset($data['admin_phone'])) {
-            $adminData['admin_phone'] = $data['admin_phone'];
-        }
-        if (! empty($adminData)) {
-            $this->adminRepository->update($adminData, $id);
         }
     }
 
-    public function deleteAdmin(string $id)
+    /**
+     * Update admin data
+     *
+     * @param Admin $admin
+     * @param array $data
+     * @return void
+     */
+    private function updateAdminData(Admin $admin, array $data): void
     {
-        $admin = $this->adminRepository->getById($id);
-        if (! $admin) {
-            throw new ModelNotFoundException('Data admin tidak ditemukan.');
-        }
+        $adminData = array_filter([
+            'admin_name' => $data['admin_name'] ?? null,
+            'admin_phone' => $data['admin_phone'] ?? null,
+        ], fn($value) => $value !== null);
 
-        return $this->adminRepository->delete($id);
+        if (!empty($adminData)) {
+            $this->adminRepository->update($adminData, $admin->id);
+        }
     }
 }
