@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
+use App\Http\Requests\AssessmentUpdateRequest;
 use App\Http\Requests\ObservationSubmitRequest;
 use App\Http\Requests\ObservationUpdateRequest;
 use App\Http\Resources\ObservationCompletedDetailResource;
@@ -13,6 +14,7 @@ use App\Http\Resources\ObservationsCompletedResource;
 use App\Http\Resources\ObservationsPendingResource;
 use App\Http\Resources\ObservationsScheduledResource;
 use App\Http\Services\ObservationService;
+use Illuminate\Http\JsonResponse;
 
 class ObservationController extends Controller
 {
@@ -42,7 +44,7 @@ class ObservationController extends Controller
      * @OA\Response(response=403, description="Forbidden")
      * )
      */
-    public function indexPending()
+    public function indexPending(): JsonResponse
     {
         $observations = $this->observationService->getObservationsPending();
         $response = ObservationsPendingResource::collection($observations);
@@ -65,7 +67,7 @@ class ObservationController extends Controller
      * )
      * )
      */
-    public function indexScheduled()
+    public function indexScheduled(): JsonResponse
     {
         $observations = $this->observationService->getObservationsScheduled();
         $response = ObservationsScheduledResource::collection($observations);
@@ -88,7 +90,7 @@ class ObservationController extends Controller
      * )
      * )
      */
-    public function indexCompleted()
+    public function indexCompleted(): JsonResponse
     {
         $observations = $this->observationService->getObservationsCompleted();
         $response = ObservationsCompletedResource::collection($observations);
@@ -112,7 +114,7 @@ class ObservationController extends Controller
      * @OA\Response(response=404, description="Tidak ditemukan")
      * )
      */
-    public function showScheduled(int $observationsId)
+    public function showScheduled(int $observationsId): JsonResponse
     {
         $observation = $this->observationService->getObservationScheduledDetail($observationsId);
         $response = new ObservationScheduledDetailResource($observation);
@@ -136,7 +138,7 @@ class ObservationController extends Controller
      * @OA\Response(response=404, description="Tidak ditemukan")
      * )
      */
-    public function showCompleted(int $observationsId)
+    public function showCompleted(int $observationsId): JsonResponse
     {
         $observation = $this->observationService->getObservationCompletedDetail($observationsId);
         $response = new ObservationCompletedDetailResource($observation);
@@ -144,7 +146,7 @@ class ObservationController extends Controller
         return $this->successResponse($response, 'Observasi Completed Detail', 200);
     }
 
-    public function showDetailAnswer(int $observationsId)
+    public function showDetailAnswer(int $observationsId): JsonResponse
     {
         $observation = $this->observationService->getObservationDetailAnswer($observationsId);
         $response = new ObservationDetailAnswerResource($observation);
@@ -168,7 +170,7 @@ class ObservationController extends Controller
      * @OA\Response(response=404, description="Observasi tidak ditemukan")
      * )
      */
-    public function showQuestion(int $observationsId)
+    public function showQuestion(int $observationsId): JsonResponse
     {
         $questions = $this->observationService->getObservationQuestions($observationsId);
         $response = ObservationQuestionsResource::collection($questions);
@@ -191,7 +193,7 @@ class ObservationController extends Controller
      * @OA\Response(response=422, description="Validation Error")
      * )
      */
-    public function update(ObservationUpdateRequest $request, string $observationId)
+    public function update(ObservationUpdateRequest $request, int $observationId): JsonResponse
     {
         $data = $request->validated();
         $this->observationService->updateObservationDate($data, $observationId);
@@ -213,11 +215,19 @@ class ObservationController extends Controller
      * @OA\Response(response=404, description="Observasi tidak ditemukan")
      * )
      */
-    public function submit(ObservationSubmitRequest $request, int $observationId)
+    public function submit(ObservationSubmitRequest $request, int $observationId): JsonResponse
     {
         $data = $request->validated();
         $this->observationService->submitObservation($data, $observationId);
 
         return $this->successResponse([], 'Observasi Berhasil Disimpan', 200);
+    }
+
+    public function assessmentAgreement(AssessmentUpdateRequest $request, int $observationId): JsonResponse
+    {
+        $data = $request->validated();
+        $this->observationService->assessmentAgreement($data, $observationId);
+
+        return $this->successResponse([], 'Assessment Berhasil Diperbarui', 200);
     }
 }

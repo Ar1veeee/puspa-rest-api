@@ -17,4 +17,12 @@ class AssessmentRepository
     {
         return $this->model->create($data);
     }
+
+    public function setScheduledDate(int $observationId, string $date)
+    {
+        return $this->model->where('observation_id', $observationId)->update([
+            'scheduled_date' => $date,
+            'status' => 'scheduled'
+        ]);
+    }
 }

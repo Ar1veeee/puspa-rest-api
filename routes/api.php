@@ -92,6 +92,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/observations/answer/{observation_id}', [ObservationController::class, 'showDetailAnswer']);
             Route::get('/observations/completed', [ObservationController::class, 'indexCompleted']);
             Route::get('/observations/completed/{observation_id}', [ObservationController::class, 'showCompleted']);
+            Route::put('/observations/assessment-agreement/{observation_id}', [ObservationController::class, 'assessmentAgreement']);
         }
     );
 
