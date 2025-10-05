@@ -20,7 +20,8 @@ Route::prefix('v1')->group(function () {
         ->middleware('throttle:api');
 
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register', [AuthController::class, 'register'])
+            ->middleware('throttle:register');
 
         Route::get('/email-verify/{id}/{hash}', [VerificationController::class, 'verify'])
             ->middleware(['signed', 'throttle:verification'])
