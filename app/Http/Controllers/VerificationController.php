@@ -104,7 +104,7 @@ class VerificationController extends Controller
      *     )
      * ),
      * @OA\Response(response=401, description="Unauthenticated"),
-     * @OA\Response(response=404, description="User tidak ditemukan")
+     * @OA\Response(response=404, description="Pengguna tidak ditemukan")
      * )
      */
     public function resendNotification(string $user_id): JsonResponse
@@ -113,7 +113,7 @@ class VerificationController extends Controller
             $user = User::find($user_id);
 
             if (!$user) {
-                return $this->errorResponse('User tidak ditemukan.', [], 404);
+                return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
             }
 
             if ($user->hasVerifiedEmail()) {
@@ -181,7 +181,7 @@ class VerificationController extends Controller
             $user = User::find($user_id);
 
             if (!$user) {
-                return $this->errorResponse('User tidak ditemukan.', [], 404);
+                return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
             }
 
             $userId = $user->id;

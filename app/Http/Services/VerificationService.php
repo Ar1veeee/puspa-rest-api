@@ -90,7 +90,7 @@ class VerificationService
         $user = $this->userRepository->getById($userId);
 
         if (!$user) {
-            throw new ModelNotFoundException('User tidak ditemukan.');
+            throw new ModelNotFoundException('Pengguna tidak ditemukan.');
         }
 
         return $user;
