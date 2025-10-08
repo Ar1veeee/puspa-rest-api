@@ -33,9 +33,10 @@ class ChildRepository
                         'family_id',
                         'guardian_type',
                         'guardian_name',
-                        'guardian_age',
+                        'guardian_birth_date',
                         'guardian_occupation',
                         'guardian_phone',
+                        'relationship_with_child',
                     );
                 }
             ])

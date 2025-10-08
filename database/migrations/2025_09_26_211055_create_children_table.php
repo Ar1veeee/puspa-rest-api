@@ -27,6 +27,8 @@ return new class extends Migration
                 ['islam', 'kristen', 'katolik', 'hindu', 'budha', 'konghucu', 'lainnya']
             )->nullable();
             $table->timestamps();
+
+            $table->index(['family_id'], 'family_id_idx');
         });
     }
 

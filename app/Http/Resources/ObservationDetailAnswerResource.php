@@ -14,7 +14,7 @@ class ObservationDetailAnswerResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $answerDetails = $this->observation_answer->map(function ($answer) {
+        $answerDetails = $this->observation_answers->map(function ($answer) {
             return [
                 'question_number' => $answer->observation_question->question_number ?? null,
                 'question_text' => $answer->observation_question->question_text ?? null,

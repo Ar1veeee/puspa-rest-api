@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('guardian_type', ['ayah', 'ibu', 'wali']);
             $table->string('guardian_name', 100);
             $table->string('guardian_phone', 500);
-            $table->integer('guardian_age')->nullable();
+            $table->date('guardian_birth_date')->nullable();
             $table->string('guardian_occupation', 100)->nullable();
             $table->string('relationship_with_child', 100)->nullable();
             $table->timestamps();

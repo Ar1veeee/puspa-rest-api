@@ -21,7 +21,7 @@ class ChildService
         return $this->childRepository->getAll();
     }
 
-    public function getChildDetail(string $id): Child
+    public function getChildDetail(string $id)
     {
         $child = $this->childRepository->getDetailById($id);
 

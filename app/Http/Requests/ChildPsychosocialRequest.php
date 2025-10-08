@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+
+class ChildPsychosocialRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return Auth::check() && Auth::user()->role === 'user';
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'child_order' => ['required', 'integer', 'min:1'],
+            'siblings' => ['required', 'array', 'min:1'],
+            'household_members' => ['required', 'string'],
+            'parent_marriage_status' => ['required', 'string', 'in:menikah, cerai, lainya'],
+            'daily_language' => ['required', 'string'],
+        ];
+    }
+}

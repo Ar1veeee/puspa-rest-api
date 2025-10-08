@@ -39,7 +39,7 @@ class Observation extends Model
         'is_continued_to_assessment' => 'boolean',
     ];
 
-    public function observation_answer(): HasMany
+    public function observation_answers(): HasMany
     {
         return $this->hasMany(ObservationAnswer::class, 'observation_id', 'id');
     }

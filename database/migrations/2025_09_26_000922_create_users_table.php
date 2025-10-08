@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->index(['username', 'email'], 'username_email_idx');
             $table->index(['email'], 'email_idx');
+            $table->index(['is_active'], 'is_active_idx');
         });
     }
 

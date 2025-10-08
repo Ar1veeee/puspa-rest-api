@@ -291,7 +291,6 @@ class ObservationService
 
     private function getCacheKey(string $baseKey): string
     {
-        $userId = Auth::id();
-        return "{$baseKey}_{$userId}";
+        return $baseKey;
     }
 }

@@ -29,12 +29,13 @@ class Guardian extends Model
         'guardian_type',
         'guardian_name',
         'guardian_phone',
-        'guardian_age',
+        'guardian_birth_date',
         'guardian_occupation',
         'relationship_with_child',
     ];
 
     protected $casts = [
+        'guardian_birth_date' => 'date',
         'guardian_phone' => 'encrypted',
     ];
 

@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ObservationController;
+
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
@@ -37,8 +40,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:login');
 
         Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])
-            ->name('password.email')
-            ->middleware('throttle:forgot-password');
+            ->middleware('throttle:forgot-password')
+            ->name('password.email');
 
         Route::post('/resend-reset/{email}', [PasswordResetController::class, 'resendResetLink'])
             ->middleware('throttle:forgot-password')
@@ -104,6 +107,18 @@ Route::prefix('v1')->group(function () {
             Route::get('/observations/completed', [ObservationController::class, 'indexCompleted']);
             Route::get('/observations/completed/{observation_id}', [ObservationController::class, 'showCompleted']);
             Route::put('/observations/assessment-agreement/{observation_id}', [ObservationController::class, 'assessmentAgreement']);
+        }
+    );
+
+    Route::middleware(['auth:sanctum', 'role:user'])->group(
+        function () {
+            Route::get('/users/child-assessment', [AssessmentController::class, 'indexChildren']);
+            Route::get('/users/child-assessment-detail/{assessment_id}', [AssessmentController::class, 'show']);
+            Route::put('/users/identity', [GuardianController::class, 'store']);
+            Route::post('/users/child-assessment-psychosocial/{assessment_id}', [AssessmentController::class, 'storeChildPsychosocial']);
+            Route::post('/users/child-assessment-pregnancy/{assessment_id}', [AssessmentController::class, 'storeChildPregnancy']);
+            Route::post('/users/child-assessment-birth/{assessment_id}', [AssessmentController::class, 'storeChildBirth']);
+            Route::post('/users/child-assessment-post-birth/{assessment_id}', [AssessmentController::class, 'storeChildPostBirth']);
         }
     );
 

@@ -52,9 +52,9 @@ class Child extends Model
         return $this->hasOne(Observation::class, 'child_id', 'id');
     }
 
-    public function assessments(): HasOne
+    public function assessment(): HasOne
     {
-        return $this->hasOne(Assessment::class, 'therapist_id', 'id');
+        return $this->hasOne(Assessment::class, 'child_id', 'id');
     }
 
     public static function calculateAgeAndCategory(string $birthDate): array

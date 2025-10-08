@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Assessment extends Model
 {
@@ -40,7 +41,12 @@ class Assessment extends Model
         'okupasi' => 'boolean',
     ];
 
-    public function assessment(): BelongsTo
+    public function childPsychosocialHistory(): HasOne
+    {
+        return $this->hasOne(ObservationAnswer::class, 'observation_id', 'id');
+    }
+
+    public function observation(): BelongsTo
     {
         return $this->belongsTo(ObservationAnswer::class, 'observation_id', 'id');
     }

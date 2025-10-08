@@ -37,11 +37,6 @@ class Therapist extends Model
 
     protected $touches = ['user'];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
-
     public function observations(): HasMany
     {
         return $this->hasMany(Observation::class, 'therapist_id', 'id');
@@ -50,6 +45,11 @@ class Therapist extends Model
     public function assessments(): HasMany
     {
         return $this->hasMany(Assessment::class, 'therapist_id', 'id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     protected static function boot()

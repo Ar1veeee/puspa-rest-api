@@ -146,7 +146,7 @@ class ObservationRepository
     {
         return $this->model
             ->with([
-                'observation_answer' => function ($query) {
+                'observation_answers' => function ($query) {
                     $query->with([
                         'observation_question' => function ($subQuery) {
                             $subQuery->select(

@@ -2,6 +2,7 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\Child;
 use App\Models\Guardian;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +18,57 @@ class GuardianRepository
     public function create(array $data)
     {
         return $this->model->create($data);
+    }
+
+    public function findByUserId(string $userId)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->first();
+    }
+
+    public function findByFamilyIdAndType(string $familyId, string $type)
+    {
+        return $this->model->where('family_id', $familyId)->where('guardian_type', $type)->first();
+    }
+
+    public function getAssessments(string $userId)
+    {
+        $guardian = $this->model->where('user_id', $userId)->firstOrFail();
+
+        return Child::with([
+            'assessment' => function ($query) {
+                $query->select(
+                    'id',
+                    'child_id',
+                    'scheduled_date',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                )
+                    ->orderBy('scheduled_date', 'asc');
+            },
+            'family.guardians' => function ($query) {
+                $query->select(
+                    'id',
+                    'family_id',
+                );
+            }
+        ])
+            ->select(
+                'id',
+                'family_id',
+                'child_name',
+                'child_gender',
+                'child_school',
+                'child_birth_date',
+                'child_birth_place'
+            )
+            ->where('family_id', $guardian->family_id)
+            ->whereHas('assessment', function ($query) {
+                $query->where('status', 'scheduled');
+            })
+            ->get();
     }
 
     public function hasObservationContinuedToAssessment(string $email)

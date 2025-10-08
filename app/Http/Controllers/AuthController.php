@@ -7,7 +7,6 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\LoginResource;
 use App\Http\Services\AuthService;
-use OpenApi\Annotations as OA;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller

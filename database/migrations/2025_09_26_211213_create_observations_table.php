@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
             $table->boolean('is_continued_to_assessment')->nullable()->default(false);
             $table->timestamps();
+
+            $table->index(['status'], 'status_idx');
         });
     }
 
