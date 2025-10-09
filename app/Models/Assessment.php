@@ -41,9 +41,14 @@ class Assessment extends Model
         'okupasi' => 'boolean',
     ];
 
+    public function pedagogicalAssessmentGuardian(): HasOne
+    {
+        return $this->hasOne(PedagogicalAssessmentGuardian::class, 'assessment_id', 'id');
+    }
+
     public function childPsychosocialHistory(): HasOne
     {
-        return $this->hasOne(ObservationAnswer::class, 'observation_id', 'id');
+        return $this->hasOne(ChildPsychosocialHistory::class, 'assessment_id', 'id');
     }
 
     public function observation(): BelongsTo
