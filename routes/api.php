@@ -119,6 +119,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/users/child-assessment-pregnancy/{assessment_id}', [AssessmentController::class, 'storeChildPregnancy']);
             Route::post('/users/child-assessment-birth/{assessment_id}', [AssessmentController::class, 'storeChildBirth']);
             Route::post('/users/child-assessment-post-birth/{assessment_id}', [AssessmentController::class, 'storeChildPostBirth']);
+            Route::post('/users/child-assessment-health/{assessment_id}', [AssessmentController::class, 'storeChildHealth']);
+            Route::post('/users/child-assessment-education/{assessment_id}', [AssessmentController::class, 'storeChildEducation']);
         }
     );
 

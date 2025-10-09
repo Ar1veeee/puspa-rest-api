@@ -24,7 +24,9 @@ class ChildPsychosocialRequest extends FormRequest
     {
         return [
             'child_order' => ['required', 'integer', 'min:1'],
-            'siblings' => ['required', 'array', 'min:1'],
+            'siblings' => ['nullable', 'array'],
+            'siblings.*.name' => ['required', 'string'],
+            'siblings.*.age' => ['required', 'integer'],
             'household_members' => ['required', 'string'],
             'parent_marriage_status' => ['required', 'string', 'in:menikah, cerai, lainya'],
             'daily_language' => ['required', 'string'],

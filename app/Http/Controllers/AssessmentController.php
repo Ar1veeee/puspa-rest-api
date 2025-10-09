@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\ChildBirthRequest;
+use App\Http\Requests\ChildEducationRequest;
+use App\Http\Requests\ChildHealthRequest;
 use App\Http\Requests\ChildPostBirthRequest;
 use App\Http\Requests\ChildPregnancyRequest;
 use App\Http\Requests\ChildPsychosocialRequest;
@@ -53,6 +55,22 @@ class AssessmentController extends Controller
         $this->assessmentService->createChildPostBirthHistory($assessmentId, $data);
 
         return $this->successResponse([], 'Data Riwayat Setelah Kelahiran Berhasil Disimpan', 201);
+    }
+
+    public function storeChildHealth(ChildHealthRequest $request, int $assessmentId): JsonResponse
+    {
+        $data = $request->validated();
+        $this->assessmentService->createChildHealthHistory($assessmentId, $data);
+
+        return $this->successResponse([], 'Data Riwayat Kesehatan Berhasil Disimpan', 201);
+    }
+
+    public function storeChildEducation(ChildEducationRequest $request, int $assessmentId): JsonResponse
+    {
+        $data = $request->validated();
+        $this->assessmentService->createChildEducationHistory($assessmentId, $data);
+
+        return $this->successResponse([], 'Data Riwayat Kesehatan Berhasil Disimpan', 201);
     }
 
     public function show(int $assessmentId)

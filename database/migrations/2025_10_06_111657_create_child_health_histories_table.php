@@ -31,7 +31,7 @@ return new class extends Migration
             $table->integer('measles_or_rubella_age')->nullable();
             $table->integer('influenza_age')->nullable();
             $table->integer('pneumonia_age')->nullable();
-            $table->text('others')->nullable();
+            $table->json('other_disease')->nullable();
             $table->text('family_similar_conditions_detail');
             $table->text('family_mental_disorders');
             $table->text('child_surgeries_detail');

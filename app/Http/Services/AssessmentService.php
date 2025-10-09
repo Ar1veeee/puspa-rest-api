@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\ChildBirthRepository;
+use App\Http\Repositories\ChildEducationRepository;
+use App\Http\Repositories\ChildHealthRepository;
 use App\Http\Repositories\ChildPostBirthRepository;
 use App\Http\Repositories\ChildPregnancyRepository;
 use App\Http\Repositories\GuardianRepository;
@@ -17,7 +19,9 @@ class AssessmentService
     protected $childPsychosocialRepository;
     protected $childPregnancyRepository;
     protected $childBirthRepository;
-    protected $childPostBirthRequest;
+    protected $childPostBirthRepository;
+    protected $childHealthRepository;
+    protected $childEducationRepository;
 
     public function __construct(
         AssessmentRepository $assessmentRepository,
@@ -25,7 +29,9 @@ class AssessmentService
         ChildPsychosocialRepository $childPsychosocialRepository,
         ChildPregnancyRepository $childPregnancyRepository,
         ChildBirthRepository $childBirthRepository,
-        ChildPostBirthRepository $childPostBirthRequest
+        ChildPostBirthRepository $childPostBirthRepository,
+        ChildHealthRepository $childHealthRepository,
+        ChildEducationRepository $childEducationRepository
     )
     {
         $this->assessmentRepository = $assessmentRepository;
@@ -33,7 +39,9 @@ class AssessmentService
         $this->childPsychosocialRepository = $childPsychosocialRepository;
         $this->childPregnancyRepository = $childPregnancyRepository;
         $this->childBirthRepository = $childBirthRepository;
-        $this->childPostBirthRequest = $childPostBirthRequest;
+        $this->childPostBirthRepository = $childPostBirthRepository;
+        $this->childHealthRepository = $childHealthRepository;
+        $this->childEducationRepository = $childEducationRepository;
     }
 
     public function getAssessmentDetail(int $id)
@@ -81,7 +89,25 @@ class AssessmentService
 
     public function createChildPostBirthHistory(int $assessmentId, array $data)
     {
-        return $this->childPostBirthRequest->create(
+        return $this->childPostBirthRepository->create(
+            array_merge($data, [
+                'assessment_id' => $assessmentId,
+            ])
+        );
+    }
+
+    public function createChildHealthHistory(int $assessmentId, array $data)
+    {
+        return $this->childHealthRepository->create(
+            array_merge($data, [
+                'assessment_id' => $assessmentId,
+            ])
+        );
+    }
+
+    public function createChildEducationHistory(int $assessmentId, array $data)
+    {
+        return $this->childEducationRepository->create(
             array_merge($data, [
                 'assessment_id' => $assessmentId,
             ])
