@@ -28,6 +28,10 @@ class SpeechAssessmentService
             throw new ModelNotFoundException('Assessment tidak ditemukan.');
         }
 
+        if (!$assessment->wicara) {
+            throw new ModelNotFoundException('Penilaian wicara tidak diaktifkan untuk asesmen ini.');
+        }
+
         return $this->speechAssessmentGuardianRepository->create(
             array_merge($data, [
                 'assessment_id' => $assessmentId,

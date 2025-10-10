@@ -28,6 +28,10 @@ class PhysioAssessmentService
             throw new ModelNotFoundException('Assessment tidak ditemukan.');
         }
 
+        if (!$assessment->fisio) {
+            throw new ModelNotFoundException('Penilaian fisio tidak diaktifkan untuk asesmen ini.');
+        }
+
         return $this->physioAssessmentRepository->createAssessmentGuardian(
             array_merge($data, [
                 'assessment_id' => $assessmentId,

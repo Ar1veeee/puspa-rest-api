@@ -29,6 +29,10 @@ class PedagogicalAssessmentService
             throw new ModelNotFoundException('Assessment tidak ditemukan');
         }
 
+        if (!$assessment->paedagog) {
+            throw new ModelNotFoundException('Penilaian paedagog tidak diaktifkan untuk asesmen ini.');
+        }
+
         return DB::transaction(function () use ($assessmentId, $data) {
             $academic = $this->pedagogicalAssessmentRepository->createAcademicAspect($data);
             $auditory = $this->pedagogicalAssessmentRepository->createAuditoryImpairmentAspect($data);

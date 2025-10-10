@@ -29,6 +29,10 @@ class OccupationalAssessmentService
             throw new ModelNotFoundException('Assessment tidak ditemukan.');
         }
 
+        if (!$assessment->okupasi) {
+            throw new ModelNotFoundException('Penilaian okupasi tidak diaktifkan untuk asesmen ini.');
+        }
+
         return DB::transaction(function () use ($assessmentId, $data) {
             $auditory = $this->occupationalAssessmentRepository->createAuditoryCommunication($data);
             $sensoryModality = $this->occupationalAssessmentRepository->createSensoryModality($data);
