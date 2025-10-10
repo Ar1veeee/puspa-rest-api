@@ -26,7 +26,7 @@ class ObservationQuestionsResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             "id" => $this->id,
             'question_code' => $this->question_code,
             'age_category' => $this->age_category,
@@ -34,5 +34,7 @@ class ObservationQuestionsResource extends JsonResource
             'question_text' => $this->question_text,
             'score' => $this->score,
         ];
+
+        return $response;
     }
 }

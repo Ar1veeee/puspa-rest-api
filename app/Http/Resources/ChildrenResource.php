@@ -14,7 +14,7 @@ class ChildrenResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             "id" => $this->id,
             'child_name' => $this->child_name,
             'child_birth_date' => $this->child_birth_date->format('d F Y'),
@@ -22,5 +22,7 @@ class ChildrenResource extends JsonResource
             'child_gender' => $this->child_gender,
             'child_school' => $this->child_school,
         ];
+
+        return $response;
     }
 }

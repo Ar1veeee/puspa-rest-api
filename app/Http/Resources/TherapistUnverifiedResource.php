@@ -14,7 +14,7 @@ class TherapistUnverifiedResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             'id' => $this->id,
             'therapist_id' => $this->therapist->id,
             'email' => $this->email,
@@ -23,5 +23,7 @@ class TherapistUnverifiedResource extends JsonResource
             'createdAt' => $this->created_at->format('d F Y H:i:s'),
             'updatedAt' => $this->updated_at->format('d F Y H:i:s'),
         ];
+
+        return $response;
     }
 }

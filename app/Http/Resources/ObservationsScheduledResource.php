@@ -28,7 +28,7 @@ class ObservationsScheduledResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             "id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
@@ -38,5 +38,7 @@ class ObservationsScheduledResource extends JsonResource
             'scheduled_date' => $this->scheduled_date->toDateString(),
             'status' => $this->status,
         ];
+
+        return $response;
     }
 }

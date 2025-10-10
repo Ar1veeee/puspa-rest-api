@@ -10,6 +10,10 @@ use App\Http\Repositories\ChildPostBirthRepository;
 use App\Http\Repositories\ChildPregnancyRepository;
 use App\Http\Repositories\GuardianRepository;
 use App\Http\Repositories\ChildPsychosocialRepository;
+use App\Http\Repositories\OccupationalAssessmentRepository;
+use App\Http\Repositories\PedagogicalAssessmentRepository;
+use App\Http\Repositories\PhysioAssessmentRepository;
+use App\Http\Repositories\SpeechAssessmentRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AssessmentService
@@ -22,16 +26,24 @@ class AssessmentService
     protected $childPostBirthRepository;
     protected $childHealthRepository;
     protected $childEducationRepository;
+    protected $physioAssessmentRepository;
+    protected $speechAssessmentRepository;
+    protected $occupationalAssessmentRepository;
+    protected $pedagogicalAssessmentRepository;
 
     public function __construct(
-        AssessmentRepository $assessmentRepository,
-        GuardianRepository $guardianRepository,
+        AssessmentRepository        $assessmentRepository,
+        GuardianRepository          $guardianRepository,
         ChildPsychosocialRepository $childPsychosocialRepository,
-        ChildPregnancyRepository $childPregnancyRepository,
-        ChildBirthRepository $childBirthRepository,
-        ChildPostBirthRepository $childPostBirthRepository,
-        ChildHealthRepository $childHealthRepository,
-        ChildEducationRepository $childEducationRepository
+        ChildPregnancyRepository    $childPregnancyRepository,
+        ChildBirthRepository        $childBirthRepository,
+        ChildPostBirthRepository    $childPostBirthRepository,
+        ChildHealthRepository       $childHealthRepository,
+        ChildEducationRepository    $childEducationRepository,
+        PhysioAssessmentRepository  $physioAssessmentRepository,
+        SpeechAssessmentRepository  $speechAssessmentRepository,
+        OccupationalAssessmentRepository  $occupationalAssessmentRepository,
+        PedagogicalAssessmentRepository  $pedagogicalAssessmentRepository,
     )
     {
         $this->assessmentRepository = $assessmentRepository;
@@ -42,6 +54,10 @@ class AssessmentService
         $this->childPostBirthRepository = $childPostBirthRepository;
         $this->childHealthRepository = $childHealthRepository;
         $this->childEducationRepository = $childEducationRepository;
+        $this->physioAssessmentRepository = $physioAssessmentRepository;
+        $this->speechAssessmentRepository = $speechAssessmentRepository;
+        $this->occupationalAssessmentRepository = $occupationalAssessmentRepository;
+        $this->pedagogicalAssessmentRepository = $pedagogicalAssessmentRepository;
     }
 
     public function getAssessmentDetail(int $id)
@@ -58,6 +74,87 @@ class AssessmentService
     public function getChildrenAssessment(string $userId)
     {
         return $this->guardianRepository->getAssessments($userId);
+    }
+
+    public function getGeneral(int $id)
+    {
+        $parentData = $this->assessmentRepository->getParentDataById($id);
+        $psychosocialData = $this->childPsychosocialRepository->getByAssessmentId($id);
+        $pregnancyData = $this->childPregnancyRepository->getByAssessmentId($id);
+        $birthData = $this->childBirthRepository->getByAssessmentId($id);
+        $postBirthData = $this->childPostBirthRepository->getByAssessmentId($id);
+        $healthData = $this->childHealthRepository->getByAssessmentId($id);
+        $educationData = $this->childEducationRepository->getByAssessmentId($id);
+
+        return [
+            'assessment_details' => $parentData,
+            'psychosocial' => $psychosocialData,
+            'pregnancy' => $pregnancyData,
+            'birth' => $birthData,
+            'post_birth' => $postBirthData,
+            'health' => $healthData,
+            'education' => $educationData,
+        ];
+    }
+
+    public function getPhysioGuardian(int $id)
+    {
+        $assessment = $this->assessmentRepository->getById($id);
+        if (!$assessment) {
+            throw new ModelNotFoundException('Data assessment tidak ditemukan.');
+        }
+
+        $physioData = $this->physioAssessmentRepository->getAssessmentGuardianByAssessmentId($id);
+        if (!$physioData) {
+            throw new ModelNotFoundException('Data assessment fisio tidak ditemukan.');
+        }
+
+        return $physioData;
+    }
+
+    public function getSpeechGuardian(int $id)
+    {
+        $assessment = $this->assessmentRepository->getById($id);
+        if (!$assessment) {
+            throw new ModelNotFoundException('Data assessment tidak ditemukan.');
+        }
+
+        $speechData = $this->speechAssessmentRepository->getAssessmentGuardianByAssessmentId($id);
+        if (!$speechData) {
+            throw new ModelNotFoundException('Data assessment wicara tidak ditemukan.');
+        }
+
+        return $speechData;
+    }
+
+    public function getOccupationalGuardian(int $id)
+    {
+        $assessment = $this->assessmentRepository->getById($id);
+        if (!$assessment) {
+            throw new ModelNotFoundException('Data assessment tidak ditemukan.');
+        }
+
+        $occupationalData = $this->occupationalAssessmentRepository->getAllAssessmentGuardian($id);
+        if (!$occupationalData) {
+            throw new ModelNotFoundException('Data assessment wicara tidak ditemukan.');
+        }
+
+        return $occupationalData;
+    }
+
+    public function getPedagogicalGuardian(int $id)
+    {
+        $assessment = $this->assessmentRepository->getById($id);
+        if (!$assessment) {
+            throw new ModelNotFoundException('Data assessment tidak ditemukan.');
+        }
+
+        $pedagogicalData = $this->pedagogicalAssessmentRepository->getAllAssessmentGuardian($id);
+        if (!$pedagogicalData) {
+            throw new ModelNotFoundException('Data assessment paedagog tidak ditemukan.');
+        }
+
+        return $pedagogicalData;
     }
 
     public function createChildPsychosocialHistory(int $assessmentId, array $data)

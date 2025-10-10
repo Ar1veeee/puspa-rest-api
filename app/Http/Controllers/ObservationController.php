@@ -47,7 +47,7 @@ class ObservationController extends Controller
     public function indexPending(): JsonResponse
     {
         $observations = $this->observationService->getObservationsPending();
-        $response = ObservationsPendingResource::collection($observations);
+        $response = new ObservationsPendingResource($observations);
 
         return $this->successResponse($response, 'Daftar Observasi Pending', 200);
     }
@@ -70,7 +70,7 @@ class ObservationController extends Controller
     public function indexScheduled(): JsonResponse
     {
         $observations = $this->observationService->getObservationsScheduled();
-        $response = ObservationsScheduledResource::collection($observations);
+        $response = new ObservationsScheduledResource($observations);
 
         return $this->successResponse($response, 'Daftar Observasi Scheduled', 200);
     }
@@ -93,7 +93,7 @@ class ObservationController extends Controller
     public function indexCompleted(): JsonResponse
     {
         $observations = $this->observationService->getObservationsCompleted();
-        $response = ObservationsCompletedResource::collection($observations);
+        $response = new ObservationsCompletedResource($observations);
 
         return $this->successResponse($response, 'Daftar Observasi Completed', 200);
     }
@@ -173,7 +173,7 @@ class ObservationController extends Controller
     public function showQuestion(int $observationsId): JsonResponse
     {
         $questions = $this->observationService->getObservationQuestions($observationsId);
-        $response = ObservationQuestionsResource::collection($questions);
+        $response = new ObservationQuestionsResource($questions);
 
         return $this->successResponse($response, 'Pertanyaan Observasi', 200);
     }

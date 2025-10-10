@@ -43,7 +43,7 @@ class AdminController extends Controller
     public function index(): JsonResponse
     {
         $admins = $this->adminService->getAllAdmin();
-        $response = AdminsResource::collection($admins);
+        $response = new AdminsResource($admins);
 
         return $this->successResponse($response, 'Daftar Semua Admin', 200);
     }

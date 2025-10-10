@@ -3,6 +3,7 @@
 namespace App\Http\Repositories;
 
 use App\Models\Assessment;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AssessmentRepository
 {
@@ -21,6 +22,30 @@ class AssessmentRepository
     public function getById(int $id)
     {
         return $this->model->find($id);
+    }
+
+    public function getParentDataById(int $id)
+    {
+        $assessment = $this->model->find($id);
+
+        if (!$assessment) {
+            throw new ModelNotFoundException('Assessment dengan ID ' . $id . ' tidak ditemukan.');
+        }
+
+        return $assessment->load([
+            'child.family.guardians' => function ($query) {
+                $query->select(
+                    'id',
+                    'family_id',
+                    'guardian_type',
+                    'guardian_name',
+                    'guardian_birth_date',
+                    'guardian_occupation',
+                    'guardian_phone',
+                    'relationship_with_child'
+                );
+            }
+        ]);
     }
 
     public function getByScheduledPhysio()

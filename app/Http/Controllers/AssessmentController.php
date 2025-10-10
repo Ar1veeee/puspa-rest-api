@@ -11,6 +11,11 @@ use App\Http\Requests\ChildPregnancyRequest;
 use App\Http\Requests\ChildPsychosocialRequest;
 use App\Http\Resources\AssessmentsDetailResource;
 use App\Http\Resources\ChildrenAssessmentResource;
+use App\Http\Resources\GeneralDataAssessmentResource;
+use App\Http\Resources\OccupationalGuardianDataAssessmentResource;
+use App\Http\Resources\PedagogicalGuardianDataAssessmentResource;
+use App\Http\Resources\PhysioGuardianDataAssessmentResource;
+use App\Http\Resources\SpeechGuardianDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use Illuminate\Http\JsonResponse;
 
@@ -79,6 +84,46 @@ class AssessmentController extends Controller
         $response = new AssessmentsDetailResource($assessment);
 
         return$this->successResponse($response, 'Detail Assessment Untuk Anak');
+    }
+
+    public function showGeneralData(int $assessmentId): JsonResponse
+    {
+        $generalData = $this->assessmentService->getGeneral($assessmentId);
+        $response = new GeneralDataAssessmentResource($generalData);
+
+        return $this->successResponse($response, 'Data Umum Assessment Untuk Anak', 200);
+    }
+
+    public function showPhysioGuardianData(int $assessmentId): JsonResponse
+    {
+        $physioData = $this->assessmentService->getPhysioGuardian($assessmentId);
+        $response = new PhysioGuardianDataAssessmentResource($physioData);
+
+        return $this->successResponse($response, 'Data Fisio Assessment Untuk Anak', 200);
+    }
+
+    public function showSpeechGuardianData(int $assessmentId): JsonResponse
+    {
+        $physioData = $this->assessmentService->getSpeechGuardian($assessmentId);
+        $response = new SpeechGuardianDataAssessmentResource($physioData);
+
+        return $this->successResponse($response, 'Data Wicara Assessment Untuk Anak', 200);
+    }
+
+    public function showOccupationalGuardianData(int $assessmentId): JsonResponse
+    {
+        $occupationalData = $this->assessmentService->getOccupationalGuardian($assessmentId);
+        $response = new OccupationalGuardianDataAssessmentResource($occupationalData);
+
+        return $this->successResponse($response, 'Data Okupasi Assessment Untuk Anak', 200);
+    }
+
+    public function showPedagogicalGuardianData(int $assessmentId): JsonResponse
+    {
+        $physioData = $this->assessmentService->getPedagogicalGuardian($assessmentId);
+        $response = new PedagogicalGuardianDataAssessmentResource($physioData);
+
+        return $this->successResponse($response, 'Data Paedagog Assessment Untuk Anak', 200);
     }
 
     public function indexChildren(): JsonResponse

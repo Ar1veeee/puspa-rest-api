@@ -25,7 +25,7 @@ class OwnerController extends Controller
     public function indexAdmin(): JsonResponse
     {
         $adminsUnverified = $this->ownerService->getAllAdminUnverified();
-        $response = AdminsUnverifiedResource::collection($adminsUnverified);
+        $response = new AdminsUnverifiedResource($adminsUnverified);
 
         return $this->successResponse($response, 'Daftar Admin Belum Terverifikasi', 200);
     }
@@ -33,7 +33,7 @@ class OwnerController extends Controller
     public function indexTherapist(): JsonResponse
     {
         $therapistsUnverified = $this->ownerService->getAllTherapistUnverified();
-        $response = TherapistUnverifiedResource::collection($therapistsUnverified);
+        $response = new TherapistUnverifiedResource($therapistsUnverified);
 
         return $this->successResponse($response, 'Daftar Terapis Belum Terverifikasi', 200);
     }

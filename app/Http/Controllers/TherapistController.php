@@ -43,7 +43,7 @@ class TherapistController extends Controller
     public function index(): JsonResponse
     {
         $therapists = $this->therapistService->getAllTherapist();
-        $response = TherapistsResource::collection($therapists);
+        $response = new TherapistsResource($therapists);
 
         return $this->successResponse($response, 'Daftar Semua Terapis', 200);
     }

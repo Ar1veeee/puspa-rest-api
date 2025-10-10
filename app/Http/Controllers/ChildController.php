@@ -22,7 +22,7 @@ class ChildController extends Controller
     public function index(): JsonResponse
     {
         $children = $this->childService->getAllChild();
-        $response = ChildrenResource::collection($children);
+        $response = new ChildrenResource($children);
 
         return $this->successResponse($response, 'Daftar Semua Anak', 200);
     }

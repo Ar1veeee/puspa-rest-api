@@ -31,7 +31,7 @@ class ObservationsPendingResource extends JsonResource
     {
         $guardian = $this->child?->family?->guardians?->first();
 
-        return [
+        $response = [
             "id" => $this->id,
             'child_name' => $this->child->child_name,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
@@ -43,5 +43,7 @@ class ObservationsPendingResource extends JsonResource
             'scheduled_date' => $this->scheduled_date->toDateString(),
             'status' => $this->status,
         ];
+
+        return $response;
     }
 }

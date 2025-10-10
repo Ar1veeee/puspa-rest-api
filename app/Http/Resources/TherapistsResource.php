@@ -29,7 +29,7 @@ class TherapistsResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'email' => $this->user->email,
@@ -39,5 +39,7 @@ class TherapistsResource extends JsonResource
             'therapist_phone' => $this->therapist_phone,
             'is_active' => $this->user->is_active,
         ];
+
+        return $response;
     }
 }

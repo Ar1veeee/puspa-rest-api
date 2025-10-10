@@ -21,12 +21,12 @@ class OccupationalAssessmentRepository
     protected $modelSensoryProcessing;
 
     public function __construct(
-        OccupationalAssessmentGuardian $modelAssessmentGuardian,
-        OccupationalAdlMotorSkill $modelAdlMotorSkill,
-        OccupationalAuditoryCommunication $modelAuditoryCommunication,
-        OccupationalBehaviorScale $modelBehaviorScale,
-        OccupationalBehaviorSocial $modelBehaviorSocial,
-        OccupationalSensoryModalityTest $modelSensoryModality,
+        OccupationalAssessmentGuardian         $modelAssessmentGuardian,
+        OccupationalAdlMotorSkill              $modelAdlMotorSkill,
+        OccupationalAuditoryCommunication      $modelAuditoryCommunication,
+        OccupationalBehaviorScale              $modelBehaviorScale,
+        OccupationalBehaviorSocial             $modelBehaviorSocial,
+        OccupationalSensoryModalityTest        $modelSensoryModality,
         OccupationalSensoryProcessingScreening $modelSensoryProcessing
     )
     {
@@ -72,5 +72,20 @@ class OccupationalAssessmentRepository
     public function createSensoryProcessing(array $data)
     {
         return $this->modelSensoryProcessing->create($data);
+    }
+
+    public function getAllAssessmentGuardian(int $assessmentId)
+    {
+        return $this->modelAssessmentGuardian
+            ->with([
+                'auditoryCommunication',
+                'sensoryModalityTest',
+                'sensoryProcessingScreening',
+                'adlMotorSkill',
+                'behaviorSocial',
+                'behaviorScale',
+            ])
+            ->where('assessment_id', $assessmentId)
+            ->first();
     }
 }

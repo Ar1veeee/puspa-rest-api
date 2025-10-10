@@ -82,4 +82,20 @@ class PedagogicalAssessmentRepository
     {
         return $this->modelVisualAspect->create($data);
     }
+
+    public function getAllAssessmentGuardian(int $assessmentId)
+    {
+        return $this->modelAssessmentGuardian
+            ->with([
+                'academicAspect',
+                'visualImpairmentAspect',
+                'auditoryImpairmentAspect',
+                'cognitiveImpairmentAspect',
+                'motorImpairmentAspect',
+                'behavioralImpairmentAspect',
+                'socialCommunicationAspect',
+            ])
+            ->where('assessment_id', $assessmentId)
+            ->first();
+    }
 }

@@ -17,4 +17,9 @@ class SpeechAssessmentRepository
     {
         return $this->modelSpeechAssessmentGuardian->create($data);
     }
+
+    public function getAssessmentGuardianByAssessmentId(int $assessmentId)
+    {
+        return $this->modelSpeechAssessmentGuardian->where('assessment_id', $assessmentId)->first();
+    }
 }

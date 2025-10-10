@@ -28,7 +28,7 @@ class AdminsResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'email' => $this->user->email,
@@ -37,5 +37,7 @@ class AdminsResource extends JsonResource
             'admin_phone' => $this->admin_phone,
             'is_active' => $this->user->is_active,
         ];
+
+        return $response;
     }
 }

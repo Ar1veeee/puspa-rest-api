@@ -115,9 +115,14 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:user'])->group(
         function () {
+            Route::put('/users/identity', [GuardianController::class, 'store']);
             Route::get('/users/child-assessment', [AssessmentController::class, 'indexChildren']);
             Route::get('/users/child-assessment-detail/{assessment_id}', [AssessmentController::class, 'show']);
-            Route::put('/users/identity', [GuardianController::class, 'store']);
+            Route::get('/users/child-assessment-general/{assessment_id}', [AssessmentController::class, 'showGeneralData']);
+            Route::get('/users/child-assessment-physio-guardian/{assessment_id}', [AssessmentController::class, 'showPhysioGuardianData']);
+            Route::get('/users/child-assessment-speech-guardian/{assessment_id}', [AssessmentController::class, 'showSpeechGuardianData']);
+            Route::get('/users/child-assessment-occupational-guardian/{assessment_id}', [AssessmentController::class, 'showOccupationalGuardianData']);
+            Route::get('/users/child-assessment-pedagogical-guardian/{assessment_id}', [AssessmentController::class, 'showPedagogicalGuardianData']);
             Route::post('/users/child-assessment-psychosocial/{assessment_id}', [AssessmentController::class, 'storeChildPsychosocial']);
             Route::post('/users/child-assessment-pregnancy/{assessment_id}', [AssessmentController::class, 'storeChildPregnancy']);
             Route::post('/users/child-assessment-birth/{assessment_id}', [AssessmentController::class, 'storeChildBirth']);

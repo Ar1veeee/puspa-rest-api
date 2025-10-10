@@ -51,6 +51,11 @@ class PedagogicalAssessmentGuardian extends Model
         return $this->belongsTo(PedagogicalAuditoryImpairmentAspect::class, 'auditory_impairment_aspect_id');
     }
 
+    public function cognitiveImpairmentAspect(): BelongsTo
+    {
+        return $this->belongsTo(PedagogicalCognitiveImpairmentAspect::class, 'cognitive_impairment_aspect_id');
+    }
+
     public function motorImpairmentAspect(): BelongsTo
     {
         return $this->belongsTo(PedagogicalMotorImpairmentAspect::class, 'motor_impairment_aspects_id');
@@ -61,8 +66,8 @@ class PedagogicalAssessmentGuardian extends Model
         return $this->belongsTo(PedagogicalBehavioralImpairmentAspect::class, 'behavioral_impairment_aspect_id');
     }
 
-    public function socialCommunicationAssessment(): BelongsTo
+    public function socialCommunicationAspect(): BelongsTo
     {
-        return $this->belongsTo(PedagogicalSocialCommunicationAspect::class, 'social_communication_assessment_id');
+        return $this->belongsTo(PedagogicalSocialCommunicationAspect::class, 'social_communication_aspect_id');
     }
 }

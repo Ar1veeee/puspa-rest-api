@@ -42,7 +42,7 @@ class OccupationalAssessmentGuardian extends Model
 
     public function sensoryModalityTest(): BelongsTo
     {
-        return $this->belongsTo(OccupationalSensoryModalityTest::class);
+        return $this->belongsTo(OccupationalSensoryModalityTest::class, 'sensory_modality_id');
     }
 
     public function sensoryProcessingScreening(): BelongsTo

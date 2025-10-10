@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AdminsUnverifiedResource extends JsonResource
+class PhysioGuardianDataAssessmentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,8 @@ class AdminsUnverifiedResource extends JsonResource
     {
         $response = [
             'id' => $this->id,
-            'admin_id' => $this->admin->id,
-            'email' => $this->email,
-            'admin_name' => $this->admin->admin_name,
-            'admin_phone' => $this->admin->admin_phone,
-            'createdAt' => $this->created_at->format('d F Y H:i:s'),
-            'updatedAt' => $this->updated_at->format('d F Y H:i:s'),
+            'complaint' => $this->complaint,
+            'medical_history' => $this->medical_history,
         ];
 
         return $response;
