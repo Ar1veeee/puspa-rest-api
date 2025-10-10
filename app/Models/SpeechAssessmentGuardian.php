@@ -45,8 +45,8 @@ class SpeechAssessmentGuardian extends Model
 
     protected $casts = [
         'child_awareness' => 'boolean',
-        'previous_therapy' => 'boolean',
-        'previous_therapy_detail' => 'array',
+        'previous_speech_therapy' => 'boolean',
+        'previous_speech_therapy_detail' => 'array',
         'other_specialist' => 'boolean',
         'other_specialist_detail' => 'array',
         'family_communication_disorders' => 'boolean',
