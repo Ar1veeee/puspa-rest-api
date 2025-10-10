@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('occupational_sensory_modality_tests', function (Blueprint $table) {
             $table->id();
-            $options = ['Ya', 'Tidak', 'Kadang-kadang'];
+            $options = ['ya', 'tidak', 'kadang-kadang'];
 
             // GUSTATORI/OLFAKTORI
             $table->enum('gust_thinks_all_food_tastes_same', $options);

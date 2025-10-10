@@ -33,6 +33,11 @@ return new class extends Migration {
                 ->references('id')
                 ->on('pedagogical_motor_impairment_aspects')
                 ->onDelete('set null');
+            $table->foreignId('cognitive_impairment_aspect_id')->nullable();
+            $table->foreign('cognitive_impairment_aspect_id', 'fk_peda_cognitive_id')
+                ->references('id')
+                ->on('pedagogical_cognitive_impairment_aspects')
+                ->onDelete('set null');
             $table->foreignId('behavioral_impairment_aspect_id')->nullable();
             $table->foreign('behavioral_impairment_aspect_id', 'fk_peda_behavioral_id')
                 ->references('id')

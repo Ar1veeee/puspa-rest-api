@@ -32,7 +32,7 @@ return new class extends Migration
             $table->boolean('understands_game_rules');
             $table->boolean('understands_jokes');
             $table->boolean('is_rigid');
-            $table->enum('plays_with_other_children', ['older', 'younger', 'same_age']);
+            $table->enum('plays_with_other_children', ['lebih tua', 'lebih muda', 'seumuran']);
         });
     }
 
