@@ -5,13 +5,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ObservationController;
-
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TherapistController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\PhysioAssessmentController;
+use App\Http\Controllers\SpeechAssessmentController;
+use App\Http\Controllers\OccupationalAssessmentController;
+use App\Http\Controllers\PedagogicalAssessmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -121,6 +124,10 @@ Route::prefix('v1')->group(function () {
             Route::post('/users/child-assessment-post-birth/{assessment_id}', [AssessmentController::class, 'storeChildPostBirth']);
             Route::post('/users/child-assessment-health/{assessment_id}', [AssessmentController::class, 'storeChildHealth']);
             Route::post('/users/child-assessment-education/{assessment_id}', [AssessmentController::class, 'storeChildEducation']);
+            Route::post('/users/child-assessment-physio/{assessment_id}', [PhysioAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-speech/{assessment_id}', [SpeechAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-occupational/{assessment_id}', [OccupationalAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-pedagogical/{assessment_id}', [PedagogicalAssessmentController::class, 'storeAssessmentGuardian']);
         }
     );
 
