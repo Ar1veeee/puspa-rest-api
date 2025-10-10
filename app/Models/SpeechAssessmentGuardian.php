@@ -28,8 +28,10 @@ class SpeechAssessmentGuardian extends Model
         'main_cause',
         'child_awareness',
         'child_awareness_detail',
-        'previous_therapy',
-        'previous_therapy_detail',
+        'previous_speech_therapy',
+        'previous_speech_therapy_detail',
+        'other_specialist',
+        'other_specialist_detail',
         'family_communication_disorders',
         'family_communication_disorders_detail',
         'age_child_can_express_one_word',
@@ -42,9 +44,11 @@ class SpeechAssessmentGuardian extends Model
     ];
 
     protected $casts = [
-        'previous_therapy_detail' => 'array',
         'child_awareness' => 'boolean',
         'previous_therapy' => 'boolean',
+        'previous_therapy_detail' => 'array',
+        'other_specialist' => 'boolean',
+        'other_specialist_detail' => 'array',
         'family_communication_disorders' => 'boolean',
     ];
 
