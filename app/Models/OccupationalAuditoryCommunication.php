@@ -32,6 +32,18 @@ class OccupationalAuditoryCommunication extends Model
         'understands_body_language_facial_expressions',
     ];
 
+    protected $casts = [
+        'easily_disturbed_by_sound' => 'boolean',
+        'cannot_follow_simple_instructions' => 'boolean',
+        'confused_by_words' => 'boolean',
+        'only_uses_body_language' => 'boolean',
+        'likes_to_sing' => 'boolean',
+        'speech_sound_difficulty' => 'boolean',
+        'attentive_but_confused' => 'boolean',
+        'hesitant_to_speak' => 'boolean',
+        'understands_body_language_facial_expressions' => 'boolean',
+    ];
+
     public function occupationalAssessmentGuardian(): HasOne
     {
         return $this->hasOne(OccupationalAssessmentGuardian::class);

@@ -18,7 +18,7 @@ class PedagogicalAssessmentGuardian extends Model
 
     public $incrementing = true;
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'assessment_id',
@@ -28,7 +28,7 @@ class PedagogicalAssessmentGuardian extends Model
         'cognitive_impairment_aspect_id',
         'motor_impairment_aspects_id',
         'behavioral_impairment_aspect_id',
-        'social_communication_assessment_id',
+        'social_communication_aspect_id',
     ];
 
     public function assessment(): BelongsTo
@@ -63,6 +63,6 @@ class PedagogicalAssessmentGuardian extends Model
 
     public function socialCommunicationAssessment(): BelongsTo
     {
-        return $this->belongsTo(PedagogicalSocialCommunicationAssessment::class, 'social_communication_assessment_id');
+        return $this->belongsTo(PedagogicalSocialCommunicationAspect::class, 'social_communication_assessment_id');
     }
 }

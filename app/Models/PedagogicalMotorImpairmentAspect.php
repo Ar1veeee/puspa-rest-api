@@ -10,7 +10,7 @@ class PedagogicalMotorImpairmentAspect extends Model
 {
     use HasFactory;
 
-    protected $table = 'motor_visual_impairment_aspects';
+    protected $table = 'pedagogical_motor_impairment_aspects';
 
     protected $primaryKey = 'id';
 

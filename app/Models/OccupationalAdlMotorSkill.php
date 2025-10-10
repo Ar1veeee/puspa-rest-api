@@ -37,6 +37,23 @@ class OccupationalAdlMotorSkill extends Model
         'difficulty_climbing_stairs',
     ];
 
+    protected $casts = [
+        'difficulty_regulating_emotions' => 'boolean',
+        'difficulty_dressing' => 'boolean',
+        'difficulty_wearing_shoes_socks' => 'boolean',
+        'difficulty_tying_shoelaces' => 'boolean',
+        'difficulty_buttoning' => 'boolean',
+        'difficulty_self_cleaning' => 'boolean',
+        'difficulty_brushing_teeth' => 'boolean',
+        'difficulty_combing_hair' => 'boolean',
+        'difficulty_standing_on_one_leg' => 'boolean',
+        'difficulty_jumping_in_place' => 'boolean',
+        'difficulty_skipping_rope' => 'boolean',
+        'difficulty_riding_bike' => 'boolean',
+        'difficulty_using_playground_equipment' => 'boolean',
+        'difficulty_climbing_stairs' => 'boolean',
+    ];
+
     public function occupationalAssessmentGuardian(): HasOne
     {
         return $this->hasOne(OccupationalAssessmentGuardian::class);

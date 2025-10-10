@@ -23,7 +23,7 @@ class OccupationalAssessmentGuardian extends Model
     protected $fillable = [
         'assessment_id',
         'auditory_communication_id',
-        'sensory_modality_test_id',
+        'sensory_modality_id',
         'sensory_processing_screening_id',
         'adl_motor_skill_id',
         'behavior_social_id',

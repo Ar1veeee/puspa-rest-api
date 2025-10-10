@@ -43,6 +43,28 @@ class OccupationalBehaviorSocial extends Model
         'plays_with_other_children',
     ];
 
+    protected $casts = [
+        'is_quiet' => 'boolean',
+        'is_hyperactive' => 'boolean',
+        'difficulty_managing_frustration' => 'boolean',
+        'is_impulsive' => 'boolean',
+        'attention_seeking' => 'boolean',
+        'withdrawn' => 'boolean',
+        'is_curious' => 'boolean',
+        'is_aggressive' => 'boolean',
+        'is_shy' => 'boolean',
+        'behavior_problems_at_home' => 'boolean',
+        'behavior_problems_at_school' => 'boolean',
+        'is_emotional' => 'boolean',
+        'unusual_fears' => 'boolean',
+        'frequent_tantrums' => 'boolean',
+        'good_relationship_with_siblings' => 'boolean',
+        'makes_friends_easily' => 'boolean',
+        'understands_game_rules' => 'boolean',
+        'understands_jokes' => 'boolean',
+        'is_rigid' => 'boolean',
+    ];
+
     public function occupationalAssessmentGuardian(): HasOne
     {
         return $this->hasOne(OccupationalAssessmentGuardian::class);

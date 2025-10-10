@@ -35,6 +35,21 @@ class OccupationalSensoryProcessingScreening extends Model
         'shows_extreme_dislike_to_something',
     ];
 
+    protected $casts = [
+        'disturbed_by_physical_contact_with_others' => 'boolean',
+        'dislikes_nail_trimming' => 'boolean',
+        'fear_in_balance_climbing_games' => 'boolean',
+        'excessive_spinning_swinging_games' => 'boolean',
+        'passive_when_at_home' => 'boolean',
+        'likes_to_be_hugged_and_bought' => 'boolean',
+        'puts_fingers_toys_in_mouth' => 'boolean',
+        'dislikes_certain_food_textures' => 'boolean',
+        'disturbed_by_loud_voices' => 'boolean',
+        'likes_to_touch_objects' => 'boolean',
+        'disturbed_by_certain_textures' => 'boolean',
+        'shows_extreme_dislike_to_something' => 'boolean',
+    ];
+
     public function occupationalAssessmentGuardian(): HasOne
     {
         return $this->hasOne(OccupationalAssessmentGuardian::class);
