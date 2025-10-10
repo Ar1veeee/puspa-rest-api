@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ChildEducationRequest extends FormRequest
 {
@@ -24,14 +25,31 @@ class ChildEducationRequest extends FormRequest
     {
         return [
             'currently_in_school' => ['required', 'boolean'],
-            'school_location' => ['nullable', 'string'],
-            'school_class' => ['nullable', 'integer'],
+            'school_location' => [
+                'nullable',
+                Rule::requiredIf($this->input('currently_in_school') == true),
+                'string',
+                'max:150'
+            ],
+            'school_class' => [
+                'nullable',
+                Rule::requiredIf($this->input('currently_in_school') == true),
+                'integer'
+            ],
             'long_absence_from_school' => ['required', 'boolean'],
-            'long_absence_reason' => ['nullable', 'string'],
+            'long_absence_reason' => [
+                'nullable',
+                Rule::requiredIf($this->input('long_absence_from_school') == true),
+                'string'
+            ],
             'academic_and_socialization_detail' => ['required', 'string'],
             'special_treatment_detail' => ['required', 'string'],
             'learning_support_program' => ['required', 'boolean'],
-            'learning_support_detail' => ['required', 'string'],
+            'learning_support_detail' => [
+                'nullable',
+                Rule::requiredIf($this->input('learning_support_program') == true),
+                'string'
+            ],
         ];
     }
 }

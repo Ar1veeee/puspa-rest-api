@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ChildPostBirthRequest extends FormRequest
 {
@@ -24,25 +25,55 @@ class ChildPostBirthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'postbirth_condition' => ['required', 'string', 'in:normal, biru, kuning, kejang'],
-            'postbirth_condition_duration' => ['nullable', 'integer'],
-            'postbirth_condition_age' => ['nullable', 'integer'],
+            'postbirth_condition' => ['required', 'string', Rule::in(['normal', 'biru', 'kuning', 'kejang'])],
+            'postbirth_condition_duration' => [
+                'nullable',
+                Rule::requiredIf($this->input('postbirth_condition') !== 'normal'),
+                'integer',
+                'min:0'
+            ],
+            'postbirth_condition_age' => [
+                'nullable',
+                Rule::requiredIf($this->input('postbirth_condition') !== 'normal'),
+                'integer',
+                'min:0'
+            ],
             'has_ever_fallen' => ['required', 'boolean'],
-            'injured_body_part' => ['nullable', 'string'],
-            'age_at_fall' => ['nullable', 'integer'],
+            'injured_body_part' => [
+                'nullable',
+                Rule::requiredIf($this->input('has_ever_fallen') == true),
+                'string',
+                'max:100'
+            ],
+            'age_at_fall' => [
+                'nullable',
+                Rule::requiredIf($this->input('has_ever_fallen') == true),
+                'integer',
+                'min:0'
+            ],
             'other_postbirth_complications' => ['nullable', 'string'],
-            'head_lift_age' => ['nullable', 'integer'],
-            'prone_age' => ['nullable', 'integer'],
-            'roll_over_age' => ['nullable', 'integer'],
-            'sitting_age' => ['nullable', 'integer'],
-            'crawling_age' => ['nullable', 'integer'],
-            'standing_age' => ['nullable', 'integer'],
-            'walking_age' => ['nullable', 'integer'],
+            'head_lift_age' => ['nullable', 'integer', 'min:0'],
+            'prone_age' => ['nullable', 'integer', 'min:0'],
+            'roll_over_age' => ['nullable', 'integer', 'min:0'],
+            'sitting_age' => ['nullable', 'integer', 'min:0'],
+            'crawling_age' => ['nullable', 'integer', 'min:0'],
+            'climbing_age' => ['nullable', 'integer', 'min:0'],
+            'standing_age' => ['nullable', 'integer', 'min:0'],
+            'walking_age' => ['nullable', 'integer', 'min:0'],
             'complete_immunization' => ['required', 'boolean'],
-            'uncompleted_immunization_detail' => ['nullable', 'string'],
+            'uncompleted_immunization_detail' => [
+                'nullable',
+                Rule::requiredIf($this->input('complete_immunization') == false),
+                'string'
+            ],
             'exclusive_breastfeeding' => ['required', 'boolean'],
-            'exclusive_breastfeeding_until_age' => ['nullable', 'integer'],
-            'rice_intake_age' => ['nullable', 'integer'],
+            'exclusive_breastfeeding_until_age' => [
+                'nullable',
+                Rule::requiredIf($this->input('exclusive_breastfeeding') == true),
+                'integer',
+                'min:0'
+            ],
+            'rice_intake_age' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

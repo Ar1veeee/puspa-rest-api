@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ChildPsychosocialRequest extends FormRequest
 {
@@ -26,10 +27,10 @@ class ChildPsychosocialRequest extends FormRequest
             'child_order' => ['required', 'integer', 'min:1'],
             'siblings' => ['nullable', 'array'],
             'siblings.*.name' => ['required', 'string'],
-            'siblings.*.age' => ['required', 'integer'],
+            'siblings.*.age' => ['required', 'integer', 'min:0'],
             'household_members' => ['required', 'string'],
-            'parent_marriage_status' => ['required', 'string', 'in:menikah, cerai, lainya'],
-            'daily_language' => ['required', 'string'],
+            'parent_marriage_status' => ['required', 'string', Rule::in(['menikah', 'cerai', 'lainya'])],
+            'daily_language' => ['required', 'string', 'max:50'],
         ];
     }
 }
