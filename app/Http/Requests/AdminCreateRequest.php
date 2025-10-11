@@ -35,8 +35,8 @@ class AdminCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:100'],
+            'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:100', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
             'admin_name' => ['required', 'string', 'min:3', 'max:100'],
             'admin_phone' => 'required|string|max:100',
@@ -47,15 +47,31 @@ class AdminCreateRequest extends FormRequest
     {
         return [
             'username.required' => 'Nama pengguna tidak boleh kosong.',
-            'username.alpha_num' => 'Nama pengguna hanya berisi huruf dan angka.',
-            'username.min' => 'Nama pengguna minimal 3 karakter.',
+            'username.string' => 'Nama pengguna harus berupa teks.',
+            'username.alpha_num' => 'Nama pengguna hanya boleh berisi huruf dan angka.',
+            'username.min' => 'Nama pengguna minimal harus :min karakter.',
+            'username.max' => 'Nama pengguna tidak boleh lebih dari :max karakter.',
+            'username.unique' => 'Nama pengguna ini sudah digunakan.',
+
             'email.required' => 'Email tidak boleh kosong.',
-            'email.email' => 'Format email tidak valid.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.email' => 'Format email yang dimasukkan tidak valid.',
+            'email.max' => 'Email tidak boleh lebih dari :max karakter.',
+            'email.unique' => 'Email ini sudah terdaftar.',
+
             'password.required' => 'Password tidak boleh kosong.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
+            'password.string' => 'Password harus berupa teks.',
+            'password.min' => 'Password minimal harus :min karakter.',
+            'password.regex' => 'Password harus mengandung setidaknya satu huruf besar, satu angka, dan satu simbol.',
+
             'admin_name.required' => 'Nama admin tidak boleh kosong.',
-            'admin_phone.required' => 'Telepon admin tidak boleh kosong.',
+            'admin_name.string' => 'Nama admin harus berupa teks.',
+            'admin_name.min' => 'Nama admin minimal harus :min karakter.',
+            'admin_name.max' => 'Nama admin tidak boleh lebih dari :max karakter.',
+
+            'admin_phone.required' => 'Nomor telepon admin tidak boleh kosong.',
+            'admin_phone.string' => 'Nomor telepon harus berupa teks.',
+            'admin_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',
         ];
     }
 }

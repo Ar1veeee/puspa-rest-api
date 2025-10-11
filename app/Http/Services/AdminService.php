@@ -78,9 +78,8 @@ class AdminService
      * @return Admin
      * @throws ModelNotFoundException|ValidationException
      */
-    public function updateAdmin(array $data, string $id): Admin
+    public function updateAdmin(array $data, Admin $admin): Admin
     {
-        $admin = $this->findAdminOrFail($id);
         $user = $this->findUserOrFail($admin->user_id);
 
         $this->validateUpdateCredentials($data, $user);
@@ -106,19 +105,16 @@ class AdminService
      * @return bool
      * @throws ModelNotFoundException
      */
-    public function deleteAdmin(string $id): bool
+    public function deleteAdmin(Admin $admin): bool
     {
-        $admin = $this->findAdminOrFail($id);
         $userId = $admin->user_id;
 
         DB::beginTransaction();
         try {
-            $this->adminRepository->delete($id);
-
+            $this->adminRepository->delete($admin->id);
             $this->userRepository->delete($userId);
 
             DB::commit();
-
             return true;
         } catch (Exception $e) {
             DB::rollBack();

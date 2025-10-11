@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
-use App\Http\Resources\AdminDetailResource;
-use App\Http\Resources\AdminsResource;
+use App\Http\Resources\AdminResource;
 use App\Http\Services\AdminService;
+use App\Models\Admin;
 use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
@@ -43,7 +43,7 @@ class AdminController extends Controller
     public function index(): JsonResponse
     {
         $admins = $this->adminService->getAllAdmin();
-        $response = new AdminsResource($admins);
+        $response = AdminResource::collection($admins);
 
         return $this->successResponse($response, 'Daftar Semua Admin', 200);
     }
@@ -69,9 +69,9 @@ class AdminController extends Controller
     public function store(AdminCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $this->adminService->createAdmin($data);
+        $admin = $this->adminService->createAdmin($data);
 
-        return $this->successResponse([], 'Tambah Admin Berhasil', 201);
+        return $this->successResponse(new AdminResource($admin), 'Tambah Admin Berhasil', 201);
     }
 
     /**
@@ -95,10 +95,10 @@ class AdminController extends Controller
      * @OA\Response(response=404, description="Data admin tidak ditemukan")
      * )
      */
-    public function show(string $adminId): JsonResponse
+    public function show(Admin $admin): JsonResponse
     {
-        $admin = $this->adminService->getAdminDetail($adminId);
-        $response = new AdminDetailResource($admin);
+        $admin->load('user');
+        $response = new AdminResource($admin);
 
         return $this->successResponse($response, 'Detail Admin', 200);
     }
@@ -128,10 +128,10 @@ class AdminController extends Controller
      * @OA\Response(response=422, description="Validation Error")
      * )
      */
-    public function update(AdminUpdateRequest $request, string $adminId): JsonResponse
+    public function update(AdminUpdateRequest $request, Admin $admin): JsonResponse
     {
         $data = $request->validated();
-        $this->adminService->updateAdmin($data, $adminId);
+        $this->adminService->updateAdmin($data, $admin);
 
         return $this->successResponse([], 'Update Admin Berhasil', 200);
     }
@@ -156,9 +156,9 @@ class AdminController extends Controller
      * @OA\Response(response=404, description="Data admin tidak ditemukan")
      * )
      */
-    public function destroy(string $adminId): JsonResponse
+    public function destroy(Admin $admin): JsonResponse
     {
-        $this->adminService->deleteAdmin($adminId);
+        $this->adminService->deleteAdmin($admin);
 
         return $this->successResponse([], 'Data Admin Berhasil Terhapus', 200);
     }

@@ -83,9 +83,9 @@ Route::prefix('v1')->group(function () {
         function () {
             Route::get('/admins', [AdminController::class, 'index']);
             Route::post('/admins', [AdminController::class, 'store']);
-            Route::get('/admins/{admin_id}', [AdminController::class, 'show']);
-            Route::put('/admins/{admin_id}', [AdminController::class, 'update']);
-            Route::delete('/admins/{admin_id}', [AdminController::class, 'destroy']);
+            Route::get('/admins/{admin}', [AdminController::class, 'show']);
+            Route::put('/admins/{admin}', [AdminController::class, 'update']);
+            Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
 
             Route::get('/children', [ChildController::class, 'index']);
             Route::get('/children/{child_id}', [ChildController::class, 'show']);

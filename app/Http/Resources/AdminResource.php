@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
- * schema="AdminDetailResource",
+ * schema="AdminResource",
  * type="object",
  * @OA\Property(property="id", type="string", description="Admin profile ID"),
  * @OA\Property(property="user_id", type="string", description="User ID terkait"),
@@ -19,7 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Property(property="updated_at", type="string", format="date-time", description="Update timestamp")
  * )
  */
-class AdminDetailResource extends JsonResource
+class AdminResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -28,15 +28,16 @@ class AdminDetailResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'email' => $this->user->email,
             'username' => $this->user->username,
             'admin_name' => $this->admin_name,
             'admin_phone' => $this->admin_phone,
-            'created_at' => $this->created_at->format('d F Y H:i:s'),
-            'updated_at' => $this->updated_at->format('d F Y H:i:s'),
+            'is_active' => $this->user->is_active,
         ];
+
+        return $response;
     }
 }
