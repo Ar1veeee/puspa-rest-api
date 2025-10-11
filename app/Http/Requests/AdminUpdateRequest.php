@@ -34,7 +34,7 @@ class AdminUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('admin');
+        $userId = $this->route('admin')->user_id;
 
         return [
             'username' => [
@@ -71,7 +71,6 @@ class AdminUpdateRequest extends FormRequest
             'admin_name.min' => 'Nama admin minimal harus :min karakter.',
             'admin_name.max' => 'Nama admin tidak boleh lebih dari :max karakter.',
 
-            // Admin Phone
             'admin_phone.required' => 'Nomor telepon admin tidak boleh kosong.',
             'admin_phone.string' => 'Nomor telepon harus berupa teks.',
             'admin_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',

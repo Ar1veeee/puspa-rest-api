@@ -78,8 +78,8 @@ class ObservationController extends Controller
 
     public function showQuestion(Observation $observation): JsonResponse
     {
-        $questions = $this->observationService->getObservationQuestions($observation->id);
-        $response = new ObservationQuestionsResource($questions);
+        $questions = $this->observationService->getObservationQuestions($observation);
+        $response = ObservationQuestionsResource::collection($questions);
 
         return $this->successResponse($response, 'Pertanyaan Observasi', 200);
     }

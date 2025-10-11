@@ -2,7 +2,6 @@
 
 namespace App\Rules;
 
-use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +21,6 @@ class ObservationCompleted implements Rule
 
     public function message()
     {
-        return 'Observasi Anda belum disetujui atau belum selesai. Silakan hubungi terapis untuk informasi lebih lanjut.';
+        return 'Registrasi tertunda. Mohon berikan persetujuan asesmen pada hasil observasi untuk melanjutkan';
     }
 }

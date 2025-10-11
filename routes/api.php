@@ -116,26 +116,21 @@ Route::prefix('v1')->group(function () {
         function () {
             Route::get('/users/children', [GuardianController::class, 'indexChildren']);
             Route::post('/users/children', [GuardianController::class, 'storeChild']);
-
             Route::put('/users/identity', [GuardianController::class, 'update']);
             Route::get('/users/child-assessment', [AssessmentController::class, 'indexChildren']);
-            Route::get('/users/child-assessment-detail/{assessment_id}', [AssessmentController::class, 'show']);
-            Route::get('/users/child-assessment-general/{assessment_id}', [AssessmentController::class, 'showGeneralData']);
-            Route::get('/users/child-assessment-physio-guardian/{assessment_id}', [AssessmentController::class, 'showPhysioGuardianData']);
-            Route::get('/users/child-assessment-speech-guardian/{assessment_id}', [AssessmentController::class, 'showSpeechGuardianData']);
-            Route::get('/users/child-assessment-occupational-guardian/{assessment_id}', [AssessmentController::class, 'showOccupationalGuardianData']);
-            Route::get('/users/child-assessment-pedagogical-guardian/{assessment_id}', [AssessmentController::class, 'showPedagogicalGuardianData']);
-            Route::post('/users/child-assessment-psychosocial/{assessment_id}', [AssessmentController::class, 'storeChildPsychosocial']);
-            Route::post('/users/child-assessment-pregnancy/{assessment_id}', [AssessmentController::class, 'storeChildPregnancy']);
-            Route::post('/users/child-assessment-birth/{assessment_id}', [AssessmentController::class, 'storeChildBirth']);
-            Route::post('/users/child-assessment-post-birth/{assessment_id}', [AssessmentController::class, 'storeChildPostBirth']);
-            Route::post('/users/child-assessment-health/{assessment_id}', [AssessmentController::class, 'storeChildHealth']);
-            Route::post('/users/child-assessment-education/{assessment_id}', [AssessmentController::class, 'storeChildEducation']);
-            Route::post('/users/child-assessment-physio/{assessment_id}', [PhysioAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-speech/{assessment_id}', [SpeechAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-occupational/{assessment_id}', [OccupationalAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-pedagogical/{assessment_id}', [PedagogicalAssessmentController::class, 'storeAssessmentGuardian']);
+
+            Route::get('/users/child-assessment-detail/{assessment}', [AssessmentController::class, 'show']);
+            Route::get('/users/child-assessment-general/{assessment}', [AssessmentController::class, 'showGeneralData']);
+            Route::get('/users/child-assessment-physio-guardian/{assessment}', [AssessmentController::class, 'showPhysioGuardianData']);
+            Route::get('/users/child-assessment-speech-guardian/{assessment}', [AssessmentController::class, 'showSpeechGuardianData']);
+            Route::get('/users/child-assessment-occupational-guardian/{assessment}', [AssessmentController::class, 'showOccupationalGuardianData']);
+            Route::get('/users/child-assessment-pedagogical-guardian/{assessment}', [AssessmentController::class, 'showPedagogicalGuardianData']);
+
+            Route::post('/users/child-assessment-general/{assessment}', [AssessmentController::class, 'storeGeneralData']);
+            Route::post('/users/child-assessment-physio/{assessment}', [PhysioAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-speech/{assessment}', [SpeechAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-occupational/{assessment}', [OccupationalAssessmentController::class, 'storeAssessmentGuardian']);
+            Route::post('/users/child-assessment-pedagogical/{assessment}', [PedagogicalAssessmentController::class, 'storeAssessmentGuardian']);
         }
     );
-
 });

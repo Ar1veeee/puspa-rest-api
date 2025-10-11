@@ -46,9 +46,49 @@ class Assessment extends Model
         return $this->hasOne(PedagogicalAssessmentGuardian::class, 'assessment_id', 'id');
     }
 
-    public function childPsychosocialHistory(): HasOne
+    public function physioAssessmentGuardian(): HasOne
+    {
+        return $this->hasOne(PhysioAssessmentGuardian::class, 'assessment_id', 'id');
+    }
+
+    public function occupationalAssessmentGuardian(): HasOne
+    {
+        return $this->hasOne(OccupationalAssessmentGuardian::class, 'assessment_id', 'id');
+    }
+
+    public function speechAssessmentGuardian(): HasOne
+    {
+        return $this->hasOne(SpeechAssessmentGuardian::class, 'assessment_id', 'id');
+    }
+
+    public function psychosocialHistory(): HasOne
     {
         return $this->hasOne(ChildPsychosocialHistory::class, 'assessment_id', 'id');
+    }
+
+    public function pregnancyHistory(): HasOne
+    {
+        return $this->hasOne(ChildPregnancyHistory::class);
+    }
+
+    public function birthHistory(): HasOne
+    {
+        return $this->hasOne(ChildBirthHistory::class);
+    }
+
+    public function postBirthHistory(): HasOne
+    {
+        return $this->hasOne(ChildPostBirthHistory::class);
+    }
+
+    public function healthHistory(): HasOne
+    {
+        return $this->hasOne(ChildHealthHistory::class);
+    }
+
+    public function educationHistory(): HasOne
+    {
+        return $this->hasOne(ChildEducationHistory::class);
     }
 
     public function observation(): BelongsTo

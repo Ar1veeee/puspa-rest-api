@@ -15,13 +15,13 @@ class AssessmentsDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'assessment_id' => $this->id,
             'observation_id' => $this->observation_id,
             'child_id' => $this->child_id,
-            'fisio' => $this->fisio,
-            'okupasi' => $this->okupasi,
-            'wicara' => $this->wicara,
-            'paedagog' => $this->paedagog,
+            'physio' => $this->fisio,
+            'occupation' => $this->okupasi,
+            'speech' => $this->wicara,
+            'pedagogical' => $this->paedagog,
             'scheduled_date' => $this->scheduled_date->toDateString(),
             'status' => $this->status,
             'created_at' => $this->created_at->format('d F Y H:i:s'),

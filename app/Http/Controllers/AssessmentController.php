@@ -3,12 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Requests\ChildBirthRequest;
-use App\Http\Requests\ChildEducationRequest;
-use App\Http\Requests\ChildHealthRequest;
-use App\Http\Requests\ChildPostBirthRequest;
-use App\Http\Requests\ChildPregnancyRequest;
-use App\Http\Requests\ChildPsychosocialRequest;
+use App\Http\Requests\GeneralDataRequest;
 use App\Http\Resources\AssessmentsDetailResource;
 use App\Http\Resources\ChildrenAssessmentResource;
 use App\Http\Resources\GeneralDataAssessmentResource;
@@ -17,6 +12,7 @@ use App\Http\Resources\PedagogicalGuardianDataAssessmentResource;
 use App\Http\Resources\PhysioGuardianDataAssessmentResource;
 use App\Http\Resources\SpeechGuardianDataAssessmentResource;
 use App\Http\Services\AssessmentService;
+use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
 
 class AssessmentController extends Controller
@@ -30,108 +26,58 @@ class AssessmentController extends Controller
         $this->assessmentService = $assessmentService;
     }
 
-    public function storeChildPsychosocial(ChildPsychosocialRequest $request, int $assessmentId): JsonResponse
+    public function storeGeneralData(GeneralDataRequest $request, Assessment $assessment): JsonResponse
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildPsychosocialHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Psikososial Berhasil Disimpan', 201);
+        $this->authorize('storeHistory', $assessment);
+        $this->assessmentService->createGeneralData($assessment, $request->validated());
+        return $this->successResponse([], 'Data Umum Berhasil Disimpan', 201);
     }
 
-    public function storeChildPregnancy(ChildPregnancyRequest $request, int $assessmentId): JsonResponse
+    public function show(Assessment $assessment)
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildPregnancyHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Kehamilan Berhasil Disimpan', 201);
+        $this->authorize('view', $assessment);
+        return $this->successResponse(new AssessmentsDetailResource($assessment), 'Detail Assessment Untuk Anak');
     }
 
-    public function storeChildBirth(ChildBirthRequest $request, int $assessmentId): JsonResponse
+    public function showGeneralData(Assessment $assessment): JsonResponse
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildBirthHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Kelahiran Berhasil Disimpan', 201);
+        $this->authorize('view', $assessment);
+        $generalData = $this->assessmentService->getGeneral($assessment);
+        return $this->successResponse(new GeneralDataAssessmentResource($generalData), 'Data Umum Assessment Untuk Anak');
     }
 
-    public function storeChildPostBirth(ChildPostBirthRequest $request, int $assessmentId): JsonResponse
+    public function showPhysioGuardianData(Assessment $assessment): JsonResponse
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildPostBirthHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Setelah Kelahiran Berhasil Disimpan', 201);
+        $this->authorize('view', $assessment);
+        $physioData = $this->assessmentService->getPhysioGuardian($assessment);
+        return $this->successResponse(new PhysioGuardianDataAssessmentResource($physioData), 'Data Fisio Assessment Untuk Anak');
     }
 
-    public function storeChildHealth(ChildHealthRequest $request, int $assessmentId): JsonResponse
+    public function showSpeechGuardianData(Assessment $assessment): JsonResponse
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildHealthHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Kesehatan Berhasil Disimpan', 201);
+        $this->authorize('view', $assessment);
+        $speechData = $this->assessmentService->getSpeechGuardian($assessment);
+        return $this->successResponse(new SpeechGuardianDataAssessmentResource($speechData), 'Data Wicara Assessment Untuk Anak');
     }
 
-    public function storeChildEducation(ChildEducationRequest $request, int $assessmentId): JsonResponse
+    public function showOccupationalGuardianData(Assessment $assessment): JsonResponse
     {
-        $data = $request->validated();
-        $this->assessmentService->createChildEducationHistory($assessmentId, $data);
-
-        return $this->successResponse([], 'Data Riwayat Kesehatan Berhasil Disimpan', 201);
+        $this->authorize('view', $assessment);
+        $occupationalData = $this->assessmentService->getOccupationalGuardian($assessment);
+        return $this->successResponse(new OccupationalGuardianDataAssessmentResource($occupationalData), 'Data Okupasi Assessment Untuk Anak');
     }
 
-    public function show(int $assessmentId)
+    public function showPedagogicalGuardianData(Assessment $assessment): JsonResponse
     {
-        $assessment = $this->assessmentService->getAssessmentDetail($assessmentId);
-        $response = new AssessmentsDetailResource($assessment);
-
-        return$this->successResponse($response, 'Detail Assessment Untuk Anak');
-    }
-
-    public function showGeneralData(int $assessmentId): JsonResponse
-    {
-        $generalData = $this->assessmentService->getGeneral($assessmentId);
-        $response = new GeneralDataAssessmentResource($generalData);
-
-        return $this->successResponse($response, 'Data Umum Assessment Untuk Anak', 200);
-    }
-
-    public function showPhysioGuardianData(int $assessmentId): JsonResponse
-    {
-        $physioData = $this->assessmentService->getPhysioGuardian($assessmentId);
-        $response = new PhysioGuardianDataAssessmentResource($physioData);
-
-        return $this->successResponse($response, 'Data Fisio Assessment Untuk Anak', 200);
-    }
-
-    public function showSpeechGuardianData(int $assessmentId): JsonResponse
-    {
-        $physioData = $this->assessmentService->getSpeechGuardian($assessmentId);
-        $response = new SpeechGuardianDataAssessmentResource($physioData);
-
-        return $this->successResponse($response, 'Data Wicara Assessment Untuk Anak', 200);
-    }
-
-    public function showOccupationalGuardianData(int $assessmentId): JsonResponse
-    {
-        $occupationalData = $this->assessmentService->getOccupationalGuardian($assessmentId);
-        $response = new OccupationalGuardianDataAssessmentResource($occupationalData);
-
-        return $this->successResponse($response, 'Data Okupasi Assessment Untuk Anak', 200);
-    }
-
-    public function showPedagogicalGuardianData(int $assessmentId): JsonResponse
-    {
-        $physioData = $this->assessmentService->getPedagogicalGuardian($assessmentId);
-        $response = new PedagogicalGuardianDataAssessmentResource($physioData);
-
-        return $this->successResponse($response, 'Data Paedagog Assessment Untuk Anak', 200);
+        $this->authorize('view', $assessment);
+        $pedagogicalData = $this->assessmentService->getPedagogicalGuardian($assessment);
+        return $this->successResponse(new PedagogicalGuardianDataAssessmentResource($pedagogicalData), 'Data Paedagog Assessment Untuk Anak');
     }
 
     public function indexChildren(): JsonResponse
     {
         $userId = auth()->id();
-        $assessments = $this->assessmentService->getChildrenAssessment($userId);
-        $response = new ChildrenAssessmentResource($assessments);
-
-        return $this->successResponse($response, 'Daftar Assessment Semua Anak', 200);
+        $childAssessment = $this->assessmentService->getChildrenAssessment($userId);
+        return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak');
     }
 }
