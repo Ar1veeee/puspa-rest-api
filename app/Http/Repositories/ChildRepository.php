@@ -25,22 +25,7 @@ class ChildRepository
 
     public function getDetailById(string $id)
     {
-        return $this->model
-            ->with([
-                'family.guardians' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'guardian_type',
-                        'guardian_name',
-                        'guardian_birth_date',
-                        'guardian_occupation',
-                        'guardian_phone',
-                        'relationship_with_child',
-                    );
-                }
-            ])
-            ->find($id);
+        return $this->model->with('family.guardians')->find($id);
     }
 
     public function create(array $data)

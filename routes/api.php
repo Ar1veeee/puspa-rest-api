@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
 
             Route::get('/children', [ChildController::class, 'index']);
-            Route::get('/children/{child_id}', [ChildController::class, 'show']);
+            Route::get('/children/{child}', [ChildController::class, 'show']);
 
             Route::get('/therapists', [TherapistController::class, 'index']);
             Route::post('/therapists', [TherapistController::class, 'store']);

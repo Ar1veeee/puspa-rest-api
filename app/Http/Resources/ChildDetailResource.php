@@ -52,30 +52,29 @@ class ChildDetailResource extends JsonResource
                 ? $guardian->guardian_birth_date->diff(now())->format('%y Tahun %m Bulan')
                 : '-';
 
-            match ($guardian->guardian_type) {
-                'ayah' => [
-                    $response['father_name'] = $guardian->guardian_name,
-                    $response['father_phone'] = $guardian->guardian_phone,
-                    $response['father_age'] = $age,
-                    $response['father_occupation'] = $guardian->guardian_occupation ?? '-',
-                    $response['father_relationship'] = $guardian->relationship_with_child ?? '-',
-                ],
-                'ibu' => [
-                    $response['mother_name'] = $guardian->guardian_name,
-                    $response['mother_phone'] = $guardian->guardian_phone,
-                    $response['mother_age'] = $age,
-                    $response['mother_occupation'] = $guardian->guardian_occupation ?? '-',
-                    $response['mother_relationship'] = $guardian->relationship_with_child ?? '-',
-                ],
-                'wali' => [
-                    $response['wali_name'] = $guardian->guardian_name,
-                    $response['wali_phone'] = $guardian->guardian_phone,
-                    $response['wali_age'] = $age,
-                    $response['wali_occupation'] = $guardian->guardian_occupation ?? '-',
-                    $response['wali_relationship'] = $guardian->relationship_with_child ?? '-',
-                ],
-                default => null,
-            };
+            switch ($guardian->guardian_type) {
+                case 'ayah':
+                    $response['father_name'] = $guardian->guardian_name;
+                    $response['father_phone'] = $guardian->guardian_phone;
+                    $response['father_age'] = $age;
+                    $response['father_occupation'] = $guardian->guardian_occupation ?? '-';
+                    $response['father_relationship'] = $guardian->relationship_with_child ?? '-';
+                    break;
+                case 'ibu':
+                    $response['mother_name'] = $guardian->guardian_name;
+                    $response['mother_phone'] = $guardian->guardian_phone;
+                    $response['mother_age'] = $age;
+                    $response['mother_occupation'] = $guardian->guardian_occupation ?? '-';
+                    $response['mother_relationship'] = $guardian->relationship_with_child ?? '-';
+                    break;
+                case 'wali':
+                    $response['guardian_name'] = $guardian->guardian_name; // 'wali_name' diubah menjadi 'guardian_name' agar konsisten
+                    $response['guardian_phone'] = $guardian->guardian_phone;
+                    $response['guardian_age'] = $age;
+                    $response['guardian_occupation'] = $guardian->guardian_occupation ?? '-';
+                    $response['guardian_relationship'] = $guardian->relationship_with_child ?? '-';
+                    break;
+            }
         }
 
         return $response;
