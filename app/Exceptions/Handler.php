@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
      * A list of the exception types that are not reported.
      */
     protected $dontReport = [
-        //
+        \App\Exceptions\RateLimitExceededException::class,
     ];
 
     /**
@@ -74,6 +74,12 @@ class Handler extends ExceptionHandler
                     'Anda tidak memiliki izin untuk mengakses resource ini.',
                     403
                 );
+            }
+        });
+
+        $this->renderable(function (RateLimitExceededException $e, $request) {
+            if ($this->isApiRequest($request)) {
+                return $this->apiErrorResponse('Too Many Requests', $e->getMessage(), 429);
             }
         });
 
