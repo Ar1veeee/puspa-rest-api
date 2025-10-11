@@ -13,7 +13,7 @@ use Exception;
 class PasswordResetService
 {
     protected $userRepository;
-    public const RESEND_COOLDOWN_SECONDS = 150;
+    public const RESEND_COOLDOWN_SECONDS = 120;
     private const MAX_RESEND_ATTEMPTS_PER_HOUR = 5;
 
     public function __construct(UserRepository $userRepository)
