@@ -91,9 +91,9 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/therapists', [TherapistController::class, 'index']);
             Route::post('/therapists', [TherapistController::class, 'store']);
-            Route::get('/therapists/{therapist_id}', [TherapistController::class, 'show']);
-            Route::put('/therapists/{therapist_id}', [TherapistController::class, 'update']);
-            Route::delete('/therapists/{therapist_id}', [TherapistController::class, 'destroy']);
+            Route::get('/therapists/{therapist}', [TherapistController::class, 'show']);
+            Route::put('/therapists/{therapist}', [TherapistController::class, 'update']);
+            Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
 
             Route::get('/observations/pending', [ObservationController::class, 'indexPending']);
             Route::put('/observations/{observation_id}', [ObservationController::class, 'update']);

@@ -54,8 +54,6 @@ class TherapistService
      */
     public function createTherapist(array $data): Therapist
     {
-        $this->validateUniqueCredentials($data);
-
         DB::beginTransaction();
         try {
             $user = $this->createUserForTherapist($data);
@@ -78,12 +76,9 @@ class TherapistService
      * @return Therapist
      * @throws ModelNotFoundException|ValidationException
      */
-    public function updateTherapist(array $data, string $id): Therapist
+    public function updateTherapist(array $data, Therapist $therapist)
     {
-        $therapist = $this->findTherapistOrFail($id);
         $user = $this->findUserOrFail($therapist->user_id);
-
-        $this->validateUpdateCredentials($data, $user);
 
         DB::beginTransaction();
         try {
@@ -91,7 +86,6 @@ class TherapistService
             $this->updateTherapistData($therapist, $data);
 
             DB::commit();
-
             return $therapist->fresh()->load('user');
         } catch (Exception $e) {
             DB::rollBack();
@@ -106,19 +100,16 @@ class TherapistService
      * @return bool
      * @throws ModelNotFoundException
      */
-    public function deleteTherapist(string $id): bool
+    public function deleteTherapist(Therapist $therapist): bool
     {
-        $therapist = $this->findTherapistOrFail($id);
         $userId = $therapist->user_id;
 
         DB::beginTransaction();
         try {
-            $this->therapistRepository->delete($id);
-
+            $this->therapistRepository->delete($therapist->id);
             $this->userRepository->delete($userId);
 
             DB::commit();
-
             return true;
         } catch (Exception $e) {
             DB::rollBack();
@@ -127,55 +118,6 @@ class TherapistService
     }
 
     // ========== Private Helper Methods ==========
-
-    /**
-     * Validate unique credentials for new therapist
-     *
-     * @param array $data
-     * @return void
-     * @throws ValidationException
-     */
-    private function validateUniqueCredentials(array $data): void
-    {
-        if ($this->userRepository->checkExistingUsername($data['username'])) {
-            throw ValidationException::withMessages([
-                'username' => ['Username sudah digunakan.'],
-            ]);
-        }
-
-        if ($this->userRepository->checkExistingEmail($data['email'])) {
-            throw ValidationException::withMessages([
-                'email' => ['Email sudah digunakan.'],
-            ]);
-        }
-    }
-
-    /**
-     * Validate credentials for therapist update
-     *
-     * @param array $data
-     * @param \App\Models\User $user
-     * @return void
-     * @throws ValidationException
-     */
-    private function validateUpdateCredentials(array $data, $user): void
-    {
-        if (isset($data['username']) && $data['username'] !== $user->username) {
-            if ($this->userRepository->isUsernameTakenByAnother($data['username'], $user->id)) {
-                throw ValidationException::withMessages([
-                    'username' => ['Username sudah digunakan.'],
-                ]);
-            }
-        }
-
-        if (isset($data['email']) && $data['email'] !== $user->email) {
-            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
-                throw ValidationException::withMessages([
-                    'email' => ['Email sudah digunakan.'],
-                ]);
-            }
-        }
-    }
 
     /**
      * Create user account for therapist

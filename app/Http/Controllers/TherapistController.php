@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\TherapistCreateRequest;
 use App\Http\Requests\TherapistUpdateRequest;
-use App\Http\Resources\TherapistDetailResource;
-use App\Http\Resources\TherapistsResource;
+use App\Http\Resources\TherapistResource;
 use App\Http\Services\TherapistService;
+use App\Models\Therapist;
 use Illuminate\Http\JsonResponse;
 
 class TherapistController extends Controller
@@ -43,7 +43,7 @@ class TherapistController extends Controller
     public function index(): JsonResponse
     {
         $therapists = $this->therapistService->getAllTherapist();
-        $response = new TherapistsResource($therapists);
+        $response = TherapistResource::collection($therapists);
 
         return $this->successResponse($response, 'Daftar Semua Terapis', 200);
     }
@@ -95,10 +95,10 @@ class TherapistController extends Controller
      * @OA\Response(response=404, description="Data terapis tidak ditemukan")
      * )
      */
-    public function show(string $therapistId): JsonResponse
+    public function show(Therapist $therapist): JsonResponse
     {
-        $therapist = $this->therapistService->getTherapistDetail($therapistId);
-        $response = new TherapistDetailResource($therapist);
+        $therapist->load('user');
+        $response = new TherapistResource($therapist);
 
         return $this->successResponse($response, 'Detail Terapis', 200);
     }
@@ -128,10 +128,10 @@ class TherapistController extends Controller
      * @OA\Response(response=422, description="Validation Error")
      * )
      */
-    public function update(TherapistUpdateRequest $request, string $therapistId): JsonResponse
+    public function update(TherapistUpdateRequest $request, Therapist $therapist): JsonResponse
     {
         $data = $request->validated();
-        $this->therapistService->updateTherapist($data, $therapistId);
+        $this->therapistService->updateTherapist($data, $therapist);
 
         return $this->successResponse([], 'Update Terapis Berhasil', 200);
     }
@@ -156,9 +156,9 @@ class TherapistController extends Controller
      * @OA\Response(response=404, description="Data terapis tidak ditemukan")
      * )
      */
-    public function destroy(string $therapistId): JsonResponse
+    public function destroy(Therapist $therapist): JsonResponse
     {
-        $this->therapistService->deleteTherapist($therapistId);
+        $this->therapistService->deleteTherapist($therapist);
 
         return $this->successResponse([], 'Data Terapis Berhasil Terhapus', 200);
     }

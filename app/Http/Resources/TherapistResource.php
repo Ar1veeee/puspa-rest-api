@@ -20,7 +20,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @OA\Property(property="updated_at", type="string", format="date-time", description="Update timestamp")
  * )
  */
-class TherapistsResource extends JsonResource
+class TherapistResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -38,6 +38,8 @@ class TherapistsResource extends JsonResource
             'therapist_section' => $this->therapist_section,
             'therapist_phone' => $this->therapist_phone,
             'is_active' => $this->user->is_active,
+            'created_at' => $this->created_at->format('d F Y H:i:s'),
+            'updated_at' => $this->updated_at->format('d F Y H:i:s'),
         ];
 
         return $response;
