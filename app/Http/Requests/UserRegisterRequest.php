@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ObservationCompleted;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -33,8 +34,12 @@ class UserRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:100'],
+            'username' => ['required', 'string', 'alpha_num', 'min:3', 'max:100', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:100',
+                'unique:users,email',
+                'exists:guardians,temp_email',
+                new ObservationCompleted,
+            ],
             'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
         ];
     }
@@ -44,8 +49,12 @@ class UserRegisterRequest extends FormRequest
         return [
             'username.required' => 'Nama pengguna tidak boleh kosong.',
             'username.alpha_num' => 'Nama pengguna hanya berisi huruf dan angka.',
+
             'email.required' => 'Email tidak boleh kosong.',
             'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar sebagai pengguna.',
+            'email.exists' => 'Email tidak ditemukan. Silakan lakukan pendaftaran terlebih dahulu.',
+
             'password.required' => 'Password tidak boleh kosong.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',

@@ -33,8 +33,6 @@ class AuthService
      */
     public function register(array $data): string
     {
-        $this->validateRegistration($data);
-
         DB::beginTransaction();
         try {
             $user = $this->createUser($data);
@@ -61,8 +59,6 @@ class AuthService
     {
         $user = $this->authenticateUser($data);
 
-        $this->revokeAllUserTokens($user);
-
         $token = $this->generateUserToken($user);
 
         return [
@@ -86,40 +82,6 @@ class AuthService
     }
 
     // ========== Private Helper Methods ==========
-
-    /**
-     * Validate all registration requirements
-     *
-     * @param array $data
-     * @return void
-     * @throws ValidationException
-     */
-    private function validateRegistration(array $data): void
-    {
-        if ($this->userRepository->checkExistingUsername($data['username'])) {
-            throw ValidationException::withMessages([
-                'username' => ['Username sudah digunakan.'],
-            ]);
-        }
-
-        if ($this->userRepository->checkExistingEmail($data['email'])) {
-            throw ValidationException::withMessages([
-                'email' => ['Email sudah terdaftar sebagai pengguna.'],
-            ]);
-        }
-
-        if (!$this->guardianRepository->checkExistingEmail($data['email'])) {
-            throw ValidationException::withMessages([
-                'email' => ['Email tidak ditemukan. Silakan hubungi admin untuk pendaftaran observasi terlebih dahulu.'],
-            ]);
-        }
-
-        if (!$this->guardianRepository->hasObservationContinuedToAssessment($data['email'])) {
-            throw ValidationException::withMessages([
-                'email' => ['Observasi Anda belum disetujui. Silakan hubungi terapis untuk informasi lebih lanjut.']
-            ]);
-        }
-    }
 
     /**
      * Create new user
@@ -182,17 +144,6 @@ class AuthService
         }
 
         return $user;
-    }
-
-    /**
-     * Revoke all user tokens
-     *
-     * @param \App\Models\User $user
-     * @return void
-     */
-    private function revokeAllUserTokens($user): void
-    {
-        $user->tokens()->delete();
     }
 
     /**

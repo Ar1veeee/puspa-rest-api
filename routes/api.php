@@ -56,13 +56,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
             ->name('password.reset')
             ->middleware('throttle:reset-password');
+        Route::post('/logout', [AuthController::class, 'logout'])
+            ->middleware('throttle:logout');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('verified')->group(function () {
-            Route::post('/auth/logout', [AuthController::class, 'logout'])
-                ->middleware('throttle:logout');
-
             Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduled'])
                 ->middleware('throttle:authenticated');
 
