@@ -6,13 +6,13 @@ use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
+use App\Models\Observation;
 use App\Traits\ClearsCaches;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ObservationService
 {
@@ -44,65 +44,30 @@ class ObservationService
     {
         $cacheKey = $this->getCacheKey('observations_pending');
 
-        return Cache::remember(
-            $cacheKey,
-            self::CACHE_TTL_PENDING,
-            fn() => $this->observationRepository->getByPendingStatus()
-        );
+        return Cache::remember($cacheKey, self::CACHE_TTL_PENDING, function () {
+            return $this->getBaseStatusQuery('pending')
+                ->with('child.family.guardians:id,family_id,guardian_name,guardian_type,guardian_phone')
+                ->get();
+        });
     }
 
     public function getObservationsScheduled()
     {
         $cacheKey = $this->getCacheKey('observations_scheduled');
-
-        return Cache::remember(
-            $cacheKey,
-            self::CACHE_TTL_SCHEDULED,
-            fn() => $this->observationRepository->getByScheduledStatus()
-        );
+        return Cache::remember($cacheKey, self::CACHE_TTL_SCHEDULED, function () {
+            return $this->getBaseStatusQuery('scheduled')->get();
+        });
     }
 
     public function getObservationsCompleted()
     {
-        return $this->observationRepository->getByCompletedStatus();
+        return $this->getBaseStatusQuery('completed')
+            ->with('therapist:id,therapist_name')
+            ->get();
     }
 
-    public function getObservationScheduledDetail(int $id)
+    public function getObservationQuestions(Observation $observation)
     {
-        $observation = $this->observationRepository->getByScheduledDetail($id);
-
-        if (!$observation) {
-            throw new ModelNotFoundException('Observasi tidak ditemukan.');
-        }
-
-        return $observation;
-    }
-
-    public function getObservationCompletedDetail(int $id)
-    {
-        $observation = $this->observationRepository->getByCompletedDetail($id);
-
-        if (!$observation) {
-            throw new ModelNotFoundException('Observasi tidak ditemukan.');
-        }
-
-        return $observation;
-    }
-
-    public function getObservationDetailAnswer(int $id)
-    {
-        $observationAnswer = $this->observationRepository->getDetailAnswer($id);
-
-        if (!$observationAnswer) {
-            throw new ModelNotFoundException('Observasi tidak ditemukan.');
-        }
-
-        return $observationAnswer;
-    }
-
-    public function getObservationQuestions(int $id)
-    {
-        $observation = $this->findObservationOrFail($id);
         $ageCategory = $observation->age_category;
         $cacheKey = "observation_questions_{$ageCategory}";
 
@@ -112,26 +77,22 @@ class ObservationService
         );
     }
 
-    public function updateObservationDate(array $data, int $id)
+    public function updateObservationDate(array $data, Observation $observation)
     {
-        $observation = $this->findObservationOrFail($id);
-
         $updateData = $this->prepareObservationDateUpdate($data, $observation);
 
         if (empty($updateData)) {
             return $observation;
         }
 
-        $updated = $this->observationRepository->update($id, $updateData);
+        $updated = $this->observationRepository->update($observation->id, $updateData);
         $this->clearObservationCaches();
 
         return $updated;
     }
 
-    public function submitObservation(array $data, int $id)
+    public function submitObservation(array $data, Observation $observation)
     {
-        $observation = $this->findObservationOrFail($id);
-
         $this->validateObservationForSubmission($observation);
 
         $therapist = $this->getAuthenticatedTherapist();
@@ -140,7 +101,7 @@ class ObservationService
 
         DB::beginTransaction();
         try {
-            $totalScore = $this->saveObservationAnswers($data['answers'], $id, $questions);
+            $totalScore = $this->saveObservationAnswers($data['answers'], $observation->id, $questions);
 
             $this->updateObservationAsCompleted($observation, $therapist, $totalScore, $data);
 
@@ -156,21 +117,19 @@ class ObservationService
         }
     }
 
-    public function assessmentAgreement(array $data, int $id)
+    public function assessmentAgreement(array $data, Observation $observation)
     {
-        $this->findObservationOrFail($id);
-
         DB::beginTransaction();
         try {
             $updateObservation = [];
 
             if (!empty($data['scheduled_date'])) {
-                $this->assessmentRepository->setScheduledDate($id, $data['scheduled_date']);
+                $this->assessmentRepository->setScheduledDate($observation->id, $data['scheduled_date']);
             }
 
             $updateObservation['is_continued_to_assessment'] = true;
 
-            $updated = $this->observationRepository->update($id, $updateObservation);
+            $updated = $this->observationRepository->update($observation->id, $updateObservation);
 
             DB::commit();
             $this->clearObservationCaches();
@@ -184,17 +143,6 @@ class ObservationService
 
     // ========== Private Helper Methods ==========
 
-    private function findObservationOrFail(int $id)
-    {
-        $observation = $this->observationRepository->getById($id);
-
-        if (!$observation) {
-            throw new ModelNotFoundException('Observasi tidak ditemukan.');
-        }
-
-        return $observation;
-    }
-
     private function validateObservationForSubmission($observation): void
     {
         if ($observation->status === 'completed') {
@@ -204,13 +152,27 @@ class ObservationService
 
     private function getAuthenticatedTherapist()
     {
-        $therapist = Auth::user()->therapist;
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new Exception('Tidak ada pengguna yang terautentikasi.');
+        }
+
+        $therapist = $user->therapist;
 
         if (!$therapist) {
             throw new Exception('Profil terapis tidak ditemukan untuk pengguna ini.');
         }
 
         return $therapist;
+    }
+
+    private function getBaseStatusQuery(string $status)
+    {
+        return $this->observationRepository->model()
+            ->with('child:id,family_id,child_name,child_gender,child_school,child_birth_date')
+            ->where('status', $status)
+            ->orderBy('scheduled_date', 'asc');
     }
 
     private function getQuestionsForAnswers(array $answers)

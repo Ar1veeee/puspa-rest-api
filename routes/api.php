@@ -96,19 +96,19 @@ Route::prefix('v1')->group(function () {
             Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
 
             Route::get('/observations/pending', [ObservationController::class, 'indexPending']);
-            Route::put('/observations/{observation_id}', [ObservationController::class, 'update']);
+            Route::put('/observations/{observation}', [ObservationController::class, 'update']);
         }
     );
 
     Route::middleware(['auth:sanctum', 'role:terapis', 'throttle:therapist'])->group(
         function () {
-            Route::get('/observations/scheduled/{observation_id}', [ObservationController::class, 'showScheduled']);
-            Route::get('/observations/question/{observation_id}', [ObservationController::class, 'showQuestion']);
-            Route::post('/observations/submit/{observation_id}', [ObservationController::class, 'submit']);
-            Route::get('/observations/answer/{observation_id}', [ObservationController::class, 'showDetailAnswer']);
+            Route::get('/observations/scheduled/{observation}', [ObservationController::class, 'showScheduled']);
+            Route::get('/observations/question/{observation}', [ObservationController::class, 'showQuestion']);
+            Route::post('/observations/submit/{observation}', [ObservationController::class, 'submit']);
+            Route::get('/observations/answer/{observation}', [ObservationController::class, 'showDetailAnswer']);
             Route::get('/observations/completed', [ObservationController::class, 'indexCompleted']);
-            Route::get('/observations/completed/{observation_id}', [ObservationController::class, 'showCompleted']);
-            Route::put('/observations/assessment-agreement/{observation_id}', [ObservationController::class, 'assessmentAgreement']);
+            Route::get('/observations/completed/{observation}', [ObservationController::class, 'showCompleted']);
+            Route::put('/observations/assessment-agreement/{observation}', [ObservationController::class, 'assessmentAgreement']);
         }
     );
 
