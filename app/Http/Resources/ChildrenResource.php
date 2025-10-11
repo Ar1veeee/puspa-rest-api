@@ -14,11 +14,14 @@ class ChildrenResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $formattedBirthDate = $this->child_birth_date ? $this->child_birth_date->format('d F Y') : null;
+        $age = $this->child_birth_date ? $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan') : null;
+
         $response = [
             "id" => $this->id,
             'child_name' => $this->child_name,
-            'child_birth_date' => $this->child_birth_date->format('d F Y'),
-            'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
+            'child_birth_date' => $formattedBirthDate,
+            'child_age' => $age,
             'child_gender' => $this->child_gender,
             'child_school' => $this->child_school,
         ];

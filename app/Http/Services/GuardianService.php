@@ -2,20 +2,61 @@
 
 namespace App\Http\Services;
 
+use App\Http\Repositories\ChildRepository;
 use App\Http\Repositories\FamilyRepository;
 use App\Http\Repositories\GuardianRepository;
-use App\Models\Guardian;
+use App\Http\Repositories\ObservationRepository;
+use App\Models\Child;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class GuardianService
 {
     protected $guardianRepository;
     protected $familyRepository;
+    protected $childRepository;
+    protected $observationRepository;
 
-    public function __construct(GuardianRepository $guardianRepository, FamilyRepository $familyRepository)
+    private const DEFAULT_OBSERVATION_DAYS_AHEAD = 1;
+
+    public function __construct(
+        GuardianRepository    $guardianRepository,
+        FamilyRepository      $familyRepository,
+        ChildRepository       $childRepository,
+        ObservationRepository $observationRepository
+    )
     {
         $this->guardianRepository = $guardianRepository;
         $this->familyRepository = $familyRepository;
+        $this->childRepository = $childRepository;
+        $this->observationRepository = $observationRepository;
+    }
+
+    public function getChildren(string $userId)
+    {
+        $guardian = $this->guardianRepository->findByUserId($userId);
+        if (!$guardian) {
+            throw new ModelNotFoundException('Data Orang Tua Tidak Ditemukan');
+        }
+
+        return $this->guardianRepository->getChildrenByUserId($guardian->user_id);
+    }
+
+    public function addChild(string $userId, array $data)
+    {
+        $guardian = $this->guardianRepository->findByUserId($userId);
+        if (!$guardian) {
+            throw new ModelNotFoundException('Data Orang Tua Tidak Ditemukan');
+        }
+
+        return DB::transaction(function () use ($guardian, $data) {
+            $child = $this->childRepository->create(
+                array_merge($data, [
+                    'family_id' => $guardian->family_id,
+                ])
+            );
+            $this->createObservation($child, $data['child_birth_date']);
+        });
     }
 
     public function updateGuardians(array $data, string $userId)
@@ -84,4 +125,26 @@ class GuardianService
         }
     }
 
+    private function createObservation(Child $child, string $birthDate)
+    {
+        $ageInfo = Child::calculateAgeAndCategory($birthDate);
+
+        return $this->observationRepository->create([
+            'child_id' => $child->id,
+            'scheduled_date' => $this->calculateScheduledDate(),
+            'age_category' => $ageInfo['category'],
+            'status' => 'pending',
+        ]);
+    }
+
+    private function calculateScheduledDate()
+    {
+        $date = now()->addDays(self::DEFAULT_OBSERVATION_DAYS_AHEAD);
+
+        while ($date->isWeekend()) {
+            $date->addDay();
+        }
+
+        return $date;
+    }
 }

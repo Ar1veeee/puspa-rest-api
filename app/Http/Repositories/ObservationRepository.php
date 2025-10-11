@@ -25,49 +25,28 @@ class ObservationRepository
 
     public function getByPendingStatus()
     {
-        return $this->model
+        return $this->getStatusQuery('pending')
             ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_gender',
-                        'child_school',
-                        'child_birth_date'
-                    );
-                },
                 'child.family.guardians' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'guardian_name',
-                        'guardian_type',
-                        'guardian_phone',
-                    );
+                    $query->select('id', 'family_id', 'guardian_name', 'guardian_type', 'guardian_phone');
                 }
             ])
-            ->where('status', 'pending')
-            ->orderBy('scheduled_date', 'asc')
             ->get();
     }
 
     public function getByScheduledStatus()
     {
-        return $this->model
+        return $this->getStatusQuery('scheduled')->get();
+    }
+
+    public function getByCompletedStatus()
+    {
+        return $this->getStatusQuery('completed')
             ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'child_name',
-                        'child_gender',
-                        'child_school',
-                        'child_birth_date',
-                    );
+                'therapist' => function ($query) {
+                    $query->select('id', 'therapist_name');
                 }
             ])
-            ->where('status', 'scheduled')
-            ->orderBy('scheduled_date', 'asc')
             ->get();
     }
 
@@ -87,32 +66,6 @@ class ObservationRepository
                 }
             ])
             ->find($id);
-    }
-
-    public function getByCompletedStatus()
-    {
-        return $this->model
-            ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_gender',
-                        'child_school',
-                        'child_birth_date',
-                    );
-                },
-                'therapist' => function ($query) {
-                    $query->select(
-                        'id',
-                        'therapist_name',
-                    );
-                }
-            ])
-            ->where('status', 'completed')
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
     }
 
     public function getByCompletedDetail(int $id)
@@ -144,31 +97,36 @@ class ObservationRepository
 
     public function getDetailAnswer(int $id)
     {
-        return $this->model
-            ->with([
-                'observation_answers' => function ($query) {
-                    $query->with([
-                        'observation_question' => function ($subQuery) {
-                            $subQuery->select(
-                                'id',
-                                'question_number',
-                                'question_text',
-                            );
-                        }
-                    ]);
-                }
-            ])
+        return $this->model->with([
+            'observation_answers.observation_question' => function ($query) {
+                $query->select('id', 'question_number', 'question_text');
+            }
+        ])
             ->find($id);
     }
 
     public function update(int $id, array $data): ?bool
     {
         $observation = $this->model->find($id);
+        return $observation ? $observation->update($data) : null;
+    }
 
-        if ($observation) {
-            return $observation->update($data);
-        }
-
-        return null;
+    private function getStatusQuery(string $status)
+    {
+        return $this->model
+            ->with([
+                'child' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'child_name',
+                        'child_gender',
+                        'child_school',
+                        'child_birth_date'
+                    );
+                },
+            ])
+            ->where('status', $status)
+            ->orderBy('scheduled_date', 'asc');
     }
 }

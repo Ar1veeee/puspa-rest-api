@@ -115,7 +115,10 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:user'])->group(
         function () {
-            Route::put('/users/identity', [GuardianController::class, 'store']);
+            Route::get('/users/children', [GuardianController::class, 'indexChildren']);
+            Route::post('/users/children', [GuardianController::class, 'storeChild']);
+
+            Route::put('/users/identity', [GuardianController::class, 'update']);
             Route::get('/users/child-assessment', [AssessmentController::class, 'indexChildren']);
             Route::get('/users/child-assessment-detail/{assessment_id}', [AssessmentController::class, 'show']);
             Route::get('/users/child-assessment-general/{assessment_id}', [AssessmentController::class, 'showGeneralData']);

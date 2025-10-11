@@ -32,9 +32,21 @@ class GuardianRepository
         return $this->model->where('family_id', $familyId)->where('guardian_type', $type)->first();
     }
 
+    public function getChildrenByUserId(string $userId)
+    {
+        $guardian = $this->model
+            ->with('family.children')
+            ->where('user_id', $userId)
+            ->firstOrFail();
+        return $guardian->family->children;
+    }
+
     public function getAssessments(string $userId)
     {
-        $guardian = $this->model->where('user_id', $userId)->firstOrFail();
+        $guardian = $this->model->where('user_id', $userId)->first();
+        if (!$guardian) {
+            return collect();
+        }
 
         return Child::with([
             'assessment' => function ($query) {
@@ -47,12 +59,6 @@ class GuardianRepository
                     'updated_at',
                 )
                     ->orderBy('scheduled_date', 'asc');
-            },
-            'family.guardians' => function ($query) {
-                $query->select(
-                    'id',
-                    'family_id',
-                );
             }
         ])
             ->select(
@@ -73,13 +79,12 @@ class GuardianRepository
 
     public function hasObservationContinuedToAssessment(string $email)
     {
-        return DB::table('guardians')
-            ->join('families', 'guardians.family_id', '=', 'families.id')
-            ->join('children', 'families.id', '=', 'children.family_id')
-            ->join('observations', 'children.id', '=', 'observations.child_id')
-            ->where('guardians.temp_email', $email)
-            ->where('observations.is_continued_to_assessment', true)
-            ->where('observations.status', 'Completed')
+        return $this->model
+            ->where('temp_email', $email)
+            ->whereHas('family.children.observations', function ($query) {
+                $query->where('is_continued_to_assessment', true)
+                    ->where('status', 'completed');
+            })
             ->exists();
     }
 
