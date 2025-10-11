@@ -77,12 +77,6 @@ class Handler extends ExceptionHandler
             }
         });
 
-        $this->renderable(function (RateLimitExceededException $e, $request) {
-            if ($this->isApiRequest($request)) {
-                return $this->apiErrorResponse('Too Many Requests', $e->getMessage(), 429);
-            }
-        });
-
         $this->renderable(function (RouteNotFoundException $e, $request) {
             if ($this->isApiRequest($request)) {
                 return response()->json([

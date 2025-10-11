@@ -5,10 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-/**
- * Class RateLimitExceededException
- */
-class RateLimitExceededException extends Exception
+class AlreadyVerifiedException extends Exception
 {
     public function render($request): JsonResponse
     {
@@ -16,6 +13,6 @@ class RateLimitExceededException extends Exception
             'success' => false,
             'message' => $this->getMessage(),
             'errors' => [],
-        ], 429);
+        ], 400);
     }
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\AlreadyVerifiedException;
+use App\Exceptions\RateLimitExceededException;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Services\VerificationService;
-use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Exception;
 
 class VerificationController extends Controller
@@ -46,11 +45,12 @@ class VerificationController extends Controller
      */
     public function verify(string $id, string $hash)
     {
-        $this->verificationService->validateHash($id, $hash);
-        $result = $this->verificationService->verifyEmail($id);
-
-        $status = $result['success'] ? 'success' : 'already';
-        return redirect("{$this->frontendUrl}/auth/email-verify?status={$status}");
+        try {
+            $this->verificationService->verifyEmail($id);
+            return redirect($this->frontendUrl . '/auth/email-verify');
+        } catch (ModelNotFoundException $e) {
+            return redirect($this->frontendUrl . '/auth/email-verify?status=invalid');
+        }
     }
 
     /**
@@ -98,43 +98,24 @@ class VerificationController extends Controller
     public function resendNotification(string $user_id): JsonResponse
     {
         try {
-            $user = User::find($user_id);
-
-            if (!$user) {
-                return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
-            }
-
-            if ($user->hasVerifiedEmail()) {
-                return $this->errorResponse('Email sudah terverifikasi.', [], 400);
-            }
-
-            $userId = $user->id;
-
-            if (!$this->verificationService->canResendVerification($userId)) {
-                $remaining = $this->verificationService->getRemainingCooldown($userId);
-                return $this->errorResponse(
-                    "Mohon tunggu " . ceil($remaining / 60) . " menit sebelum meminta link verifikasi baru.",
-                    [
-                        'can_resend' => false,
-                        'remaining_seconds' => $remaining,
-                    ],
-                    429
-                );
-            }
-
-            $result = $this->verificationService->resendVerificationNotification($userId);
+            $this->verificationService->resendVerificationNotification($user_id);
 
             return $this->successResponse(
                 [
                     'can_resend' => false,
-                    'cooldown_minutes' => VerificationService::RESEND_COOLDOWN_MINUTES,
+                    'cooldown_seconds' => VerificationService::RESEND_COOLDOWN_SECONDS,
                 ],
-                $result['message'],
+                'Link verifikasi baru telah dikirim ke email Anda.',
                 200
             );
-
-        } catch (Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
+        } catch (AlreadyVerifiedException $e) {
             return $this->errorResponse($e->getMessage(), [], 400);
+        } catch (RateLimitExceededException $e) {
+            return $this->errorResponse($e->getMessage(), [], 429);
+        } catch (Exception $e) {
+            return $this->errorResponse('Gagal mengirim email verifikasi.', [], 500);
         }
     }
 
@@ -166,34 +147,18 @@ class VerificationController extends Controller
     public function checkResendStatus(string $user_id): JsonResponse
     {
         try {
-            $user = User::find($user_id);
+            $statusData = $this->verificationService->getResendStatus($user_id);
 
-            if (!$user) {
-                return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
-            }
-
-            $userId = $user->id;
-
-            $canResend = $this->verificationService->canResendVerification($userId);
-            $remainingSeconds = $this->verificationService->getRemainingCooldown($userId);
-            $isVerified = $user->hasVerifiedEmail();
-
-            $message = $isVerified
+            $message = $statusData['is_verified']
                 ? 'Email sudah terverifikasi.'
-                : ($canResend
+                : ($statusData['can_resend']
                     ? 'Anda dapat meminta link verifikasi baru.'
-                    : "Tunggu {$remainingSeconds} detik lagi.");
+                    : "Tunggu {$statusData['remaining_seconds']} detik lagi.");
 
-            return $this->successResponse(
-                [
-                    'can_resend' => $canResend,
-                    'remaining_seconds' => $remainingSeconds,
-                    'is_verified' => $isVerified,
-                ],
-                $message,
-                200
-            );
+            return $this->successResponse($statusData, $message);
 
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
         } catch (Exception $e) {
             return $this->errorResponse('Gagal mengambil status.', [], 500);
         }
