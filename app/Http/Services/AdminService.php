@@ -17,7 +17,10 @@ class AdminService
     protected $userRepository;
     protected $adminRepository;
 
-    public function __construct(UserRepository $userRepository, AdminRepository $adminRepository)
+    public function __construct(
+        UserRepository  $userRepository,
+        AdminRepository $adminRepository
+    )
     {
         $this->userRepository = $userRepository;
         $this->adminRepository = $adminRepository;
@@ -96,6 +99,14 @@ class AdminService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function updatePassword(array $data, string $userId)
+    {
+        return $this->userRepository->update(
+            ['password' => Hash::make($data['password'])],
+            $userId
+        );
     }
 
     /**

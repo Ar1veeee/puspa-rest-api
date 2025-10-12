@@ -16,6 +16,7 @@ use App\Http\Resources\ObservationsScheduledResource;
 use App\Http\Services\ObservationService;
 use App\Models\Observation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ObservationController extends Controller
 {
@@ -28,60 +29,63 @@ class ObservationController extends Controller
         $this->observationService = $observationService;
     }
 
-    public function indexPending(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $observations = $this->observationService->getObservationsPending();
-        $response = ObservationsPendingResource::collection($observations);
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', 'in:pending,scheduled,completed'],
+        ]);
 
-        return $this->successResponse($response, 'Daftar Observasi Pending', 200);
+        $observations = $this->observationService->getObservations($validated);
+        $status = $validated['status'] ?? 'all';
+
+        $resourceCollection = match ($status) {
+            'pending' => ObservationsPendingResource::collection($observations),
+            'scheduled' => ObservationsScheduledResource::collection($observations),
+            'completed' => ObservationsCompletedResource::collection($observations),
+            default => null,
+        };
+
+        $message = 'Daftar Observasi ' . ucfirst($status);
+
+        return $this->successResponse($resourceCollection, $message, 200);
     }
 
-    public function indexScheduled(): JsonResponse
+    public function show(Request $request, Observation $observation): JsonResponse
     {
-        $observations = $this->observationService->getObservationsScheduled();
-        $response = ObservationsScheduledResource::collection($observations);
+        $validated = $request->validate([
+            'type' => ['required', 'string', 'in:scheduled,completed,question,answer'],
+        ]);
 
-        return $this->successResponse($response, 'Daftar Observasi Scheduled', 200);
-    }
+        $type = $validated['type'];
 
-    public function indexCompleted(): JsonResponse
-    {
-        $observations = $this->observationService->getObservationsCompleted();
-        $response = ObservationsCompletedResource::collection($observations);
+        if (in_array($type, ['scheduled', 'completed'])) {
+            $observation->load(['child', 'child.family.guardians']);
+        } elseif ($type === 'answer') {
+            $observation->load('observation_answers.observation_question');
+        }
 
-        return $this->successResponse($response, 'Daftar Observasi Completed', 200);
-    }
+        [$response, $message] = match ($type) {
+            'scheduled' => [
+                new ObservationScheduledDetailResource($observation),
+                'Observasi Scheduled Detail'
+            ],
+            'completed' => [
+                new ObservationCompletedDetailResource($observation),
+                'Observasi Completed Detail'
+            ],
+            'question' => [
+                ObservationQuestionsResource::collection(
+                    $this->observationService->getObservationQuestions($observation)
+                ),
+                'Pertanyaan Observasi'
+            ],
+            'answer' => [
+                new ObservationDetailAnswerResource($observation),
+                'Observasi Detail Answer'
+            ],
+        };
 
-    public function showScheduled(Observation $observation): JsonResponse
-    {
-        $observation->load(['child', 'child.family.guardians']);
-        $response = new ObservationScheduledDetailResource($observation);
-
-        return $this->successResponse($response, 'Observasi Scheduled Detail', 200);
-    }
-
-    public function showCompleted(Observation $observation): JsonResponse
-    {
-        $observation->load(['child', 'child.family.guardians']);
-        $response = new ObservationCompletedDetailResource($observation);
-
-        return $this->successResponse($response, 'Observasi Completed Detail', 200);
-    }
-
-    public function showDetailAnswer(Observation $observation): JsonResponse
-    {
-        $observation->load('observation_answers.observation_question');
-        $response = new ObservationDetailAnswerResource($observation);
-
-        return $this->successResponse($response, 'Observasi Detail Answer', 200);
-    }
-
-    public function showQuestion(Observation $observation): JsonResponse
-    {
-        $questions = $this->observationService->getObservationQuestions($observation);
-        $response = ObservationQuestionsResource::collection($questions);
-
-        return $this->successResponse($response, 'Pertanyaan Observasi', 200);
+        return $this->successResponse($response, $message, 200);
     }
 
     public function update(ObservationUpdateRequest $request, Observation $observation): JsonResponse

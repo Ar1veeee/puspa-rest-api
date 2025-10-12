@@ -40,30 +40,20 @@ class ObservationService
         $this->assessmentRepository = $assessmentRepository;
     }
 
-    public function getObservationsPending()
+    public function getObservations(array $filters = [])
     {
-        $cacheKey = $this->getCacheKey('observations_pending');
+        $status = $filters['status'] ?? null;
 
-        return Cache::remember($cacheKey, self::CACHE_TTL_PENDING, function () {
-            return $this->getBaseStatusQuery('pending')
-                ->with('child.family.guardians:id,family_id,guardian_name,guardian_type,guardian_phone')
-                ->get();
-        });
-    }
+        if ($status === 'pending' || $status === 'scheduled') {
+            $cacheKey = "observations_{$status}";
+            $ttl = ($status === 'pending') ? self::CACHE_TTL_PENDING : self::CACHE_TTL_SCHEDULED;
 
-    public function getObservationsScheduled()
-    {
-        $cacheKey = $this->getCacheKey('observations_scheduled');
-        return Cache::remember($cacheKey, self::CACHE_TTL_SCHEDULED, function () {
-            return $this->getBaseStatusQuery('scheduled')->get();
-        });
-    }
+            return Cache::remember($cacheKey, $ttl, function () use ($status) {
+                return $this->observationRepository->getByFilters(['status' => $status]);
+            });
+        }
 
-    public function getObservationsCompleted()
-    {
-        return $this->getBaseStatusQuery('completed')
-            ->with('therapist:id,therapist_name')
-            ->get();
+        return $this->observationRepository->getByFilters($filters);
     }
 
     public function getObservationQuestions(Observation $observation)
@@ -165,14 +155,6 @@ class ObservationService
         }
 
         return $therapist;
-    }
-
-    private function getBaseStatusQuery(string $status)
-    {
-        return $this->observationRepository->model()
-            ->with('child:id,family_id,child_name,child_gender,child_school,child_birth_date')
-            ->where('status', $status)
-            ->orderBy('scheduled_date', 'asc');
     }
 
     private function getQuestionsForAnswers(array $answers)

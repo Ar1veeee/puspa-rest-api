@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\AdminResource;
 use App\Http\Services\AdminService;
 use App\Models\Admin;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -51,6 +53,14 @@ class AdminController extends Controller
         $this->adminService->updateAdmin($data, $admin);
 
         return $this->successResponse([], 'Update Admin Berhasil', 200);
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
+    {
+        $userId = Auth::id();
+        $this->adminService->updatePassword($request->validated(), $userId);
+
+        return $this->successResponse([], 'Update Password Berhasil', 200);
     }
 
     public function destroy(Admin $admin): JsonResponse

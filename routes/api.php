@@ -28,109 +28,83 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register'])
             ->middleware('throttle:register');
+        Route::post('/login', [AuthController::class, 'login'])
+            ->middleware('throttle:login');
 
         Route::get('/email-verify/{id}/{hash}', [VerificationController::class, 'verify'])
             ->middleware(['signed', 'throttle:verification'])
             ->name('verification.verify');
-
-        Route::post('/resend-verification/{user_id}', [VerificationController::class, 'resendNotification'])
+        Route::post('/resend-verification/{user}', [VerificationController::class, 'resendNotification'])
             ->name('verification.resend');
-
-        Route::get('/resend-status/{user_id}', [VerificationController::class, 'checkResendStatus'])
+        Route::get('/resend-status/{user}', [VerificationController::class, 'checkResendStatus'])
             ->name('verification.status');
-
-        Route::post('/login', [AuthController::class, 'login'])
-            ->middleware('throttle:login');
 
         Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])
             ->middleware('throttle:forgot-password')
             ->name('password.email');
-
         Route::post('/resend-reset/{email}', [PasswordResetController::class, 'resendResetLink'])
             ->middleware('throttle:forgot-password')
             ->name('password.resend');
-
-        Route::get('/resend-reset-status', [PasswordResetController::class, 'checkResendStatus'])
-            ->name('password.resend.status');
-
         Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
             ->name('password.reset')
             ->middleware('throttle:reset-password');
-        Route::post('/logout', [AuthController::class, 'logout'])
-            ->middleware('throttle:logout');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::middleware('verified')->group(function () {
-            Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduled'])
-                ->middleware('throttle:authenticated');
+        Route::post('/logout', [AuthController::class, 'logout'])
+            ->middleware('throttle:logout');
+        Route::get('/auth/protected', [AuthController::class, 'protected']);
 
-            Route::get('/auth/protected', [AuthController::class, 'protected'])
-                ->middleware('throttle:authenticated');
+        Route::middleware(['verified', 'role:user'])->group(function () {
+            Route::get('/my/children', [GuardianController::class, 'indexChildren']);
+            Route::post('/my/children', [GuardianController::class, 'storeChild']);
+            Route::put('/my/identity', [GuardianController::class, 'update']);
+            Route::get('/my/assessments', [AssessmentController::class, 'indexChildren']);
+
+            Route::prefix('assessments/{assessment}')->group(function () {
+                Route::get('/', [AssessmentController::class, 'show']);
+                Route::get('/general-data', [AssessmentController::class, 'showGeneralData']);
+                Route::post('/general-data', [AssessmentController::class, 'storeGeneralData']);
+
+                Route::get('/physio-data', [AssessmentController::class, 'showPhysioGuardianData']);
+                Route::post('/physio-data', [PhysioAssessmentController::class, 'storeAssessmentGuardian']);
+
+                Route::get('/speech-data', [AssessmentController::class, 'showSpeechGuardianData']);
+                Route::post('/speech-data', [SpeechAssessmentController::class, 'storeAssessmentGuardian']);
+
+                Route::get('/occupational-data', [AssessmentController::class, 'showOccupationalGuardianData']);
+                Route::post('/occupational-data', [OccupationalAssessmentController::class, 'storeAssessmentGuardian']);
+
+                Route::get('/pedagogical-data', [AssessmentController::class, 'showPedagogicalGuardianData']);
+                Route::post('/pedagogical-data', [PedagogicalAssessmentController::class, 'storeAssessmentGuardian']);
+            });
         });
-    });
 
-    Route::middleware(['auth:sanctum', 'role:owner'])->group(
-        function () {
-            Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
-            Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
-            Route::get('/users/verified/{user_id}', [OwnerController::class, 'activateAccount']);
-        }
-    );
-
-    Route::middleware(['auth:sanctum', 'role:admin', 'throttle:admin'])->group(
-        function () {
-            Route::get('/admins', [AdminController::class, 'index']);
-            Route::post('/admins', [AdminController::class, 'store']);
-            Route::get('/admins/{admin}', [AdminController::class, 'show']);
-            Route::put('/admins/{admin}', [AdminController::class, 'update']);
-            Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
+        Route::middleware(['role:admin', 'throttle:admin'])->group(function () {
+            Route::put('/admins/update-password', [AdminController::class, 'updatePassword']);
+            Route::apiResource('/admins', AdminController::class);
+            Route::apiResource('/therapists', TherapistController::class);
 
             Route::get('/children', [ChildController::class, 'index']);
             Route::get('/children/{child}', [ChildController::class, 'show']);
 
-            Route::get('/therapists', [TherapistController::class, 'index']);
-            Route::post('/therapists', [TherapistController::class, 'store']);
-            Route::get('/therapists/{therapist}', [TherapistController::class, 'show']);
-            Route::put('/therapists/{therapist}', [TherapistController::class, 'update']);
-            Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
-
-            Route::get('/observations/pending', [ObservationController::class, 'indexPending']);
             Route::put('/observations/{observation}', [ObservationController::class, 'update']);
-        }
-    );
+        });
 
-    Route::middleware(['auth:sanctum', 'role:terapis', 'throttle:therapist'])->group(
-        function () {
-            Route::get('/observations/scheduled/{observation}', [ObservationController::class, 'showScheduled']);
-            Route::get('/observations/question/{observation}', [ObservationController::class, 'showQuestion']);
-            Route::post('/observations/submit/{observation}', [ObservationController::class, 'submit']);
-            Route::get('/observations/answer/{observation}', [ObservationController::class, 'showDetailAnswer']);
-            Route::get('/observations/completed', [ObservationController::class, 'indexCompleted']);
-            Route::get('/observations/completed/{observation}', [ObservationController::class, 'showCompleted']);
-            Route::put('/observations/assessment-agreement/{observation}', [ObservationController::class, 'assessmentAgreement']);
-        }
-    );
+        Route::get('/observations', [ObservationController::class, 'index']);
 
-    Route::middleware(['auth:sanctum', 'role:user'])->group(
-        function () {
-            Route::get('/users/children', [GuardianController::class, 'indexChildren']);
-            Route::post('/users/children', [GuardianController::class, 'storeChild']);
-            Route::put('/users/identity', [GuardianController::class, 'update']);
-            Route::get('/users/child-assessment', [AssessmentController::class, 'indexChildren']);
+        Route::middleware(['role:terapis', 'throttle:therapist'])->group(
+            function () {
+                Route::get('/observations/{observation}', [ObservationController::class, 'show']);
+                Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
+                Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
+            }
+        );
 
-            Route::get('/users/child-assessment-detail/{assessment}', [AssessmentController::class, 'show']);
-            Route::get('/users/child-assessment-general/{assessment}', [AssessmentController::class, 'showGeneralData']);
-            Route::get('/users/child-assessment-physio-guardian/{assessment}', [AssessmentController::class, 'showPhysioGuardianData']);
-            Route::get('/users/child-assessment-speech-guardian/{assessment}', [AssessmentController::class, 'showSpeechGuardianData']);
-            Route::get('/users/child-assessment-occupational-guardian/{assessment}', [AssessmentController::class, 'showOccupationalGuardianData']);
-            Route::get('/users/child-assessment-pedagogical-guardian/{assessment}', [AssessmentController::class, 'showPedagogicalGuardianData']);
-
-            Route::post('/users/child-assessment-general/{assessment}', [AssessmentController::class, 'storeGeneralData']);
-            Route::post('/users/child-assessment-physio/{assessment}', [PhysioAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-speech/{assessment}', [SpeechAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-occupational/{assessment}', [OccupationalAssessmentController::class, 'storeAssessmentGuardian']);
-            Route::post('/users/child-assessment-pedagogical/{assessment}', [PedagogicalAssessmentController::class, 'storeAssessmentGuardian']);
-        }
-    );
+        Route::middleware('role:owner')->group(function () {
+            Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
+            Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
+            Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
+        });
+    });
 });

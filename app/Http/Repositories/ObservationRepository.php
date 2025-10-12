@@ -28,28 +28,26 @@ class ObservationRepository
         return $this->model->find($id);
     }
 
+    public function getByFilters(array $filters = [])
+    {
+        $query = $this->model->query();
+
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        $query->with([
+            'child:id,family_id,child_name,child_gender,child_school,child_birth_date',
+            'child.family.guardians:id,family_id,guardian_name,guardian_type,guardian_phone',
+            'therapist:id,therapist_name'
+        ]);
+
+        return $query->orderBy('scheduled_date', 'asc')->get();
+    }
+
     public function update(int $id, array $data): ?bool
     {
         $observation = $this->model->find($id);
         return $observation ? $observation->update($data) : null;
-    }
-
-    private function getStatusQuery(string $status)
-    {
-        return $this->model
-            ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_gender',
-                        'child_school',
-                        'child_birth_date'
-                    );
-                },
-            ])
-            ->where('status', $status)
-            ->orderBy('scheduled_date', 'asc');
     }
 }
