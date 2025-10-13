@@ -31,7 +31,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])
             ->middleware('throttle:login');
 
-        Route::get('/email-verify/{id}/{hash}', [VerificationController::class, 'verify'])
+        Route::get('/email-verify/{user}/{hash}', [VerificationController::class, 'verify'])
             ->middleware(['signed', 'throttle:verification'])
             ->name('verification.verify');
         Route::post('/resend-verification/{user}', [VerificationController::class, 'resendNotification'])
@@ -54,6 +54,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])
             ->middleware('throttle:logout');
         Route::get('/auth/protected', [AuthController::class, 'protected']);
+
+        Route::middleware('role:owner')->group(function () {
+            Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
+            Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
+            Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
+        });
 
         Route::middleware(['verified', 'role:user'])->group(function () {
             Route::get('/my/children', [GuardianController::class, 'indexChildren']);
@@ -100,11 +106,5 @@ Route::prefix('v1')->group(function () {
                 Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
             }
         );
-
-        Route::middleware('role:owner')->group(function () {
-            Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
-            Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
-            Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
-        });
     });
 });

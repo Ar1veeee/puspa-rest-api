@@ -6,6 +6,7 @@ use App\Exceptions\AlreadyVerifiedException;
 use App\Exceptions\RateLimitExceededException;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Services\VerificationService;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Exception;
@@ -23,20 +24,20 @@ class VerificationController extends Controller
         $this->frontendUrl = config('app.frontend_url');
     }
 
-    public function verify(string $id, string $hash)
+    public function verify(User $user, string $hash)
     {
         try {
-            $this->verificationService->verifyEmail($id);
+            $this->verificationService->verifyEmail($user);
             return redirect($this->frontendUrl . '/auth/email-verify');
         } catch (ModelNotFoundException $e) {
             return redirect($this->frontendUrl . '/auth/email-verify?status=invalid');
         }
     }
 
-    public function resendNotification(string $user_id): JsonResponse
+    public function resendNotification(User $user): JsonResponse
     {
         try {
-            $this->verificationService->resendVerificationNotification($user_id);
+            $this->verificationService->resendVerificationNotification($user);
 
             return $this->successResponse(
                 [
@@ -46,8 +47,6 @@ class VerificationController extends Controller
                 'Link verifikasi baru telah dikirim ke email Anda.',
                 200
             );
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
         } catch (AlreadyVerifiedException $e) {
             return $this->errorResponse($e->getMessage(), [], 400);
         } catch (RateLimitExceededException $e) {
@@ -57,10 +56,10 @@ class VerificationController extends Controller
         }
     }
 
-    public function checkResendStatus(string $user_id): JsonResponse
+    public function checkResendStatus(User $user): JsonResponse
     {
         try {
-            $statusData = $this->verificationService->getResendStatus($user_id);
+            $statusData = $this->verificationService->getResendStatus($user);
 
             $message = $statusData['is_verified']
                 ? 'Email sudah terverifikasi.'

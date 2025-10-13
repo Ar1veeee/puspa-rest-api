@@ -22,10 +22,8 @@ class VerificationService
         $this->userRepository = $userRepository;
     }
 
-    public function verifyEmail(string $userId): void
+    public function verifyEmail(User $user): void
     {
-        $user = $this->findUserOrFail($userId);
-
         if ($user->hasVerifiedEmail()) {
             throw new AlreadyVerifiedException('Email sudah terverifikasi sebelumnya.');
         }
@@ -43,25 +41,22 @@ class VerificationService
      * @throws AlreadyVerifiedException If email already verified.
      * @throws RateLimitExceededException If the user exceeds the rate limit.
      */
-    public function resendVerificationNotification(string $userId): void
+    public function resendVerificationNotification(User $user): void
     {
-        $user = $this->findUserOrFail($userId);
-
         if ($user->hasVerifiedEmail()) {
             throw new AlreadyVerifiedException('Email sudah terverifikasi.');
         }
 
-        $this->checkRateLimits($userId);
+        $this->checkRateLimits($user->id);
 
         $user->sendEmailVerificationNotification();
 
-        RateLimiter::hit($this->getLimiterKey($userId), self::RESEND_COOLDOWN_SECONDS);
+        RateLimiter::hit($this->getLimiterKey($user->id), self::RESEND_COOLDOWN_SECONDS);
     }
 
-    public function getResendStatus(string $userId): array
+    public function getResendStatus(User $user): array
     {
-        $user = $this->findUserOrFail($userId);
-        $key = $this->getLimiterKey($userId);
+        $key = $this->getLimiterKey($user->id);
 
         return [
             'is_verified' => $user->hasVerifiedEmail(),
@@ -71,15 +66,6 @@ class VerificationService
     }
 
     // ========== Private Helper Methods ==========
-
-    private function findUserOrFail(string $userId): User
-    {
-        $user = $this->userRepository->getById($userId);
-        if (!$user) {
-            throw new ModelNotFoundException('Pengguna tidak ditemukan.');
-        }
-        return $user;
-    }
 
     private function getLimiterKey(string $userId): string
     {
