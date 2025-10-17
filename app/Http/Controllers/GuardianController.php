@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AddChildrenRequest;
 use App\Http\Requests\StoreGuardianRequest;
+use App\Http\Requests\UpdateGuardianProfileRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\ChildrenResource;
+use App\Http\Resources\GuardianProfileResource;
 use App\Http\Services\GuardianService;
+use App\Models\Guardian;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,6 +34,14 @@ class GuardianController extends Controller
         return $this->successResponse($response, 'Daftar Anak', 200);
     }
 
+    public function showProfile()
+    {
+        $user_id = Auth::id();
+        $profile = $this->guardianService->getProfile($user_id);
+        $response = new GuardianProfileResource($profile);
+        return $this->successResponse($response, 'Profile', 200);
+    }
+
     public function storeChild(AddChildrenRequest $request): JsonResponse
     {
         $userId = Auth::id();
@@ -47,5 +59,22 @@ class GuardianController extends Controller
         $this->guardianService->updateGuardians($data, $userId);
 
         return $this->successResponse([], 'Data orang tua berhasil disimpan', 200);
+    }
+
+    public function updateProfile(UpdateGuardianProfileRequest $request, Guardian $guardian): JsonResponse
+    {
+        $data = $request->validated();
+        $this->guardianService->updateProfile($data, $guardian);
+
+        return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
+    {
+        $userId = Auth::id();
+        $data = $request->validated();
+        $this->guardianService->updatePassword($data, $userId);
+
+        return $this->successResponse([], 'Password Berhasil Diperbarui', 200);
     }
 }

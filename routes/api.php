@@ -61,11 +61,14 @@ Route::prefix('v1')->group(function () {
             Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
         });
 
-        Route::middleware(['verified', 'role:user'])->group(function () {
-            Route::get('/my/children', [GuardianController::class, 'indexChildren']);
-            Route::post('/my/children', [GuardianController::class, 'storeChild']);
-            Route::put('/my/identity', [GuardianController::class, 'update']);
-            Route::get('/my/assessments', [AssessmentController::class, 'indexChildren']);
+        Route::middleware(['verified', 'role:user'])->prefix('my')->group(function () {
+            Route::get('/children', [GuardianController::class, 'indexChildren']);
+            Route::post('/children', [GuardianController::class, 'storeChild']);
+            Route::get('/profile', [GuardianController::class, 'showProfile']);
+            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
+            Route::put('/update-password', [GuardianController::class, 'updatePassword']);
+            Route::put('/identity', [GuardianController::class, 'update']);
+            Route::get('/assessments', [AssessmentController::class, 'indexScheduled']);
 
             Route::prefix('assessments/{assessment}')->group(function () {
                 Route::get('/', [AssessmentController::class, 'show']);
@@ -88,8 +91,19 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware(['role:admin', 'throttle:admin'])->group(function () {
             Route::put('/admins/update-password', [AdminController::class, 'updatePassword']);
-            Route::apiResource('/admins', AdminController::class);
-            Route::apiResource('/therapists', TherapistController::class);
+
+            Route::get('/admins', [AdminController::class, 'index']);
+            Route::get('/admins/{admin}', [AdminController::class, 'show']);
+            Route::post('/admins', [AdminController::class, 'store']);
+            Route::put('/admins/{admin}', [AdminController::class, 'update']);
+            Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
+
+
+            Route::get('/therapists', [TherapistController::class, 'index']);
+            Route::get('/therapists/{therapist}', [TherapistController::class, 'show']);
+            Route::post('/therapists', [TherapistController::class, 'store']);
+            Route::put('/therapists/{therapist}', [TherapistController::class, 'update']);
+            Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
 
             Route::get('/children', [ChildController::class, 'index']);
             Route::get('/children/{child}', [ChildController::class, 'show']);
@@ -104,6 +118,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('/observations/{observation}', [ObservationController::class, 'show']);
                 Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
                 Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
+                Route::get('/assessments/{status}', [AssessmentController::class, 'indexByStatus'])
+                    ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']);
             }
         );
     });

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdatePasswordRequest extends FormRequest
 {
@@ -22,17 +23,36 @@ class UpdatePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/', 'confirmed'],
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ];
     }
 
+    /**
+     * Pesan error kustom dalam Bahasa Indonesia.
+     */
     public function messages(): array
     {
         return [
-            'password.required' => 'Password tidak boleh kosong.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'current_password.required' => 'Password saat ini tidak boleh kosong.',
+            'current_password.current_password' => 'Password saat ini yang Anda masukkan salah.',
+
+            'password.required' => 'Password baru tidak boleh kosong.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.min' => 'Password baru minimal harus :min karakter.',
+            'password.letters' => 'Password baru harus mengandung setidaknya satu huruf.',
+            'password.mixedCase' => 'Password baru harus mengandung huruf besar dan kecil.',
+            'password.numbers' => 'Password baru harus mengandung setidaknya satu angka.',
+            'password.symbols' => 'Password baru harus mengandung setidaknya satu simbol.',
         ];
     }
 }

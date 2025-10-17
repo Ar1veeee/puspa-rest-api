@@ -6,12 +6,18 @@ use App\Http\Repositories\ChildRepository;
 use App\Http\Repositories\FamilyRepository;
 use App\Http\Repositories\GuardianRepository;
 use App\Http\Repositories\ObservationRepository;
+use App\Http\Repositories\UserRepository;
 use App\Models\Child;
+use App\Models\Guardian;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class GuardianService
 {
+    protected $userRepository;
     protected $guardianRepository;
     protected $familyRepository;
     protected $childRepository;
@@ -20,16 +26,23 @@ class GuardianService
     private const DEFAULT_OBSERVATION_DAYS_AHEAD = 1;
 
     public function __construct(
+        UserRepository        $userRepository,
         GuardianRepository    $guardianRepository,
         FamilyRepository      $familyRepository,
         ChildRepository       $childRepository,
         ObservationRepository $observationRepository
     )
     {
+        $this->userRepository = $userRepository;
         $this->guardianRepository = $guardianRepository;
         $this->familyRepository = $familyRepository;
         $this->childRepository = $childRepository;
         $this->observationRepository = $observationRepository;
+    }
+
+    public function getProfile(string $user_id)
+    {
+        return $this->guardianRepository->findByUserId($user_id);
     }
 
     public function getChildren(string $userId)
@@ -63,8 +76,12 @@ class GuardianService
     {
         DB::beginTransaction();
         try {
-            $guardian = $this->guardianRepository->findByUserId($userId);
-            $familyId = $guardian->family_id;
+            $primaryGuardian = $this->guardianRepository->findByUserId($userId);
+            if (!$primaryGuardian) {
+                throw new \Exception('Data wali utama tidak ditemukan.');
+            }
+
+            $familyId = $primaryGuardian->family_id;
 
             $types = [
                 'ayah' => [
@@ -89,31 +106,25 @@ class GuardianService
                     'relationship_with_child' => $data['wali_relationship'] ?? null,
                 ],
             ];
+
             foreach ($types as $type => $info) {
                 $info = array_map(fn($v) => is_string($v) ? trim($v) : $v, $info);
 
                 $hasData = array_filter($info, fn($v) => $v !== null && $v !== '');
-
-                if (!$hasData) {
+                if (empty($hasData)) {
                     continue;
                 }
 
-                $existing = $this->guardianRepository->findByFamilyIdAndType($familyId, $type);
+                $existingGuardian = $this->guardianRepository->findByFamilyIdAndType($familyId, $type);
 
-                $payload = [
-                    'family_id' => $familyId,
-                    'user_id' => $userId,
-                    'guardian_type' => $type,
-                    'guardian_name' => $info['guardian_name'],
-                    'guardian_phone' => $info['guardian_phone'],
-                    'guardian_birth_date' => $info['guardian_birth_date'],
-                    'guardian_occupation' => $info['guardian_occupation'],
-                    'relationship_with_child' => $info['relationship_with_child'],
-                ];
-
-                if ($existing) {
-                    $existing->update($payload);
+                if ($existingGuardian) {
+                    $existingGuardian->update($info);
                 } else {
+                    $payload = array_merge($info, [
+                        'family_id' => $familyId,
+                        'guardian_type' => $type,
+                        'user_id' => ($primaryGuardian->guardian_type === $type) ? $userId : null,
+                    ]);
                     $this->guardianRepository->create($payload);
                 }
             }
@@ -123,6 +134,50 @@ class GuardianService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function updateProfile(array $data, Guardian $guardian)
+    {
+        $user = $this->findUserOrFail($guardian->user_id);
+
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Email sudah digunakan.'],
+                ]);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->updateUserData($user, $data);
+            $this->updateGuardianData($guardian, $data);
+
+            DB::commit();
+
+            return $guardian->fresh()->load('user');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updatePassword(array $data, string $userId)
+    {
+        $this->findUserOrFail($userId);
+        $hashedPassword = Hash::make($data['password']);
+        return $this->userRepository->update(['password' => $hashedPassword], $userId);
+    }
+
+    private function findUserOrFail(string $id)
+    {
+        $user = $this->userRepository->getById($id);
+
+        if (!$user) {
+            throw new ModelNotFoundException('Pengguna tidak ditemukan.');
+        }
+
+        return $user;
     }
 
     private function createObservation(Child $child, string $birthDate)
@@ -135,6 +190,32 @@ class GuardianService
             'age_category' => $ageInfo['category'],
             'status' => 'pending',
         ]);
+    }
+
+    private function updateUserData($user, array $data): void
+    {
+        $userData = array_filter([
+            'email' => $data['email'] ?? null,
+        ], fn($value) => $value !== null);
+
+        if (!empty($userData)) {
+            $this->userRepository->update($userData, $user->id);
+        }
+    }
+
+    private function updateGuardianData(Guardian $guardian, array $data): void
+    {
+        $guardianData = array_filter([
+            'guardian_name' => $data['guardian_name'] ?? null,
+            'relationship_with_child' => $data['relationship_with_child'] ?? null,
+            'guardian_birth_date' => $data['guardian_birth_date'] ?? null,
+            'guardian_phone' => $data['guardian_phone'] ?? null,
+            'guardian_occupation' => $data['guardian_occupation'] ?? null,
+        ], fn($value) => $value !== null);
+
+        if (!empty($guardianData)) {
+            $this->guardianRepository->update($guardianData, $guardian->id);
+        }
     }
 
     private function calculateScheduledDate()

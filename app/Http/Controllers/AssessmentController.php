@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\GeneralDataRequest;
+use App\Http\Resources\AssessmentListResource;
 use App\Http\Resources\AssessmentsDetailResource;
 use App\Http\Resources\ChildrenAssessmentResource;
 use App\Http\Resources\GeneralDataAssessmentResource;
@@ -14,6 +15,7 @@ use App\Http\Resources\SpeechGuardianDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
@@ -74,10 +76,33 @@ class AssessmentController extends Controller
         return $this->successResponse(new PedagogicalGuardianDataAssessmentResource($pedagogicalData), 'Data Paedagog Assessment Untuk Anak');
     }
 
-    public function indexChildren(): JsonResponse
+    public function indexScheduled(): JsonResponse
     {
         $userId = auth()->id();
         $childAssessment = $this->assessmentService->getChildrenAssessment($userId);
         return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak');
+    }
+
+    public function indexByStatus(Request $request, string $status): JsonResponse
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'string', 'in:fisio,okupasi,wicara,paedagog'],
+        ]);
+
+        $type = $validated['type'];
+        $user = $request->user();
+
+        if ($user->role === 'terapis') {
+            $section = $user->therapist->therapist_section;
+            if ($section !== $type) {
+                return $this->errorResponse('Forbidden', ['error' => 'Anda hanya diizinkan untuk melihat daftar asesmen untuk bagian ' . $section], 403);
+            }
+        }
+
+        $assessments = $this->assessmentService->getChildrenAssessmentsByType($status, $type);
+
+        $response = AssessmentListResource::collection($assessments);
+        $message = 'Daftar Asesmen ' . ucfirst($type) . ' ' . ucfirst($status);
+        return $this->successResponse($response, $message);
     }
 }

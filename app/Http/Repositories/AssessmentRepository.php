@@ -3,7 +3,7 @@
 namespace App\Http\Repositories;
 
 use App\Models\Assessment;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 
 class AssessmentRepository
 {
@@ -24,33 +24,16 @@ class AssessmentRepository
         return $this->model->find($id);
     }
 
-    public function getParentDataById(int $id)
+    public function getByScheduledType(string $status, $assessmentType)
     {
-        $assessment = $this->model->find($id);
+        $query = $this->model->query();
 
-        if (!$assessment) {
-            throw new ModelNotFoundException('Assessment dengan ID ' . $id . ' tidak ditemukan.');
+        $validTypes = ['fisio', 'okupasi', 'wicara', 'paedagog'];
+        if (!in_array($assessmentType, $validTypes)) {
+            return new Collection();
         }
 
-        return $assessment->load([
-            'child.family.guardians' => function ($query) {
-                $query->select(
-                    'id',
-                    'family_id',
-                    'guardian_type',
-                    'guardian_name',
-                    'guardian_birth_date',
-                    'guardian_occupation',
-                    'guardian_phone',
-                    'relationship_with_child'
-                );
-            }
-        ]);
-    }
-
-    public function getByScheduledPhysio()
-    {
-        return $this->model
+        return $query
             ->with([
                 'child' => function ($query) {
                     $query->select(
@@ -66,96 +49,12 @@ class AssessmentRepository
                         'id',
                         'family_id',
                         'guardian_name',
-                        'guardian_phone',
+                        'guardian_phone'
                     );
                 }
             ])
-            ->where('status', 'scheduled')
-            ->where('fisio', true)
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
-    }
-
-    public function getByScheduledOccupation()
-    {
-        return $this->model
-            ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_birth_date',
-                        'child_gender'
-                    );
-                },
-                'child.family.guardians' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'guardian_name',
-                        'guardian_phone',
-                    );
-                }
-            ])
-            ->where('status', 'scheduled')
-            ->where('okupasi', true)
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
-    }
-
-    public function getByScheduledSpeech()
-    {
-        return $this->model
-            ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_birth_date',
-                        'child_gender'
-                    );
-                },
-                'child.family.guardians' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'guardian_name',
-                        'guardian_phone',
-                    );
-                }
-            ])
-            ->where('status', 'scheduled')
-            ->where('wicara', true)
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
-    }
-
-    public function getByScheduledPedagogical()
-    {
-        return $this->model
-            ->with([
-                'child' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'child_name',
-                        'child_birth_date',
-                        'child_gender'
-                    );
-                },
-                'child.family.guardians' => function ($query) {
-                    $query->select(
-                        'id',
-                        'family_id',
-                        'guardian_name',
-                        'guardian_phone',
-                    );
-                }
-            ])
-            ->where('status', 'scheduled')
-            ->where('paedagog', true)
+            ->where('status', $status)
+            ->where($assessmentType, true)
             ->orderBy('scheduled_date', 'asc')
             ->get();
     }

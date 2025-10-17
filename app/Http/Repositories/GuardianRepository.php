@@ -23,6 +23,7 @@ class GuardianRepository
     public function findByUserId(string $userId)
     {
         return $this->model
+            ->with('user')
             ->where('user_id', $userId)
             ->first();
     }
@@ -96,6 +97,15 @@ class GuardianRepository
     public function updateUserIdByEmail(string $email, string $userId)
     {
         return $this->model->where('temp_email', $email)->update(['user_id' => $userId]);
+    }
+
+    public function update(array $data, string $id): bool
+    {
+        $guardian = $this->model->find($id);
+        if ($guardian) {
+            return $guardian->update($data);
+        }
+        return false;
     }
 
     public function removeTempEmail(string $userId)

@@ -41,12 +41,10 @@ class AdminRepository
     {
         $admin = $this->model->find($id);
         if ($admin) {
-            $admin->update($data);
-
-            return $admin;
+            return $admin->update($data);
         }
 
-        return null;
+        return false;
     }
 
     public function delete($id)

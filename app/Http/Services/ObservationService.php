@@ -9,7 +9,6 @@ use App\Http\Repositories\ObservationAnswerRepository;
 use App\Models\Observation;
 use App\Traits\ClearsCaches;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

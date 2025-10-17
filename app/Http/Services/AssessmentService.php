@@ -67,6 +67,11 @@ class AssessmentService
         return $this->guardianRepository->getAssessments($userId);
     }
 
+    public function getChildrenAssessmentsByType(string $status, $type)
+    {
+        return $this->assessmentRepository->getByScheduledType($status, $type);
+    }
+
     public function getGeneral(Assessment $assessment)
     {
         $assessment->load([
