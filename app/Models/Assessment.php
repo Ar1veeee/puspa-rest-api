@@ -91,6 +91,26 @@ class Assessment extends Model
         return $this->hasOne(ChildEducationHistory::class);
     }
 
+    public function speech_assessment_therapists(): HasOne
+    {
+        return $this->hasOne(SpeechAssessmentTherapist::class, 'assessment_id', 'id');
+    }
+
+    public function peda_assessment_therapists(): HasOne
+    {
+        return $this->hasOne(PedaAssessmentTherapist::class, 'assessment_id', 'id');
+    }
+
+    public function occu_assessment_therapists(): HasOne
+    {
+        return $this->hasOne(OccuAssessmentTherapist::class, 'assessment_id', 'id');
+    }
+
+    public function physio_assessment_therapists(): HasOne
+    {
+        return $this->hasOne(PhysioAssessmentTherapist::class, 'assessment_id', 'id');
+    }
+
     public function observation(): BelongsTo
     {
         return $this->belongsTo(ObservationAnswer::class, 'observation_id', 'id');
