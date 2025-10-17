@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * @OA\Schema(
@@ -35,7 +36,16 @@ class ResetPasswordRequest extends FormRequest
         return [
             'token' => 'required',
             'email' => ['required', 'string', 'email', 'max:100'],
-            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ];
     }
 
@@ -47,10 +57,13 @@ class ResetPasswordRequest extends FormRequest
         return [
             'token.required' => 'Token tidak boleh kosong.',
             'email.required' => 'Email tidak boleh kosong.',
-            'password.required' => 'Password tidak boleh kosong.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.required' => 'Password baru tidak boleh kosong.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.min' => 'Password baru minimal harus :min karakter.',
+            'password.letters' => 'Password baru harus mengandung setidaknya satu huruf.',
+            'password.mixedCase' => 'Password baru harus mengandung huruf besar dan kecil.',
+            'password.numbers' => 'Password baru harus mengandung setidaknya satu angka.',
+            'password.symbols' => 'Password baru harus mengandung setidaknya satu simbol.',
         ];
     }
 

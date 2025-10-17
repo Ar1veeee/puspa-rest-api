@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\ObservationCompleted;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * @OA\Schema(
@@ -40,7 +41,15 @@ class UserRegisterRequest extends FormRequest
                 'exists:guardians,temp_email',
                 new ObservationCompleted,
             ],
-            'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ];
     }
 
@@ -55,9 +64,12 @@ class UserRegisterRequest extends FormRequest
             'email.unique' => 'Email ini sudah terdaftar sebagai pengguna.',
             'email.exists' => 'Email tidak ditemukan. Silakan lakukan pendaftaran terlebih dahulu.',
 
-            'password.required' => 'Password tidak boleh kosong.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf besar, angka, dan simbol.',
+            'password.required' => 'Kata sandi baru tidak boleh kosong.',
+            'password.min' => 'Kata sandi baru minimal harus :min karakter.',
+            'password.letters' => 'Kata sandi baru harus mengandung setidaknya satu huruf.',
+            'password.mixedCase' => 'Kata sandi baru harus mengandung huruf besar dan kecil.',
+            'password.numbers' => 'Kata sandi baru harus mengandung setidaknya satu angka.',
+            'password.symbols' => 'Kata sandi baru harus mengandung setidaknya satu simbol.',
         ];
     }
 }
