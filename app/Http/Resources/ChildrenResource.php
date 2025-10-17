@@ -14,7 +14,7 @@ class ChildrenResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $formattedBirthDate = $this->child_birth_date ? $this->child_birth_date->format('d F Y') : null;
+        $formattedBirthDate = $this->child_birth_date ? $this->child_birth_date->translatedFormat('d F Y') : null;
         $age = $this->child_birth_date ? $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan') : null;
 
         $response = [

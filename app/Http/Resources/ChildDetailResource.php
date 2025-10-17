@@ -16,7 +16,7 @@ class ChildDetailResource extends JsonResource
     {
         $response = [
             'child_name' => $this->child_name,
-            'child_birth_info' => $this->child_birth_place . ', ' . $this->child_birth_date->format('d F Y'),
+            'child_birth_info' => $this->child_birth_place . ', ' . $this->child_birth_date->translatedFormat('d F Y'),
             'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child_gender,
             'child_religion' => $this->child_religion ?? '-',
