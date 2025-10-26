@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AddChildrenRequest;
-use App\Http\Requests\StoreGuardianRequest;
+use App\Http\Requests\GuardianFamilyUpdateRequest;
 use App\Http\Requests\UpdateGuardianProfileRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\ChildrenResource;
@@ -52,7 +52,7 @@ class GuardianController extends Controller
         return $this->successResponse([], 'Tambah Anak Berhasil', 201);
     }
 
-    public function update(StoreGuardianRequest $request)
+    public function updateFamilyData(GuardianFamilyUpdateRequest $request)
     {
         $userId = Auth::id();
         $data = $request->validated();

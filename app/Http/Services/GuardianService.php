@@ -86,6 +86,7 @@ class GuardianService
 
             $types = [
                 'ayah' => [
+                    'guardian_identity_number' => $data['father_identity_number'] ?? null,
                     'guardian_name' => $data['father_name'] ?? null,
                     'guardian_phone' => $data['father_phone'] ?? null,
                     'guardian_birth_date' => $data['father_birth_date'] ?? null,
@@ -93,6 +94,7 @@ class GuardianService
                     'relationship_with_child' => $data['father_relationship'] ?? null,
                 ],
                 'ibu' => [
+                    'guardian_identity_number' => $data['mother_identity_number'] ?? null,
                     'guardian_name' => $data['mother_name'] ?? null,
                     'guardian_phone' => $data['mother_phone'] ?? null,
                     'guardian_birth_date' => $data['mother_birth_date'] ?? null,
@@ -100,11 +102,12 @@ class GuardianService
                     'relationship_with_child' => $data['mother_relationship'] ?? null,
                 ],
                 'wali' => [
-                    'guardian_name' => $data['wali_name'] ?? null,
-                    'guardian_phone' => $data['wali_phone'] ?? null,
-                    'guardian_birth_date' => $data['wali_birth_date'] ?? null,
-                    'guardian_occupation' => $data['wali_occupation'] ?? null,
-                    'relationship_with_child' => $data['wali_relationship'] ?? null,
+                    'guardian_identity_number' => $data['guardian_identity_number'] ?? null,
+                    'guardian_name' => $data['guardian_name'] ?? null,
+                    'guardian_phone' => $data['guardian_phone'] ?? null,
+                    'guardian_birth_date' => $data['guardian_birth_date'] ?? null,
+                    'guardian_occupation' => $data['guardian_occupation'] ?? null,
+                    'relationship_with_child' => $data['guardian_relationship'] ?? null,
                 ],
             ];
 

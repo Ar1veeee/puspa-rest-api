@@ -146,7 +146,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/children', [GuardianController::class, 'storeChild']);
 
             // Untuk menyimpan data lengkap ortu Ayah, Ibu, & Wali (Termasuk di Data Umum)
-            Route::put('/identity', [GuardianController::class, 'update']);
+            Route::put('/identity', [GuardianController::class, 'updateFamilyData']);
 
             // Untuk menampilkan asasmen terjadwal milik anak
             Route::get('/assessments', [AssessmentController::class, 'indexChildrenAssessment']);

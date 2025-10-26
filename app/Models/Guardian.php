@@ -27,6 +27,7 @@ class Guardian extends Model
         'user_id',
         'temp_email',
         'guardian_type',
+        'guardian_identity_number',
         'guardian_name',
         'guardian_phone',
         'guardian_birth_date',

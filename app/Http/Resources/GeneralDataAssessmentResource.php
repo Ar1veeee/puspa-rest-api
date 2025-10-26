@@ -16,9 +16,9 @@ class GeneralDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            'father_name' => null, 'father_phone' => null, 'father_age' => null, 'father_occupation' => null, 'father_relationship' => null,
-            'mother_name' => null, 'mother_phone' => null, 'mother_age' => null, 'mother_occupation' => null, 'mother_relationship' => null,
-            'guardian_name' => null, 'guardian_phone' => null, 'guardian_age' => null, 'guardian_occupation' => null, 'guardian_relationship' => null,
+            'father_identity_number' => null, 'father_name' => null, 'father_phone' => null, 'father_age' => null, 'father_occupation' => null, 'father_relationship' => null,
+            'mother_identity_number' => null, 'mother_name' => null, 'mother_phone' => null, 'mother_age' => null, 'mother_occupation' => null, 'mother_relationship' => null,
+            'guardian_identity_number' => null, 'guardian_name' => null, 'guardian_phone' => null, 'guardian_age' => null, 'guardian_occupation' => null, 'guardian_relationship' => null,
         ];
 
         $guardians = $this->child?->family?->guardians;
@@ -31,6 +31,7 @@ class GeneralDataAssessmentResource extends JsonResource
 
                 switch (strtolower($guardian->guardian_type)) {
                     case 'ayah':
+                        $response['father_identity_number'] = $guardian->guardian_identity_number;
                         $response['father_name'] = $guardian->guardian_name;
                         $response['father_phone'] = $guardian->guardian_phone;
                         $response['father_age'] = $age;
@@ -38,6 +39,7 @@ class GeneralDataAssessmentResource extends JsonResource
                         $response['father_relationship'] = $guardian->relationship_with_child;
                         break;
                     case 'ibu':
+                        $response['mother_identity_number'] = $guardian->guardian_identity_number;
                         $response['mother_name'] = $guardian->guardian_name;
                         $response['mother_phone'] = $guardian->guardian_phone;
                         $response['mother_age'] = $age;
@@ -45,6 +47,7 @@ class GeneralDataAssessmentResource extends JsonResource
                         $response['mother_relationship'] = $guardian->relationship_with_child;
                         break;
                     case 'wali':
+                        $response['guardian_identity_number'] = $guardian->guardian_identity_number;
                         $response['guardian_name'] = $guardian->guardian_name;
                         $response['guardian_phone'] = $guardian->guardian_phone;
                         $response['guardian_age'] = $age;
