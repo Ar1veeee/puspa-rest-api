@@ -89,14 +89,6 @@ class UserRepository
         return null;
     }
 
-    public function activation(string $id)
-    {
-        return $this->model->find($id)->update([
-            'is_active' => 1,
-            'email_verified_at' => Carbon::now()
-        ]);
-    }
-
     public function delete($id)
     {
         $user = $this->model->find($id);
@@ -109,5 +101,4 @@ class UserRepository
 
         return null;
     }
-
 }

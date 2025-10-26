@@ -13,9 +13,9 @@ class PedagogicalTherapistDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'assessment_id' => $this->assessment_id,
             'therapist' => new TherapistResource($this->whenLoaded('therapist')),
+            'peda_assessment_id' => $this->id,
             'summary' => $this->summary,
             'reading_aspect' => new PedaReadingAspectResource($this->whenLoaded('readingAspect')),
             'writing_aspect' => new PedaWritingAspectResource($this->whenLoaded('writingAspect')),

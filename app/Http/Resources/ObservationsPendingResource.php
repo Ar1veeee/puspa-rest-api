@@ -32,7 +32,7 @@ class ObservationsPendingResource extends JsonResource
         $guardian = $this->child?->family?->guardians?->first();
 
         $response = [
-            "id" => $this->id,
+            "observation_id" => $this->id,
             'child_name' => $this->child->child_name,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child->child_gender,

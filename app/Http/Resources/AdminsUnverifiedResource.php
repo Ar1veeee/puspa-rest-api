@@ -15,7 +15,7 @@ class AdminsUnverifiedResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            'id' => $this->id,
+            'user_id' => $this->id,
             'admin_id' => $this->admin->id,
             'email' => $this->email,
             'admin_name' => $this->admin->admin_name,

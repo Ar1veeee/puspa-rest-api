@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\AdminRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 class OwnerService
@@ -27,8 +29,18 @@ class OwnerService
         return $this->userRepository->getAllTherapistUnverified();
     }
 
-    public function activateAccount($id)
+    public function promoteToAssessor(User $user)
     {
-        return $this->userRepository->activation($id);
+        return $this->userRepository->update([
+            'role' => 'asesor'
+        ], $user->id);
+    }
+
+    public function activateAccount(User $user)
+    {
+        return $this->userRepository->update([
+            'is_active' => 1,
+            'email_verified_at' => Carbon::now()
+        ],$user->id);
     }
 }

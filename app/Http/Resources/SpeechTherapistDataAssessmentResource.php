@@ -14,9 +14,9 @@ class SpeechTherapistDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'assessment_id' => $this->assessment_id,
             'therapist' => new TherapistResource($this->whenLoaded('therapist')),
+            'speech_assessment_id' => $this->id,
             'oral_facial_aspect' => new SpeechOralFacialAspectResource($this->whenLoaded('oralFacialAspect')),
             'language_skill_aspect' => new SpeechLanguageSkillAspectResource($this->whenLoaded('languageSkillAspect')),
             'created_at' => $this->created_at->format('d F Y H:i:s'),

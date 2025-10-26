@@ -27,7 +27,7 @@ class ObservationQuestionsResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            "id" => $this->id,
+            "question_id" => $this->id,
             'question_code' => $this->question_code,
             'age_category' => $this->age_category,
             'question_number' => $this->question_number,

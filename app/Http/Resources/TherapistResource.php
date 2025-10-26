@@ -30,8 +30,8 @@ class TherapistResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            'id' => $this->id,
             'user_id' => $this->user_id,
+            'therapist_id' => $this->id,
             'email' => $this->user->email,
             'username' => $this->user->username,
             'therapist_name' => $this->therapist_name,

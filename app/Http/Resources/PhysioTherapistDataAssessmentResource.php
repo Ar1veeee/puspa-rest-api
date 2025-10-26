@@ -15,9 +15,9 @@ class PhysioTherapistDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'assessment_id' => $this->assessment_id,
             'therapist' => new TherapistResource($this->whenLoaded('therapist')),
+            'physio_assessment_id' => $this->id,
             'general_examination' => new PhysioGeneralExaminationResource($this->whenLoaded('generalExamination')),
             'system_anamnesis' => new PhysioSystemAnamnesisResource($this->whenLoaded('systemAnamnesis')),
             'sensory_examination' => new PhysioSensoryExaminationResource($this->whenLoaded('sensoryExamination')),

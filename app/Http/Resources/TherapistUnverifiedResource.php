@@ -15,7 +15,7 @@ class TherapistUnverifiedResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            'id' => $this->id,
+            'user_id' => $this->id,
             'therapist_id' => $this->therapist->id,
             'email' => $this->email,
             'therapist_name' => $this->therapist->therapist_name,

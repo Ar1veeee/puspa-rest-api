@@ -18,9 +18,9 @@ class GuardianProfileResource extends JsonResource
         $role = $this->user->role === 'user' ? 'Orangtua Pasien/Anak' : '';
 
         return [
+            'user_id' => $this->user_id,
             'guardian_id' => $this->id,
             'family_id' => $this->family_id,
-            'user_id' => $this->user_id,
             'guardian_name' => $this->guardian_name,
             'guardian_type' => $this->guardian_type,
             'relationship_with_child' => $this->relationship_with_child,

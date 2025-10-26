@@ -88,7 +88,7 @@ class ObservationController extends Controller
         return $this->successResponse($response, $message, 200);
     }
 
-    public function update(ObservationUpdateRequest $request, Observation $observation): JsonResponse
+    public function updateObservationDate(ObservationUpdateRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();
         $this->observationService->updateObservationDate($data, $observation);

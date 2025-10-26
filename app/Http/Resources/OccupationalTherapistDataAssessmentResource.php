@@ -14,9 +14,9 @@ class OccupationalTherapistDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'assessment_id' => $this->assessment_id,
             'therapist' => new TherapistResource($this->whenLoaded('therapist')),
+            'occu_assessment_id' => $this->id,
             'note' => $this->note,
             'assessment_result' => $this->assessment_result,
             'therapy_recommendation' => $this->therapy_recommendation,

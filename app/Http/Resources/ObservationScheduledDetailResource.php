@@ -36,7 +36,7 @@ class ObservationScheduledDetailResource extends JsonResource
         $guardian = $this->child?->family?->guardians?->first();
 
         return [
-            "id" => $this->id,
+            "observation_id" => $this->id,
             'child_name' => $this->child->child_name,
             'child_birth_date' => $this->child->child_birth_date->translatedFormat('d F Y'),
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),

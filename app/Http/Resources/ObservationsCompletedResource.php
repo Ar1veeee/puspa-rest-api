@@ -29,10 +29,10 @@ class ObservationsCompletedResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            "id" => $this->id,
+            "observation_id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
-            'observer' => $this->therapist->therapist_name,
+            'observer' => $this->therapist?->therapist_name,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
             'scheduled_date' => $this->scheduled_date->toDateString(),

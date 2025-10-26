@@ -18,7 +18,7 @@ class ChildrenResource extends JsonResource
         $age = $this->child_birth_date ? $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan') : null;
 
         $response = [
-            "id" => $this->id,
+            "child_id" => $this->id,
             'child_name' => $this->child_name,
             'child_birth_date' => $formattedBirthDate,
             'child_age' => $age,

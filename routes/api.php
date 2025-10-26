@@ -14,6 +14,7 @@ use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
+    // ================== ROUTE UNAUTHENTICATED ==================
     Route::get('/cors-test', function () {
         return response()->json(['message' => 'CORS test successful!']);
     });
@@ -31,7 +32,7 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
-    Route::get('/clear-cache', function() {
+    Route::get('/clear-cache', function () {
         \Artisan::call('config:clear');
         \Artisan::call('cache:clear');
         \Artisan::call('route:clear');
@@ -77,17 +78,65 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:reset-password');
     });
 
+    // ================== ROUTE AUTHENTICATED ==================
     Route::middleware('auth:sanctum')->group(function () {
+        // ================== GLOBAL ==================
         Route::post('/auth/logout', [AuthController::class, 'logout'])
             ->middleware('throttle:logout');
         Route::get('/auth/protected', [AuthController::class, 'protected']);
 
+        // ================== ROLE OWNER ==================
         Route::middleware('role:owner')->group(function () {
-            Route::get('/admins/unverified', [OwnerController::class, 'indexAdmin']);
-            Route::get('/therapists/unverified', [OwnerController::class, 'indexTherapist']);
+            Route::get('/users/{type}/unverified', [OwnerController::class, 'indexUnverified']);
+            Route::get('/users/{user}/promote-to-assessor', [OwnerController::class, 'promoteToAssessor']);
             Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
         });
 
+        // ================== ROLE OWNER & ADMIN ==================
+        Route::middleware(['role:admin,owner', 'throttle:admin'])->group(function () {
+            Route::get('/admins', [AdminController::class, 'index']);
+            Route::get('/therapists', [TherapistController::class, 'index']);
+            Route::get('/children', [ChildController::class, 'index']);
+        });
+
+        // ================== ROLE ADMIN ==================
+        Route::middleware(['role:admin', 'throttle:admin'])->group(function () {
+            Route::put('/admins/update-password', [AdminController::class, 'updatePassword']);
+
+            Route::get('/admins/{admin}', [AdminController::class, 'show']);
+            Route::post('/admins', [AdminController::class, 'store']);
+            Route::put('/admins/{admin}', [AdminController::class, 'update']);
+            Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
+
+            Route::get('/therapists/{therapist}', [TherapistController::class, 'show']);
+            Route::post('/therapists', [TherapistController::class, 'store']);
+            Route::put('/therapists/{therapist}', [TherapistController::class, 'update']);
+            Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
+
+            Route::get('/children/{child}', [ChildController::class, 'show']);
+
+            Route::put('/observations/{observation}', [ObservationController::class, 'updateObservationDate']);
+            Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
+        });
+
+        // ================== ROLE ADMIN & THERAPIST ==================
+        Route::middleware(['role:admin,terapis', 'throttle:therapist'])->group(function () {
+            Route::get('/observations', [ObservationController::class, 'index']);
+        });
+
+        // ================== ROLE THERAPIST ==================
+        Route::middleware(['role:terapis', 'throttle:therapist'])->group(function () {
+            Route::get('/observations/{observation}', [ObservationController::class, 'show']);
+            Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
+            Route::prefix('assessments')->group(function () {
+                Route::get('/{status}', [AssessmentController::class, 'indexByStatus'])
+                    ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']);
+                Route::post('/{assessment}', [AssessmentController::class, 'storeTherapistAssessment']);
+                Route::get('/{assessment}/answer', [AssessmentController::class, 'showTherapistAssessmentAnswer']);
+            });
+        });
+
+        // ================== ROLE ORANG TUA / USER ==================
         Route::middleware(['verified', 'role:user'])->prefix('my')->group(function () {
             Route::get('/profile', [GuardianController::class, 'showProfile']);
             Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
@@ -108,42 +157,5 @@ Route::prefix('v1')->group(function () {
                 Route::get('/answer', [AssessmentController::class, 'showGuardianAssessmentAnswer']);
             });
         });
-
-        Route::middleware(['role:admin', 'throttle:admin'])->group(function () {
-            Route::put('/admins/update-password', [AdminController::class, 'updatePassword']);
-
-            Route::get('/admins', [AdminController::class, 'index']);
-            Route::get('/admins/{admin}', [AdminController::class, 'show']);
-            Route::post('/admins', [AdminController::class, 'store']);
-            Route::put('/admins/{admin}', [AdminController::class, 'update']);
-            Route::delete('/admins/{admin}', [AdminController::class, 'destroy']);
-
-            Route::get('/therapists', [TherapistController::class, 'index']);
-            Route::get('/therapists/{therapist}', [TherapistController::class, 'show']);
-            Route::post('/therapists', [TherapistController::class, 'store']);
-            Route::put('/therapists/{therapist}', [TherapistController::class, 'update']);
-            Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
-
-            Route::get('/children', [ChildController::class, 'index']);
-            Route::get('/children/{child}', [ChildController::class, 'show']);
-
-            Route::put('/observations/{observation}', [ObservationController::class, 'update']);
-        });
-
-        Route::get('/observations', [ObservationController::class, 'index']);
-
-        Route::middleware(['role:terapis', 'throttle:therapist'])->group(
-            function () {
-                Route::get('/observations/{observation}', [ObservationController::class, 'show']);
-                Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
-                Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
-                Route::prefix('assessments')->group(function () {
-                    Route::get('/{status}', [AssessmentController::class, 'indexByStatus'])
-                        ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']);
-                    Route::post('/{assessment}', [AssessmentController::class, 'storeTherapistAssessment']);
-                    Route::get('/{assessment}/answer', [AssessmentController::class, 'showTherapistAssessmentAnswer']);
-                });
-            }
-        );
     });
 });

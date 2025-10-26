@@ -25,7 +25,7 @@ class ObservationDetailAnswerResource extends JsonResource
         });
 
         return [
-            'id' => $this->id,
+            'observation_id' => $this->id,
             'age_category' => $this->age_category,
             'answer_details' => $answerDetails,
             'total_score' => $this->total_score,

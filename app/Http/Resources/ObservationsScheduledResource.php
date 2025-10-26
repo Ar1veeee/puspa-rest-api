@@ -29,7 +29,7 @@ class ObservationsScheduledResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            "id" => $this->id,
+            "observation_id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
             'child_gender' => $this->child->child_gender,

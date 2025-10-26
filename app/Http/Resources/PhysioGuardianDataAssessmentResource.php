@@ -15,7 +15,7 @@ class PhysioGuardianDataAssessmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         $response = [
-            'id' => $this->id,
+            'physio_assessment_id' => $this->id,
             'complaint' => $this->complaint,
             'medical_history' => $this->medical_history,
         ];
