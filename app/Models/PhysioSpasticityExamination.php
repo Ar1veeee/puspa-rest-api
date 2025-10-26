@@ -9,9 +9,16 @@ class PhysioSpasticityExamination extends Model
 {
     use HasFactory;
 
+    protected $table = 'physio_spasticity_examinations';
+
     public $timestamps = false;
+
     protected $fillable = [
-        'head_neck_score', 'trunk_score', 'aga_dex_score', 'aga_sin_score',
-        'agb_dex_score', 'agb_sin_score'
+        'spas_head_neck_score',
+        'spas_trunk_score',
+        'spas_aga_dex_score',
+        'spas_aga_sin_score',
+        'spas_agb_dex_score',
+        'spas_agb_sin_score'
     ];
 }

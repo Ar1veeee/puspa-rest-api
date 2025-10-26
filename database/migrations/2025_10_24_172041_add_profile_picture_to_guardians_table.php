@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('physio_physiotherapy_diagnoses', function (Blueprint $table) {
-            $table->id();
-            $table->json('impairments')->nullable();
-            $table->json('functional_limitations')->nullable();
-            $table->json('participant_restrictions')->nullable();
+        Schema::table('guardians', function (Blueprint $table) {
+            $table->string('profile_picture')->nullable()->after('guardian_occupation');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('physio_physiotherapy_diagnoses');
+        Schema::table('guardians', function (Blueprint $table) {
+            $table->dropColumn('profile_picture');
+        });
     }
 };

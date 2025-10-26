@@ -2,6 +2,9 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\PedaAssessmentTherapist;
+use App\Models\PedaCountingAspect;
+use App\Models\PedaGeneralKnowledgeAspect;
 use App\Models\PedagogicalAcademicAspect;
 use App\Models\PedagogicalAssessmentGuardian;
 use App\Models\PedagogicalAuditoryImpairmentAspect;
@@ -10,6 +13,9 @@ use App\Models\PedagogicalCognitiveImpairmentAspect;
 use App\Models\PedagogicalMotorImpairmentAspect;
 use App\Models\PedagogicalSocialCommunicationAspect;
 use App\Models\PedagogicalVisualImpairmentAspect;
+use App\Models\PedaLearningReadinessAspect;
+use App\Models\PedaReadingAspect;
+use App\Models\PedaWritingAspect;
 
 class PedagogicalAssessmentRepository
 {
@@ -22,6 +28,13 @@ class PedagogicalAssessmentRepository
     protected $modelVisualAspect;
     protected $modelSocialCommunicationAspect;
 
+    protected $modelAssessmentTherapist;
+    protected $modelReadingAspect;
+    protected $modelWritingAspect;
+    protected $modelCountingAspect;
+    protected $modelLearningReadinessAspect;
+    protected $modelGeneralKnowledgeAspect;
+
     public function __construct(
         PedagogicalAssessmentGuardian         $modelAssessmentGuardian,
         PedagogicalAcademicAspect             $modelAcademicAspect,
@@ -30,7 +43,14 @@ class PedagogicalAssessmentRepository
         PedagogicalCognitiveImpairmentAspect  $modelCognitiveAspect,
         PedagogicalMotorImpairmentAspect      $modelMotorAspect,
         PedagogicalVisualImpairmentAspect     $modelVisualAspect,
-        PedagogicalSocialCommunicationAspect  $modelSocialCommunicationAspect
+        PedagogicalSocialCommunicationAspect  $modelSocialCommunicationAspect,
+
+        PedaAssessmentTherapist $modelAssessmentTherapist,
+        PedaReadingAspect $modelReadingAspect,
+        PedaWritingAspect $modelWritingAspect,
+        PedaCountingAspect $modelCountingAspect,
+        PedaLearningReadinessAspect $modelLearningReadinessAspect,
+        PedaGeneralKnowledgeAspect $modelGeneralKnowledgeAspect,
     )
     {
         $this->modelAssessmentGuardian = $modelAssessmentGuardian;
@@ -41,6 +61,12 @@ class PedagogicalAssessmentRepository
         $this->modelMotorAspect = $modelMotorAspect;
         $this->modelVisualAspect = $modelVisualAspect;
         $this->modelSocialCommunicationAspect = $modelSocialCommunicationAspect;
+        $this->modelAssessmentTherapist = $modelAssessmentTherapist;
+        $this->modelReadingAspect = $modelReadingAspect;
+        $this->modelWritingAspect = $modelWritingAspect;
+        $this->modelCountingAspect = $modelCountingAspect;
+        $this->modelLearningReadinessAspect = $modelLearningReadinessAspect;
+        $this->modelGeneralKnowledgeAspect = $modelGeneralKnowledgeAspect;
     }
 
     public function createAssessmentGuardian(array $data)
@@ -83,19 +109,33 @@ class PedagogicalAssessmentRepository
         return $this->modelVisualAspect->create($data);
     }
 
-    public function getAllAssessmentGuardian(int $assessmentId)
+    public function createAssessmentTherapist(array $data)
     {
-        return $this->modelAssessmentGuardian
-            ->with([
-                'academicAspect',
-                'visualImpairmentAspect',
-                'auditoryImpairmentAspect',
-                'cognitiveImpairmentAspect',
-                'motorImpairmentAspect',
-                'behavioralImpairmentAspect',
-                'socialCommunicationAspect',
-            ])
-            ->where('assessment_id', $assessmentId)
-            ->first();
+        return $this->modelAssessmentTherapist->create($data);
+    }
+
+    public function createReadingAspect(array $data)
+    {
+        return $this->modelReadingAspect->create($data);
+    }
+
+    public function createWritingAspect(array $data)
+    {
+        return $this->modelWritingAspect->create($data);
+    }
+
+    public function createCountingAspect(array $data)
+    {
+        return $this->modelCountingAspect->create($data);
+    }
+
+    public function createLearningReadinessAspect(array $data)
+    {
+        return $this->modelLearningReadinessAspect->create($data);
+    }
+
+    public function createGeneralKnowledgeAspect(array $data)
+    {
+        return $this->modelGeneralKnowledgeAspect->create($data);
     }
 }

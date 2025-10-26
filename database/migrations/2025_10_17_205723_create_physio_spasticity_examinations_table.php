@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('physio_spasticity_examinations', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('head_neck_score');
-            $table->tinyInteger('trunk_score');
-            $table->tinyInteger('aga_dex_score');
-            $table->tinyInteger('aga_sin_score');
-            $table->tinyInteger('agb_dex_score');
-            $table->tinyInteger('agb_sin_score');
+            $table->tinyInteger('spas_head_neck_score');
+            $table->tinyInteger('spas_trunk_score');
+            $table->tinyInteger('spas_aga_dex_score');
+            $table->tinyInteger('spas_aga_sin_score');
+            $table->tinyInteger('spas_agb_dex_score');
+            $table->tinyInteger('spas_agb_sin_score');
         });
     }
 

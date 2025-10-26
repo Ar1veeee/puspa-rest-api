@@ -13,6 +13,7 @@ use App\Http\Services\GuardianService;
 use App\Models\Guardian;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class GuardianController extends Controller
 {
@@ -64,6 +65,17 @@ class GuardianController extends Controller
     public function updateProfile(UpdateGuardianProfileRequest $request, Guardian $guardian): JsonResponse
     {
         $data = $request->validated();
+        if ($request->hasFile('file')) {
+            if ($guardian->profile_picture) {
+                Storage::disk('public')->delete($guardian->profile_picture);
+            }
+
+            $file = $request->file('file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('guardians', $filename, 'public');
+            $data['profile_picture'] = $path;
+        }
+
         $this->guardianService->updateProfile($data, $guardian);
 
         return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);

@@ -9,6 +9,19 @@ class PhysioPhysiotherapyDiagnosis extends Model
 {
     use HasFactory;
 
+    protected $table = 'physio_physiotherapy_diagnoses';
+
     public $timestamps = false;
-    protected $guarded = [];
+
+    protected $fillable = [
+        'impairments',
+        'functional_limitations',
+        'participant_restrictions',
+    ];
+
+    protected $casts = [
+        'impairments' => 'array',
+        'functional_limitations' => 'array',
+        'participant_restrictions' => 'array',
+    ];
 }

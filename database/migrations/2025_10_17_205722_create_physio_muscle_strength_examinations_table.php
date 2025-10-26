@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('physio_muscle_strength_examinations', function (Blueprint $table) {
             $table->id();
             $options = ['X', 'O', 'T', 'R'];
-            $table->enum('trunk_score', $options);
-            $table->enum('aga_dex_score', $options);
-            $table->enum('aga_sin_score', $options);
-            $table->enum('agb_dex_score', $options);
-            $table->enum('agb_sin_score', $options);
+            $table->enum('str_trunk_score', $options);
+            $table->enum('str_aga_dex_score', $options);
+            $table->enum('str_aga_sin_score', $options);
+            $table->enum('str_agb_dex_score', $options);
+            $table->enum('str_agb_sin_score', $options);
         });
     }
 

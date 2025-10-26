@@ -9,6 +9,9 @@ class PhysioSpasticityType extends Model
 {
     use HasFactory;
 
+    protected $table = 'physio_spasticity_types';
+
     public $timestamps = false;
+
     protected $fillable = ['hemiplegia', 'diplegia', 'quadriplegia', 'monoplegia', 'triplegia'];
 }

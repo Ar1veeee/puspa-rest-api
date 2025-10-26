@@ -11,6 +11,7 @@ use App\Models\Child;
 use App\Models\Guardian;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -205,13 +206,14 @@ class GuardianService
 
     private function updateGuardianData(Guardian $guardian, array $data): void
     {
-        $guardianData = array_filter([
+        $guardianData = Arr::whereNotNull([
             'guardian_name' => $data['guardian_name'] ?? null,
             'relationship_with_child' => $data['relationship_with_child'] ?? null,
             'guardian_birth_date' => $data['guardian_birth_date'] ?? null,
             'guardian_phone' => $data['guardian_phone'] ?? null,
             'guardian_occupation' => $data['guardian_occupation'] ?? null,
-        ], fn($value) => $value !== null);
+            'profile_picture' => $data['profile_picture'] ?? null,
+        ]);
 
         if (!empty($guardianData)) {
             $this->guardianRepository->update($guardianData, $guardian->id);

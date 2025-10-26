@@ -8,6 +8,7 @@ use App\Http\Repositories\UserRepository;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 class VerificationService
@@ -22,16 +23,35 @@ class VerificationService
         $this->userRepository = $userRepository;
     }
 
-    public function verifyEmail(User $user): void
+    public function verifyEmail(string $userId, string $hash): void
     {
-        if ($user->hasVerifiedEmail()) {
+        $user = $this->userRepository->getById($userId);
+
+        if (!$user) {
+            throw new ModelNotFoundException('Pengguna tidak ditemukan.');
+        }
+
+        if (!hash_equals(sha1($user->email), $hash)) {
+            throw new ModelNotFoundException('Link verifikasi tidak valid.');
+        }
+
+        if ($user->email_verified_at !== null) {
             throw new AlreadyVerifiedException('Email sudah terverifikasi sebelumnya.');
         }
 
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
+        DB::table('users')
+            ->where('id', $userId)
+            ->update([
+                'email_verified_at' => now(),
+                'is_active' => true,
+                'updated_at' => now(),
+            ]);
+
+        $user->refresh();
+
+        event(new Verified($user));
     }
+
 
     /**
      *

@@ -24,10 +24,10 @@ class VerificationController extends Controller
         $this->frontendUrl = config('app.frontend_url');
     }
 
-    public function verify(User $user, string $hash)
+    public function verify(string $id, string $hash)
     {
         try {
-            $this->verificationService->verifyEmail($user);
+            $this->verificationService->verifyEmail($id, $hash);
             return redirect($this->frontendUrl . '/auth/email-verify');
         } catch (ModelNotFoundException $e) {
             return redirect($this->frontendUrl . '/auth/email-verify?status=invalid');

@@ -32,6 +32,7 @@ class Guardian extends Model
         'guardian_birth_date',
         'guardian_occupation',
         'relationship_with_child',
+        'profile_picture',
     ];
 
     protected $casts = [

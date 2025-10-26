@@ -2,6 +2,12 @@
 
 namespace App\Http\Repositories;
 
+use App\Models\OccuAssessmentTherapist;
+use App\Models\OccuBalanceCoordination;
+use App\Models\OccuBodilySelfSense;
+use App\Models\OccuConcentrationProblemSolving;
+use App\Models\OccuConceptKnowledge;
+use App\Models\OccuMotoricPlanning;
 use App\Models\OccupationalAdlMotorSkill;
 use App\Models\OccupationalAssessmentGuardian;
 use App\Models\OccupationalAuditoryCommunication;
@@ -12,6 +18,7 @@ use App\Models\OccupationalSensoryProcessingScreening;
 
 class OccupationalAssessmentRepository
 {
+    // Guardian Repo
     protected $modelAssessmentGuardian;
     protected $modelAdlMotorSkill;
     protected $modelAuditoryCommunication;
@@ -20,6 +27,14 @@ class OccupationalAssessmentRepository
     protected $modelSensoryModality;
     protected $modelSensoryProcessing;
 
+    // Therapist Repo
+    protected $modelAssessmentTherapist;
+    protected $modelBalanceCoordination;
+    protected $modelBodilySelfSense;
+    protected $modelConcentrationProblemSolving;
+    protected $modelConceptKnowledge;
+    protected $modelMotoricPlanning;
+
     public function __construct(
         OccupationalAssessmentGuardian         $modelAssessmentGuardian,
         OccupationalAdlMotorSkill              $modelAdlMotorSkill,
@@ -27,7 +42,14 @@ class OccupationalAssessmentRepository
         OccupationalBehaviorScale              $modelBehaviorScale,
         OccupationalBehaviorSocial             $modelBehaviorSocial,
         OccupationalSensoryModalityTest        $modelSensoryModality,
-        OccupationalSensoryProcessingScreening $modelSensoryProcessing
+        OccupationalSensoryProcessingScreening $modelSensoryProcessing,
+
+        OccuAssessmentTherapist                $modelAssessmentTherapist,
+        OccuBalanceCoordination                $modelBalanceCoordination,
+        OccuBodilySelfSense                    $modelBodilySelfSense,
+        OccuConcentrationProblemSolving        $modelConcentrationProblemSolving,
+        OccuConceptKnowledge                   $modelConceptKnowledge,
+        OccuMotoricPlanning                    $modelMotoricPlanning,
     )
     {
         $this->modelAssessmentGuardian = $modelAssessmentGuardian;
@@ -37,8 +59,16 @@ class OccupationalAssessmentRepository
         $this->modelBehaviorSocial = $modelBehaviorSocial;
         $this->modelSensoryModality = $modelSensoryModality;
         $this->modelSensoryProcessing = $modelSensoryProcessing;
+
+        $this->modelAssessmentTherapist = $modelAssessmentTherapist;
+        $this->modelBalanceCoordination = $modelBalanceCoordination;
+        $this->modelBodilySelfSense = $modelBodilySelfSense;
+        $this->modelConcentrationProblemSolving = $modelConcentrationProblemSolving;
+        $this->modelConceptKnowledge = $modelConceptKnowledge;
+        $this->modelMotoricPlanning = $modelMotoricPlanning;
     }
 
+    // Guardian Repo
     public function createAssessmentGuardian(array $data)
     {
         return $this->modelAssessmentGuardian->create($data);
@@ -74,18 +104,34 @@ class OccupationalAssessmentRepository
         return $this->modelSensoryProcessing->create($data);
     }
 
-    public function getAllAssessmentGuardian(int $assessmentId)
+    // Therapist Repo
+    public function createAssessmentTherapist(array $data)
     {
-        return $this->modelAssessmentGuardian
-            ->with([
-                'auditoryCommunication',
-                'sensoryModalityTest',
-                'sensoryProcessingScreening',
-                'adlMotorSkill',
-                'behaviorSocial',
-                'behaviorScale',
-            ])
-            ->where('assessment_id', $assessmentId)
-            ->first();
+        return $this->modelAssessmentTherapist->create($data);
+    }
+
+    public function createBalanceCoordination(array $data)
+    {
+        return $this->modelBalanceCoordination->create($data);
+    }
+
+    public function createBodilySelfSense(array $data)
+    {
+        return $this->modelBodilySelfSense->create($data);
+    }
+
+    public function createConcentrationProblemSolving(array $data)
+    {
+        return $this->modelConcentrationProblemSolving->create($data);
+    }
+
+    public function createConceptKnowledge(array $data)
+    {
+        return $this->modelConceptKnowledge->create($data);
+    }
+
+    public function createMotoricPlanning(array $data)
+    {
+        return $this->modelMotoricPlanning->create($data);
     }
 }

@@ -22,11 +22,11 @@ return new class extends Migration
 
             foreach ($reflexes as $reflex) {
                 $table->text($reflex . '_result')->nullable();
-                $table->text($reflex . '_primitive')->nullable();
-                $table->text($reflex . '_functional')->nullable();
-                $table->text($reflex . '_pathological')->nullable();
-                $table->text($reflex . '_integration')->nullable();
-                $table->text($reflex . '_not_synchronous')->nullable();
+                $table->boolean($reflex . '_primitive')->nullable();
+                $table->boolean($reflex . '_functional')->nullable();
+                $table->boolean($reflex . '_pathological')->nullable();
+                $table->boolean($reflex . '_integration')->nullable();
+                $table->boolean($reflex . '_not_synchronous')->nullable();
             }
         });
     }
