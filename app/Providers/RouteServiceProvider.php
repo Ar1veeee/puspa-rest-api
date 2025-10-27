@@ -154,14 +154,6 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('authenticated', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()->id);
-        });
-
-        RateLimiter::for('admin', function (Request $request) {
-            return Limit::perMinute(100)->by($request->user()->id);
-        });
-
-        RateLimiter::for('therapist', function (Request $request) {
             return Limit::perMinute(100)->by($request->user()->id);
         });
     }

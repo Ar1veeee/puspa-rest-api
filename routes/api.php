@@ -86,21 +86,21 @@ Route::prefix('v1')->group(function () {
         Route::get('/auth/protected', [AuthController::class, 'protected']);
 
         // ================== ROLE OWNER ==================
-        Route::middleware('role:owner')->group(function () {
+        Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
             Route::get('/users/{type}/unverified', [OwnerController::class, 'indexUnverified']);
             Route::get('/users/{user}/promote-to-assessor', [OwnerController::class, 'promoteToAssessor']);
             Route::get('/users/{user}/activate', [OwnerController::class, 'activateAccount']);
         });
 
         // ================== ROLE OWNER & ADMIN ==================
-        Route::middleware(['role:admin,owner', 'throttle:admin'])->group(function () {
+        Route::middleware(['role:admin,owner', 'throttle:authenticated'])->group(function () {
             Route::get('/admins', [AdminController::class, 'index']);
             Route::get('/therapists', [TherapistController::class, 'index']);
             Route::get('/children', [ChildController::class, 'index']);
         });
 
         // ================== ROLE ADMIN ==================
-        Route::middleware(['role:admin', 'throttle:admin'])->group(function () {
+        Route::middleware(['role:admin', 'throttle:authenticated'])->group(function () {
             Route::put('/admins/update-password', [AdminController::class, 'updatePassword']);
 
             Route::get('/admins/{admin}', [AdminController::class, 'show']);
@@ -120,12 +120,12 @@ Route::prefix('v1')->group(function () {
         });
 
         // ================== ROLE ADMIN & THERAPIST ==================
-        Route::middleware(['role:admin,terapis', 'throttle:therapist'])->group(function () {
+        Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::get('/observations', [ObservationController::class, 'index']);
         });
 
         // ================== ROLE THERAPIST ==================
-        Route::middleware(['role:terapis', 'throttle:therapist'])->group(function () {
+        Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::get('/observations/{observation}', [ObservationController::class, 'show']);
             Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
             Route::prefix('assessments')->group(function () {
@@ -137,7 +137,7 @@ Route::prefix('v1')->group(function () {
         });
 
         // ================== ROLE ORANG TUA / USER ==================
-        Route::middleware(['verified', 'role:user'])->prefix('my')->group(function () {
+        Route::middleware(['verified', 'role:user', 'throttle:authenticated'])->prefix('my')->group(function () {
             Route::get('/profile', [GuardianController::class, 'showProfile']);
             Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
             Route::put('/update-password', [GuardianController::class, 'updatePassword']);
