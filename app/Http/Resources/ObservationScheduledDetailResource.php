@@ -2,28 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * @OA\Schema(
- * schema="ObservationScheduledDetailResource",
- * type="object",
- * @OA\Property(property="id", type="integer", description="Observation ID"),
- * @OA\Property(property="child_name", type="string", description="Nama lengkap anak"),
- * @OA\Property(property="child_birth_date", type="string", format="date", description="Tanggal lahir anak"),
- * @OA\Property(property="child_age", type="integer", description="Usia anak saat ini"),
- * @OA\Property(property="child_gender", type="string", description="Jenis kelamin anak"),
- * @OA\Property(property="child_school", type="string", nullable=true, description="Sekolah anak"),
- * @OA\Property(property="child_address", type="string", description="Alamat rumah anak"),
- * @OA\Property(property="scheduled_date", type="string", format="date", description="Tanggal jadwal observasi"),
- * @OA\Property(property="parent_name", type="string", description="Nama orang tua"),
- * @OA\Property(property="parent_type", type="string", description="Tipe orang tua (cth: ayah, ibu)"),
- * @OA\Property(property="parent_phone", type="string", description="Nomor telepon orang tua"),
- * @OA\Property(property="child_complaint", type="string", description="Keluhan awal anak"),
- * @OA\Property(property="child_service_choice", type="string", description="Pilihan layanan untuk anak")
- * )
- */
 class ObservationScheduledDetailResource extends JsonResource
 {
     /**
@@ -35,6 +17,10 @@ class ObservationScheduledDetailResource extends JsonResource
     {
         $guardian = $this->child?->family?->guardians?->first();
 
+        $scheduled_date_formatted = $this->scheduled_date instanceof Carbon
+            ? $this->scheduled_date
+            : Carbon::parse($this->scheduled_date);
+
         return [
             "observation_id" => $this->id,
             'child_name' => $this->child->child_name,
@@ -43,7 +29,8 @@ class ObservationScheduledDetailResource extends JsonResource
             'child_gender' => $this->child->child_gender,
             'child_school' => $this->child->child_school,
             'child_address' => $this->child->child_address,
-            'scheduled_date' => $this->scheduled_date->toDateString(),
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
+            'scheduled_time' => $scheduled_date_formatted->format('H:i'), // Hanya jam:menit
             'parent_name' => $guardian->guardian_name,
             'parent_type' => $guardian->guardian_type,
             'parent_phone' => $guardian->guardian_phone,

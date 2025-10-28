@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,6 +29,10 @@ class ObservationsScheduledResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $scheduled_date_formatted = $this->scheduled_date instanceof Carbon
+            ? $this->scheduled_date
+            : Carbon::parse($this->scheduled_date);
+
         $response = [
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
@@ -35,7 +40,8 @@ class ObservationsScheduledResource extends JsonResource
             'child_gender' => $this->child->child_gender,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
-            'scheduled_date' => $this->scheduled_date->toDateString(),
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
+            'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
             'status' => $this->status,
         ];
 

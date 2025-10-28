@@ -35,7 +35,6 @@ class Observation extends Model
     ];
 
     protected $casts = [
-        'scheduled_date' => 'date',
         'is_continued_to_assessment' => 'boolean',
     ];
 

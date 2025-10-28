@@ -8,6 +8,7 @@ use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
 use App\Models\Observation;
 use App\Traits\ClearsCaches;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -237,6 +238,7 @@ class ObservationService
     {
         $observation->update([
             'therapist_id' => $therapist->id,
+            'completed_at' => Carbon::now(),
             'total_score' => $totalScore,
             'conclusion' => $data['conclusion'],
             'recommendation' => $data['recommendation'],
@@ -261,8 +263,15 @@ class ObservationService
     {
         $updateData = [];
 
-        if (!empty($data['scheduled_date'])) {
-            $updateData['scheduled_date'] = $data['scheduled_date'];
+        if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
+            $newDateTime = Carbon::createFromFormat(
+                'Y-m-d H:i',
+                $data['scheduled_date'] . ' ' . $data['scheduled_time']
+            );
+
+            if ($newDateTime && !$newDateTime->equalTo($observation->scheduled_date)) {
+                $updateData['scheduled_date'] = $newDateTime;
+            }
 
             if ($observation->status === 'pending') {
                 $updateData['status'] = 'scheduled';

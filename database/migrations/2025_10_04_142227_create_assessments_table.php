@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->boolean('wicara')->nullable()->default(false);
             $table->boolean('paedagog')->nullable()->default(false);
             $table->boolean('okupasi')->nullable()->default(false);
-            $table->date('scheduled_date')->nullable()->default(null);
+            $table->dateTime('scheduled_date')->nullable()->default(null);
             $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
             $table->timestamps();
         });

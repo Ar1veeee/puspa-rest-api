@@ -5,24 +5,6 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * @OA\Schema(
- * schema="ObservationCompletedDetailResource",
- * type="object",
- * @OA\Property(property="id", type="integer", description="Observation ID"),
- * @OA\Property(property="child_name", type="string", description="Child's full name"),
- * @OA\Property(property="child_birth_place_date", type="string", description="Child's birth place and date"),
- * @OA\Property(property="child_age", type="integer", description="Child's current age in years"),
- * @OA\Property(property="child_gender", type="string", description="Child's gender"),
- * @OA\Property(property="child_school", type="string", nullable=true, description="Child's school"),
- * @OA\Property(property="child_address", type="string", description="Child's home address"),
- * @OA\Property(property="parent_name", type="string", description="Nama orang tua"),
- * @OA\Property(property="parent_type", type="string", description="Tipe orang tua (cth: ayah, ibu)"),
- * @OA\Property(property="total_score", type="integer", description="Total score accumulated from the answers"),
- * @OA\Property(property="recommendation", type="string", description="Therapist's recommendation after the observation"),
- * @OA\Property(property="conclusion", type="string", description="Therapist's conclusion after the observation")
- * )
- */
 class ObservationCompletedDetailResource extends JsonResource
 {
     /**

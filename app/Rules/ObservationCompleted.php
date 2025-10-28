@@ -15,7 +15,7 @@ class ObservationCompleted implements Rule
             ->join('observations', 'children.id', '=', 'observations.child_id')
             ->where('guardians.temp_email', $value)
             ->where('observations.is_continued_to_assessment', true)
-            ->where('observations.status', 'Completed')
+            ->where('observations.status', 'completed')
             ->exists();
     }
 
