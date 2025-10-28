@@ -46,9 +46,9 @@ class GuardianService
         return $this->guardianRepository->findByUserId($user_id);
     }
 
-    public function getChildren(string $userId)
+    public function getChildren(string $user_id)
     {
-        $guardian = $this->guardianRepository->findByUserId($userId);
+        $guardian = $this->guardianRepository->findByUserId($user_id);
         if (!$guardian) {
             throw new ModelNotFoundException('Data Orang Tua Tidak Ditemukan');
         }
@@ -56,9 +56,9 @@ class GuardianService
         return $this->guardianRepository->getChildrenByUserId($guardian->user_id);
     }
 
-    public function addChild(string $userId, array $data)
+    public function addChild(string $user_id, array $data)
     {
-        $guardian = $this->guardianRepository->findByUserId($userId);
+        $guardian = $this->guardianRepository->findByUserId($user_id);
         if (!$guardian) {
             throw new ModelNotFoundException('Data Orang Tua Tidak Ditemukan');
         }
@@ -73,16 +73,16 @@ class GuardianService
         });
     }
 
-    public function updateGuardians(array $data, string $userId)
+    public function updateGuardians(array $data, string $user_id)
     {
         DB::beginTransaction();
         try {
-            $primaryGuardian = $this->guardianRepository->findByUserId($userId);
+            $primaryGuardian = $this->guardianRepository->findByUserId($user_id);
             if (!$primaryGuardian) {
                 throw new \Exception('Data wali utama tidak ditemukan.');
             }
 
-            $familyId = $primaryGuardian->family_id;
+            $family_id = $primaryGuardian->family_id;
 
             $types = [
                 'ayah' => [
@@ -114,20 +114,21 @@ class GuardianService
             foreach ($types as $type => $info) {
                 $info = array_map(fn($v) => is_string($v) ? trim($v) : $v, $info);
 
-                $hasData = array_filter($info, fn($v) => $v !== null && $v !== '');
-                if (empty($hasData)) {
+                $hasData = collect($info)->filter(fn($v) => $v !== null && $v !== '')->isNotEmpty();
+
+                if (!$hasData) {
                     continue;
                 }
 
-                $existingGuardian = $this->guardianRepository->findByFamilyIdAndType($familyId, $type);
+                $existingGuardian = $this->guardianRepository->findByFamilyIdAndType($family_id, $type);
 
                 if ($existingGuardian) {
                     $existingGuardian->update($info);
                 } else {
                     $payload = array_merge($info, [
-                        'family_id' => $familyId,
+                        'family_id' => $family_id,
                         'guardian_type' => $type,
-                        'user_id' => ($primaryGuardian->guardian_type === $type) ? $userId : null,
+                        'user_id' => ($primaryGuardian->guardian_type === $type) ? $user_id : null,
                     ]);
                     $this->guardianRepository->create($payload);
                 }

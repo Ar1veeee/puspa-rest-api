@@ -114,6 +114,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('/therapists/{therapist}', [TherapistController::class, 'destroy']);
 
             Route::get('/children/{child}', [ChildController::class, 'show']);
+            Route::put('/children/{child}', [ChildController::class, 'update']);
 
             Route::put('/observations/{observation}', [ObservationController::class, 'updateObservationDate']);
             Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);

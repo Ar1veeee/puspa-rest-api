@@ -25,18 +25,21 @@ class ChildDetailResource extends JsonResource
             'created_at' => $this->created_at->format('d F Y H:i:s'),
             'updated_at' => $this->updated_at->format('d F Y H:i:s'),
 
+            'father_identity_name' => '-',
             'father_name' => '-',
             'father_phone' => '-',
             'father_age' => '-',
             'father_occupation' => '-',
             'father_relationship' => '-',
 
+            'mother_identity_name' => '-',
             'mother_name' => '-',
             'mother_phone' => '-',
             'mother_age' => '-',
             'mother_occupation' => '-',
             'mother_relationship' => '-',
 
+            'guardian_identity_name' => '-',
             'guardian_name' => '-',
             'guardian_phone' => '-',
             'guardian_age' => '-',
@@ -54,6 +57,7 @@ class ChildDetailResource extends JsonResource
 
             switch ($guardian->guardian_type) {
                 case 'ayah':
+                    $response['father_identity_name'] = $guardian->guardian_identity_name ?? '-';
                     $response['father_name'] = $guardian->guardian_name;
                     $response['father_phone'] = $guardian->guardian_phone;
                     $response['father_age'] = $age;
@@ -61,6 +65,7 @@ class ChildDetailResource extends JsonResource
                     $response['father_relationship'] = $guardian->relationship_with_child ?? '-';
                     break;
                 case 'ibu':
+                    $response['mother_identity_name'] = $guardian->guardian_identity_name ?? '-';
                     $response['mother_name'] = $guardian->guardian_name;
                     $response['mother_phone'] = $guardian->guardian_phone;
                     $response['mother_age'] = $age;
@@ -68,7 +73,8 @@ class ChildDetailResource extends JsonResource
                     $response['mother_relationship'] = $guardian->relationship_with_child ?? '-';
                     break;
                 case 'wali':
-                    $response['guardian_name'] = $guardian->guardian_name; // 'wali_name' diubah menjadi 'guardian_name' agar konsisten
+                    $response['guardian_identity_name'] = $guardian->guardian_identity_name ?? '-';
+                    $response['guardian_name'] = $guardian->guardian_name;
                     $response['guardian_phone'] = $guardian->guardian_phone;
                     $response['guardian_age'] = $age;
                     $response['guardian_occupation'] = $guardian->guardian_occupation ?? '-';

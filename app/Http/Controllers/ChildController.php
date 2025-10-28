@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
+use App\Http\Requests\ChildFamilyUpdateRequest;
 use App\Http\Resources\ChildDetailResource;
 use App\Http\Resources\ChildrenResource;
 use App\Http\Services\ChildService;
@@ -34,5 +35,12 @@ class ChildController extends Controller
         $response = new ChildDetailResource($child);
 
         return $this->successResponse($response, 'Detail Anak', 200);
+    }
+
+    public function update(ChildFamilyUpdateRequest $request,Child $child)
+    {
+        $data = $request->validated();
+        $this->childService->update($data, $child);
+        return $this->successResponse([], 'Update Anak Berhasil', 200);
     }
 }
