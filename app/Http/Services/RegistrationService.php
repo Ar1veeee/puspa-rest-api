@@ -23,8 +23,6 @@ class RegistrationService
     protected $childRepository;
     protected $observationRepository;
 
-    private const DEFAULT_OBSERVATION_DAYS_AHEAD = 1;
-
     public function __construct(
         UserRepository        $userRepository,
         FamilyRepository      $familyRepository,
@@ -53,15 +51,17 @@ class RegistrationService
 
         DB::beginTransaction();
         try {
-            $family = $this->createFamily();
-            $this->createGuardian($family->id, $data);
-            $child = $this->createChild($family->id, $data);
-            $this->createObservation($child, $data['child_birth_date']);
+            $updated = [
+                $family = $this->createFamily(),
+                $this->createGuardian($family->id, $data),
+                $child = $this->createChild($family->id, $data),
+                $this->createObservation($child, $data['child_birth_date']),
+            ];
 
             DB::commit();
+            $this->clearObservationCaches();
 
-            return $this->clearObservationCaches();
-
+            return $updated;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -175,7 +175,6 @@ class RegistrationService
 
         return $this->observationRepository->create([
             'child_id' => $child->id,
-            'scheduled_date' => $this->calculateScheduledDate(),
             'age_category' => $ageInfo['category'],
             'status' => 'pending',
         ]);
