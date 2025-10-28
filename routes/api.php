@@ -120,15 +120,19 @@ Route::prefix('v1')->group(function () {
             Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
         });
 
-        // ================== ROLE ADMIN & THERAPIST ==================
+        // ================== ROLE ADMIN, THERAPIST, ASSESSOR ==================
         Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::get('/observations', [ObservationController::class, 'indexByStatus']); // status sebagai query
             Route::get('/observations/{observation}', [ObservationController::class, 'showByType']); // type sebagai query
         });
 
-        // ================== ROLE THERAPIST ==================
+        // ================== ROLE THERAPIST & ASSESSOR ==================
         Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
+        });
+
+        // ================== ROLE ASSESSOR ==================
+        Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
                 Route::get('/{status}', [AssessmentController::class, 'indexByStatus'])
                     ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']);
