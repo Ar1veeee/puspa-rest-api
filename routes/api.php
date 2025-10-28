@@ -122,12 +122,12 @@ Route::prefix('v1')->group(function () {
 
         // ================== ROLE ADMIN & THERAPIST ==================
         Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
-            Route::get('/observations', [ObservationController::class, 'index']);
+            Route::get('/observations', [ObservationController::class, 'indexByStatus']); // status sebagai query
+            Route::get('/observations/{observation}', [ObservationController::class, 'showByType']); // type sebagai query
         });
 
         // ================== ROLE THERAPIST ==================
         Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
-            Route::get('/observations/{observation}', [ObservationController::class, 'show']);
             Route::post('/observations/{observation}/submit', [ObservationController::class, 'submit']);
             Route::prefix('assessments')->group(function () {
                 Route::get('/{status}', [AssessmentController::class, 'indexByStatus'])

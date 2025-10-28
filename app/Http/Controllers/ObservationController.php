@@ -29,7 +29,7 @@ class ObservationController extends Controller
         $this->observationService = $observationService;
     }
 
-    public function index(Request $request): JsonResponse
+    public function indexByStatus(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'status' => ['nullable', 'string', 'in:pending,scheduled,completed'],
@@ -50,7 +50,7 @@ class ObservationController extends Controller
         return $this->successResponse($resourceCollection, $message, 200);
     }
 
-    public function show(Request $request, Observation $observation): JsonResponse
+    public function showByType(Request $request, Observation $observation): JsonResponse
     {
         $validated = $request->validate([
             'type' => ['required', 'string', 'in:scheduled,completed,question,answer'],
