@@ -31,6 +31,7 @@ class Observation extends Model
         'conclusion',
         'recommendation',
         'status',
+        'completed_at',
         'is_continued_to_assessment',
     ];
 
