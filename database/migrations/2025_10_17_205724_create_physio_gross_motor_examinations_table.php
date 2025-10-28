@@ -53,8 +53,8 @@ return new class extends Migration
             $table->text('standing_ankle')->nullable();
             $table->text('standing_support')->nullable()->comment('Tumpuan');
             $table->enum('standing_posture', ['Good Posture', 'Poor Posture'])->nullable();
+            $table->text('standing_posture_note')->nullable();
             // Berjalan
-            $table->text('walking_bad_posture')->nullable();
             $table->text('walking_gait_pattern')->nullable()->comment('Pola Jalan');
             $table->text('walking_balance')->nullable()->comment('Keseimbangan');
             $table->text('walking_knee_type')->nullable()->comment('Tipe Lutut');

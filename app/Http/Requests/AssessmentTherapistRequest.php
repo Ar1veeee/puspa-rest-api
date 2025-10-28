@@ -180,9 +180,9 @@ class AssessmentTherapistRequest extends FormRequest
                 'standing_ankle' => ['nullable', 'string', 'max:500'],
                 'standing_support' => ['nullable', 'string', 'max:500'],
                 'standing_posture' => ['nullable', 'string', Rule::in($postureOptions)],
+                'standing_posture_note' => ['nullable', 'string', 'max:200'],
 
                 // Walking
-                'walking_bad_posture' => ['nullable', 'string', 'max:500'],
                 'walking_gait_pattern' => ['nullable', 'string', 'max:500'],
                 'walking_balance' => ['nullable', 'string', 'max:500'],
                 'walking_knee_type' => ['nullable', 'string', 'max:500'],
