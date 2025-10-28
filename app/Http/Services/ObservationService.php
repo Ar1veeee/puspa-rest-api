@@ -84,6 +84,8 @@ class ObservationService
     {
         $this->validateObservationForSubmission($observation);
 
+        $this->validateAgeCategory($observation, $data['answers']);
+
         $therapist = $this->getAuthenticatedTherapist();
 
         $questions = $this->getQuestionsForAnswers($data['answers']);
@@ -159,9 +161,47 @@ class ObservationService
     private function getQuestionsForAnswers(array $answers)
     {
         $questionIds = array_column($answers, 'question_id');
-        return $this->observationQuestionRepository
+        $questions = $this->observationQuestionRepository
             ->getQuestionsByIds($questionIds)
             ->keyBy('id');
+
+        foreach ($questionIds as $id) {
+            if (!$questions->has($id)) {
+                throw new Exception("Pertanyaan dengan ID {$id} tidak ditemukan.");
+            }
+        }
+
+        return $questions;
+    }
+
+    private function validateAgeCategory(Observation $observation, array $answers)
+    {
+        $observationAgeCategory = $observation->age_category;
+        $question_ids = array_column($answers, 'question_id');
+
+        if (empty($question_ids)) {
+            return; // tidak ada jawaban, skip validasi
+        }
+
+        $questions = $this->observationQuestionRepository
+            ->getQuestionsByIds($question_ids)
+            ->pluck('age_category', 'id');
+
+        foreach ($answers as $answer) {
+            $question_id = $answer['question_id'] ?? null;
+            $questionAgeCategory = $questions[$question_id] ?? null;
+
+            if (!$question_id || !$questionAgeCategory) {
+                throw new Exception("Pertanyaan dengan ID {$question_id} tidak ditemukan.");
+            }
+
+            if ($questionAgeCategory !== $observationAgeCategory) {
+                throw new Exception(
+                    "Pertanyaan ID {$question_id} untuk kategori usia '{$questionAgeCategory}' " .
+                    "tidak sesuai dengan observasi kategori usia '{$observationAgeCategory}'."
+                );
+            }
+        }
     }
 
     private function saveObservationAnswers(array $answers, int $observationId, $questions): int
