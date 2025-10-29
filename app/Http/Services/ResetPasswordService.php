@@ -66,18 +66,6 @@ class PasswordResetService
         throw new Exception('Token reset password tidak valid atau telah kedaluwarsa.');
     }
 
-    public function getResendStatus(string $email): array
-    {
-        $key = $this->getLimiterKey($email);
-        $canResend = !RateLimiter::tooManyAttempts($key, self::MAX_RESEND_ATTEMPTS_PER_HOUR);
-        $remainingSeconds = RateLimiter::availableIn($key);
-
-        return [
-            'can_resend' => $canResend,
-            'remaining_seconds' => $remainingSeconds,
-        ];
-    }
-
     // ================= Private Helpers ================= //
 
     private function findUserOrFail(string $email)
