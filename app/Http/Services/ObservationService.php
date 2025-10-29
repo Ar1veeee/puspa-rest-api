@@ -7,6 +7,7 @@ use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
 use App\Models\Observation;
+use App\Models\User;
 use App\Traits\ClearsCaches;
 use Carbon\Carbon;
 use Exception;
@@ -23,7 +24,6 @@ class ObservationService
     protected $observationAnswerRepository;
     protected $assessmentRepository;
 
-    public const CACHE_TTL_QUESTIONS = null;
     public const CACHE_TTL_PENDING = 600;
     public const CACHE_TTL_SCHEDULED = 600;
 
@@ -54,6 +54,22 @@ class ObservationService
         }
 
         return $this->observationRepository->getByFilters($filters);
+    }
+
+    public function getObservationsScheduled(array $filters = [])
+    {
+        $status = 'scheduled';
+
+        $queryFilters = [
+            'status' => $status,
+        ];
+
+        // Jika ada tanggal, tambahkan
+        if (!empty($filters['date'])) {
+            $queryFilters['scheduled_date'] = $filters['date'];
+        }
+
+        return $this->observationRepository->getByDate($queryFilters);
     }
 
     public function getObservationQuestions(Observation $observation)
@@ -115,8 +131,13 @@ class ObservationService
         try {
             $updateObservation = [];
 
-            if (!empty($data['scheduled_date'])) {
-                $this->assessmentRepository->setScheduledDate($observation->id, $data['scheduled_date']);
+            if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
+                $newDateTime = Carbon::createFromFormat(
+                    'Y-m-d H:i',
+                    $data['scheduled_date'] . ' ' . $data['scheduled_time']
+                );
+
+                $this->assessmentRepository->setScheduledDate($observation->id, $newDateTime);
             }
 
             $updateObservation['is_continued_to_assessment'] = true;
@@ -144,6 +165,7 @@ class ObservationService
 
     private function getAuthenticatedTherapist()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         if (!$user) {

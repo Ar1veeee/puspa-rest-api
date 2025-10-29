@@ -12,6 +12,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TherapistController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 Route::prefix('v1')->group(function () {
     // ================== ROUTE UNAUTHENTICATED ==================
@@ -33,10 +34,10 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::get('/clear-cache', function () {
-        \Artisan::call('config:clear');
-        \Artisan::call('cache:clear');
-        \Artisan::call('route:clear');
-        \Artisan::call('optimize:clear');
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('optimize:clear');
 
         // Force reload config
         config()->offsetUnset('filesystems');
@@ -117,6 +118,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/children/{child}', [ChildController::class, 'update']);
 
             Route::put('/observations/{observation}', [ObservationController::class, 'updateObservationDate']);
+            Route::get('/observations/scheduled', [ObservationController::class, 'indexScheduledByDate']);
             Route::put('/observations/{observation}/agreement', [ObservationController::class, 'assessmentAgreement']);
         });
 

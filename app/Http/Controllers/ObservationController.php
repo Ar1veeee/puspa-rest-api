@@ -50,6 +50,18 @@ class ObservationController extends Controller
         return $this->successResponse($resourceCollection, $message, 200);
     }
 
+    public function indexScheduledByDate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
+        ]);
+
+        $observations = $this->observationService->getObservationsScheduled($validated);
+        $response = ObservationsScheduledResource::collection($observations);
+
+        return $this->successResponse($response, 'Daftar Observasi Terjadwal', 200);
+    }
+
     public function showByType(Request $request, Observation $observation): JsonResponse
     {
         $validated = $request->validate([
@@ -104,6 +116,9 @@ class ObservationController extends Controller
         return $this->successResponse([], 'Observasi Berhasil Disimpan', 200);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function assessmentAgreement(AssessmentUpdateRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();

@@ -19,11 +19,6 @@ class AssessmentRepository
         return $this->model->create($data);
     }
 
-    public function getById(int $id)
-    {
-        return $this->model->find($id);
-    }
-
     public function getByScheduledType(string $status, $assessmentType)
     {
         $query = $this->model->query();

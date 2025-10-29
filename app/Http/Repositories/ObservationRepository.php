@@ -45,6 +45,28 @@ class ObservationRepository
         return $query->orderBy('scheduled_date', 'asc')->get();
     }
 
+    public function getByDate(array $filters = [])
+    {
+        $query = $this->model->query();
+
+        // Apply status filter if provided
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Apply date filter if provided
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        $query->with([
+            'child:id,family_id,child_name,child_gender,child_school,child_birth_date',
+            'child.family.guardians:id,family_id,guardian_name,guardian_type,guardian_phone',
+        ]);
+
+        return $query->orderBy('scheduled_date', 'asc')->get();
+    }
+
     public function update(int $id, array $data): ?bool
     {
         $observation = $this->model->find($id);

@@ -12,7 +12,7 @@ class AssessmentUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'terapis';
+        return Auth::check() && Auth::user()->role === 'admin';
 
     }
 
@@ -24,14 +24,16 @@ class AssessmentUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'scheduled_date' => ['required', 'date']
+            'scheduled_date' => ['required', 'date'],
+            'scheduled_time' => ['required', 'date_format:H:i']
         ];
     }
 
     public function messages(): array
     {
         return [
-            'scheduled_date.required' => 'Tanggal terjadwal tidak boleh kosong'
+            'scheduled_date.required' => 'Tanggal terjadwal tidak boleh kosong',
+            'scheduled_time.required' => 'Waktu terjadwal tidak boleh kosong'
         ];
     }
 }

@@ -33,6 +33,8 @@ class ObservationsScheduledResource extends JsonResource
             ? $this->scheduled_date
             : Carbon::parse($this->scheduled_date);
 
+        $primaryGuardian = $this->child->family->guardians->first();
+
         $response = [
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
@@ -40,6 +42,7 @@ class ObservationsScheduledResource extends JsonResource
             'child_gender' => $this->child->child_gender,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
+            'guardian_name' => $primaryGuardian->guardian_name,
             'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
             'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
             'status' => $this->status,
