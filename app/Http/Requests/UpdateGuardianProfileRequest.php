@@ -52,7 +52,7 @@ class UpdateGuardianProfileRequest extends FormRequest
             'email.unique' => 'Email ini sudah terdaftar pada akun lain.',
 
             'guardian_birth_date.date_format' => 'Format tanggal lahir harus DD-MM-YYYY.',
-            
+
             'guardian_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',
         ];
     }
