@@ -26,7 +26,6 @@ class UpdateGuardianProfileRequest extends FormRequest
         $userId = $this->route('guardian')->user_id;
 
         return [
-            'file' => ['sometimes', 'required', 'file', 'max:10240', 'mimes:jpeg,png,jpg'],
             'email' => [
                 'sometimes', 'required', 'string', 'email', 'max:100',
                 Rule::unique('users', 'email')->ignore($userId),
@@ -53,11 +52,8 @@ class UpdateGuardianProfileRequest extends FormRequest
             'email.unique' => 'Email ini sudah terdaftar pada akun lain.',
 
             'guardian_birth_date.date_format' => 'Format tanggal lahir harus DD-MM-YYYY.',
-
+            
             'guardian_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',
-
-            'file.mimes' => 'Foto harus berformat JPEG, PNG, atau JPG.',
-            'file.max' => 'Ukuran foto tidak boleh lebih dari 10MB.',
         ];
     }
 }
