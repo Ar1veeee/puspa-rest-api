@@ -24,11 +24,7 @@ class ResetPasswordNotification extends Notification
 
     public function toMail($notifiable)
     {
-        $resetUrl = url(
-            config('app.frontend_url') .
-                '/auth/reset-password?token=' . $this->token .
-                '&email=' . urlencode($notifiable->email)
-        );
+        $resetUrl = $this->getResetUrl($notifiable);
 
         return (new MailMessage())
             ->subject('Reset Password - ' . config('app.name'))
@@ -36,5 +32,17 @@ class ResetPasswordNotification extends Notification
                 'user' => $notifiable,
                 'url' => $resetUrl,
             ]);
+    }
+
+    private function getResetUrl($notifiable): string
+    {
+        $token = $this->token;
+        $email = urlencode($notifiable->email);
+
+        // URL untuk web
+        return url(
+            config('app.frontend_url') .
+            "/auth/reset-password?token={$token}&email={$email}"
+        );
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\OwnerController;
-use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TherapistController;
 use App\Http\Controllers\VerificationController;
@@ -68,13 +68,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/resend-status/{user}', [VerificationController::class, 'checkResendStatus'])
             ->name('verification.status');
 
-        Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])
-            ->middleware('throttle:forgot-password')
+        Route::post('/forgot-password', [ResetPasswordController::class, 'forgotPassword'])
+//            ->middleware('throttle:forgot-password')
             ->name('password.email');
-        Route::post('/resend-reset/{email}', [PasswordResetController::class, 'resendResetLink'])
+        Route::post('/resend-reset/{email}', [ResetPasswordController::class, 'resendResetLink'])
             ->middleware('throttle:forgot-password')
             ->name('password.resend');
-        Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
+        Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])
             ->name('password.reset')
             ->middleware('throttle:reset-password');
     });
@@ -146,7 +146,8 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ORANG TUA / USER ==================
         Route::middleware(['verified', 'role:user', 'throttle:authenticated'])->prefix('my')->group(function () {
             Route::get('/profile', [GuardianController::class, 'showProfile']);
-            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
+            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfileData']);
+            Route::post('/profile/{guardian}/photo', [GuardianController::class, 'updateProfilePhoto']);
             Route::put('/update-password', [GuardianController::class, 'updatePassword']);
 
             Route::get('/children', [GuardianController::class, 'indexChildren']);

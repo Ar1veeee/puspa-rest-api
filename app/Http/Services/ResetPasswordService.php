@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Exception;
 
-class PasswordResetService
+class ResetPasswordService
 {
     protected $userRepository;
     public const RESEND_COOLDOWN_SECONDS = 120;
@@ -23,8 +23,15 @@ class PasswordResetService
 
     public function sendResetLinkEmail(string $email): array
     {
-        $this->findUserOrFail($email);
-        $status = Password::sendResetLink(['email' => $email]);
+        $user = $this->findUserOrFail($email);
+
+        $status = Password::sendResetLink(
+            ['email' => $email],
+            function ($user, $token) {
+                $user->sendPasswordResetNotification($token);
+            }
+        );
+
         if ($status === Password::RESET_LINK_SENT) {
             return [
                 'email' => $email,
@@ -36,14 +43,22 @@ class PasswordResetService
 
     public function resendResetLink(string $email): array
     {
-        $this->findUserOrFail($email);
+        $user = $this->findUserOrFail($email);
 
         $this->checkRateLimits($email);
 
-        $status = Password::sendResetLink(['email' => $email]);
+        $status = Password::sendResetLink(
+            ['email' => $email],
+            function ($user, $token) {
+                $user->sendPasswordResetNotification($token);
+            }
+        );
+
         if ($status === Password::RESET_LINK_SENT) {
             RateLimiter::hit($this->getLimiterKey($email), self::RESEND_COOLDOWN_SECONDS);
-            return ['email' => $email];
+            return [
+                'email' => $email,
+            ];
         }
 
         throw new Exception('Gagal mengirim ulang tautan reset password.');

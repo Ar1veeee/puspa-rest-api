@@ -5,20 +5,19 @@ namespace App\Http\Controllers;
 use App\Exceptions\RateLimitExceededException;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\ForgotPasswordRequest;
-use App\Http\Requests\ResendResetLinkRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Services\PasswordResetService;
+use App\Http\Services\ResetPasswordService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Exception;
 
-class PasswordResetController extends Controller
+class ResetPasswordController extends Controller
 {
     use ResponseFormatter;
 
     protected $passwordResetService;
 
-    public function __construct(PasswordResetService $passwordResetService)
+    public function __construct(ResetPasswordService $passwordResetService)
     {
         $this->passwordResetService = $passwordResetService;
     }
@@ -26,7 +25,12 @@ class PasswordResetController extends Controller
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         try {
-            $data = $this->passwordResetService->sendResetLinkEmail($request->validated()['email']);
+            $validated = $request->validated();
+
+            $data = $this->passwordResetService->sendResetLinkEmail(
+                $validated['email'],
+            );
+
             return $this->successResponse($data, 'Tautan reset password telah dikirim ke email Anda.');
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
@@ -35,10 +39,15 @@ class PasswordResetController extends Controller
         }
     }
 
-    public function resendResetLink(ResendResetLinkRequest $request): JsonResponse
+    public function resendResetLink(ForgotPasswordRequest $request): JsonResponse
     {
         try {
-            $this->passwordResetService->resendResetLink($request->validated()['email']);
+            $validated = $request->validated();
+
+            $this->passwordResetService->resendResetLink(
+                $validated['email'],
+            );
+
             return $this->successResponse(null, 'Link reset password baru telah dikirim. Cek email Anda.');
         } catch (RateLimitExceededException|Exception $e) {
             return $this->errorResponse($e->getMessage(), [], 429);

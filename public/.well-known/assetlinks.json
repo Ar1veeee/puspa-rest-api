@@ -1,0 +1,10 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+        "namespace": "android_app",
+        "package_name": "com.puspa.puspamobile",
+        "sha256_cert_fingerprints": [
+            "A2:77:F0:3E:6E:1A:96:D4:0C:AA:1F:11:A9:42:A2:91:7B:C0:61:E3:9E:9D:55:21:C9:62:35:06:18:DD:20:02"
+        ]
+    }
+}]

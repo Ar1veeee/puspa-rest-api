@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Repositories\UserRepository;
-use App\Http\Services\PasswordResetService;
+use App\Http\Services\ResetPasswordService;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,13 +15,13 @@ class PasswordResetServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected PasswordResetService $passwordResetService;
+    protected ResetPasswordService $passwordResetService;
     protected User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->passwordResetService = new PasswordResetService(new UserRepository(new User()));
+        $this->passwordResetService = new ResetPasswordService(new UserRepository(new User()));
         $this->user = User::factory()->create(['email' => 'test@example.com']);
     }
 
