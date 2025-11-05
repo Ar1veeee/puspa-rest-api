@@ -63,38 +63,24 @@ class GuardianController extends Controller
         return $this->successResponse([], 'Data orang tua berhasil disimpan', 200);
     }
 
-    public function updateProfileData(UpdateGuardianProfileRequest $request, Guardian $guardian): JsonResponse
+    public function updateProfile(UpdateGuardianProfileRequest $request, Guardian $guardian): JsonResponse
     {
         $data = $request->validated();
 
-        $this->guardianService->updateProfile($data, $guardian);
-
-        return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
-    }
-
-    public function updateProfilePhoto(UpdateGuardianPhotoProfileRequest $request, Guardian $guardian): JsonResponse
-    {
-        $data = [];
-
         if ($request->hasFile('file')) {
-            // Hapus foto lama jika ada
-            if ($guardian->profile_picture) {
+            if ($guardian->profile_picture && Storage::disk('public')->exists($guardian->profile_picture)) {
                 Storage::disk('public')->delete($guardian->profile_picture);
             }
 
-            // Simpan foto baru
             $file = $request->file('file');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('guardians', $filename, 'public');
             $data['profile_picture'] = $path;
-
-            // Update data di service
-            $this->guardianService->updateProfile($data, $guardian);
-
-            return $this->successResponse(['profile_picture' => $path], 'Foto Profil Berhasil Diperbarui', 200);
         }
 
-        return $this->errorResponse('Not Found', ['error' => 'File tidak ditemukan'], 422);
+        $this->guardianService->updateProfile($data, $guardian);
+
+        return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
     }
 
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse

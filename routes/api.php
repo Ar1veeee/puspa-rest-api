@@ -146,8 +146,7 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ORANG TUA / USER ==================
         Route::middleware(['verified', 'role:user', 'throttle:authenticated'])->prefix('my')->group(function () {
             Route::get('/profile', [GuardianController::class, 'showProfile']);
-            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfileData']);
-            Route::post('/profile/{guardian}/photo', [GuardianController::class, 'updateProfilePhoto']);
+            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
             Route::put('/update-password', [GuardianController::class, 'updatePassword']);
 
             Route::get('/children', [GuardianController::class, 'indexChildren']);
