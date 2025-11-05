@@ -13,9 +13,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             OwnerSeeder::class,
-            ObservationQuestionSeeder::class,
             AdminSeeder::class,
             TherapistSeeder::class,
+
+            ObservationQuestionSeeder::class,
+
+            FamilyChildGuardianSeeder::class,
+            ObservationAssessmentSeeder::class,
         ]);
     }
 }
