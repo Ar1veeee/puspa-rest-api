@@ -20,7 +20,7 @@ Route::prefix('v1')->group(function () {
         return response()->json(['message' => 'CORS test successful!']);
     });
 
-    Route::get('/test-paths-detailed', function () {
+    Route::get('/test-paths', function () {
         return response()->json([
             'public_path' => public_path(),
             'storage_link' => public_path('storage'),
@@ -146,7 +146,7 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ORANG TUA / USER ==================
         Route::middleware(['verified', 'role:user', 'throttle:authenticated'])->prefix('my')->group(function () {
             Route::get('/profile', [GuardianController::class, 'showProfile']);
-            Route::put('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
+            Route::post('/profile/{guardian}', [GuardianController::class, 'updateProfile']);
             Route::put('/update-password', [GuardianController::class, 'updatePassword']);
 
             Route::get('/children', [GuardianController::class, 'indexChildren']);
