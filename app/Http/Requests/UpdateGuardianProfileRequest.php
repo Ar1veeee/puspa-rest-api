@@ -26,7 +26,7 @@ class UpdateGuardianProfileRequest extends FormRequest
         $userId = $this->route('guardian')->user_id;
 
         return [
-            'file' => ['sometimes', 'required', 'file', 'max:10240', 'mimes:jpeg,png,jpg'],
+            'file' => ['sometimes', 'required', 'file', 'max:2048', 'mimes:jpeg,png,jpg'],
             'email' => [
                 'sometimes', 'required', 'string', 'email', 'max:100',
                 Rule::unique('users', 'email')->ignore($userId),

@@ -20,16 +20,16 @@ Route::prefix('v1')->group(function () {
         return response()->json(['message' => 'CORS test successful!']);
     });
 
-    Route::get('/test-paths', function () {
+    Route::get('/test-paths-detailed', function () {
         return response()->json([
-            'base_path' => base_path(),
-            'app_path' => app_path(),
-            'storage_path' => storage_path(),
             'public_path' => public_path(),
-            'public_path_storage' => public_path('storage'),
-            'config_root' => config('filesystems.disks.public.root'),
-            'folder_exists' => file_exists(public_path('storage')),
-            'is_writable' => is_writable(public_path('storage')),
+            'storage_link' => public_path('storage'),
+            'real_path' => realpath(public_path('storage')),
+            'storage_app_public' => storage_path('app/public'),
+            'config_public_root' => config('filesystems.disks.public.root'),
+            'symlink_exists' => is_link(public_path('storage')),
+            'symlink_target' => is_link(public_path('storage')) ? readlink(public_path('storage')) : null,
+            'can_write' => is_writable(storage_path('app/public')),
         ]);
     });
 
@@ -69,7 +69,7 @@ Route::prefix('v1')->group(function () {
             ->name('verification.status');
 
         Route::post('/forgot-password', [ResetPasswordController::class, 'forgotPassword'])
-//            ->middleware('throttle:forgot-password')
+            ->middleware('throttle:forgot-password')
             ->name('password.email');
         Route::post('/resend-reset/{email}', [ResetPasswordController::class, 'resendResetLink'])
             ->middleware('throttle:forgot-password')
