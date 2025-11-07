@@ -184,7 +184,7 @@ class AssessmentService
         $physioData = $assessment->physioAssessmentTherapist;
 
         if (!$physioData) {
-            throw new ModelNotFoundException('Data assessment okupasi tidak ditemukan.');
+            throw new ModelNotFoundException('Data assessment fisio tidak ditemukan.');
         }
 
         return $physioData;

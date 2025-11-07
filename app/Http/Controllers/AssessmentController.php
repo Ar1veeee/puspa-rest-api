@@ -56,11 +56,8 @@ class AssessmentController extends Controller
         $user = $request->user();
 
         // Validasi apakah terapis tersebut adalah tipe terapis yang valid
-        if ($user->role === 'terapis') {
-            $section = $user->therapist->therapist_section;
-            if ($section !== $type) {
-                return $this->errorResponse('Forbidden', ['error' => 'Anda hanya diizinkan untuk melihat daftar asesmen untuk bagian ' . $section], 403);
-            }
+        if ($user->role !== 'asesor') {
+            return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 
         $assessments = $this->assessmentService->getChildrenAssessmentsByType($status, $type);
@@ -205,15 +202,12 @@ class AssessmentController extends Controller
         $type = $validated['type'];
         $user = $request->user();
 
-        if ($user->role === 'terapis') {
-            $section = $user->therapist->therapist_section;
-            if ($section !== $type) {
+        if ($user->role !== 'asesor') {
                 return $this->errorResponse(
                     'Forbidden',
-                    ['error' => 'Anda hanya diizinkan untuk melakukan aksi pada asesmen ' . $section],
+                    ['error' => 'Hanya asesor yang memiliki izin untuk melihat jawaban asesmen'],
                     403
                 );
-            }
         }
 
         try {
