@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AddChildrenRequest;
 use App\Http\Requests\GuardianFamilyUpdateRequest;
-use App\Http\Requests\UpdateGuardianPhotoProfileRequest;
 use App\Http\Requests\UpdateGuardianProfileRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\ChildrenResource;
