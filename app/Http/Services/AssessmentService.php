@@ -68,6 +68,22 @@ class AssessmentService
         return $this->guardianRepository->getAssessments($userId);
     }
 
+    public function getAssessmentsScheduled(array $filters = [])
+    {
+        $status = 'scheduled';
+
+        $queryFilters = [
+            'status' => $status,
+        ];
+
+        // Jika ada tanggal, tambahkan
+        if (!empty($filters['date'])) {
+            $queryFilters['scheduled_date'] = $filters['date'];
+        }
+
+        return $this->assessmentRepository->getByDate($queryFilters);
+    }
+
     public function getChildrenAssessmentsByType(string $status, $type)
     {
         return $this->assessmentRepository->getByScheduledType($status, $type);

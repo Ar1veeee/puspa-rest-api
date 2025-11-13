@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Owner;
 
+use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Resources\AdminsUnverifiedResource;
 use App\Http\Resources\TherapistUnverifiedResource;
@@ -10,7 +11,7 @@ use App\Http\Services\VerificationService;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
-class OwnerController extends Controller
+class EmployeeController extends Controller
 {
     use ResponseFormatter;
 

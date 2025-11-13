@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin_Assessor_Therapist;
 
+use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Requests\AssessmentUpdateRequest;
-use App\Http\Requests\ObservationSubmitRequest;
-use App\Http\Requests\ObservationUpdateRequest;
 use App\Http\Resources\ObservationCompletedDetailResource;
 use App\Http\Resources\ObservationDetailAnswerResource;
 use App\Http\Resources\ObservationQuestionsResource;
@@ -50,18 +48,6 @@ class ObservationController extends Controller
         return $this->successResponse($resourceCollection, $message, 200);
     }
 
-    public function indexScheduledByDate(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
-        ]);
-
-        $observations = $this->observationService->getObservationsScheduled($validated);
-        $response = ObservationsScheduledResource::collection($observations);
-
-        return $this->successResponse($response, 'Daftar Observasi Terjadwal', 200);
-    }
-
     public function showByType(Request $request, Observation $observation): JsonResponse
     {
         $validated = $request->validate([
@@ -98,32 +84,5 @@ class ObservationController extends Controller
         };
 
         return $this->successResponse($response, $message, 200);
-    }
-
-    public function updateObservationDate(ObservationUpdateRequest $request, Observation $observation): JsonResponse
-    {
-        $data = $request->validated();
-        $this->observationService->updateObservationDate($data, $observation);
-
-        return $this->successResponse([], 'Jadwal Observasi Berhasil Diperbarui', 200);
-    }
-
-    public function submit(ObservationSubmitRequest $request, Observation $observation): JsonResponse
-    {
-        $data = $request->validated();
-        $this->observationService->submitObservation($data, $observation);
-
-        return $this->successResponse([], 'Observasi Berhasil Disimpan', 200);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function assessmentAgreement(AssessmentUpdateRequest $request, Observation $observation): JsonResponse
-    {
-        $data = $request->validated();
-        $this->observationService->assessmentAgreement($data, $observation);
-
-        return $this->successResponse([], 'Assessment Berhasil Diperbarui', 200);
     }
 }

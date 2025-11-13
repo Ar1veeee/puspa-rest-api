@@ -34,7 +34,7 @@ class Assessment extends Model
     ];
 
     protected $casts = [
-        'scheduled_date' => 'date',
+        'scheduled_date' => 'datetime',
         'fisio' => 'boolean',
         'wicara' => 'boolean',
         'paedagog' => 'boolean',

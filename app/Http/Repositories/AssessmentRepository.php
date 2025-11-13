@@ -54,6 +54,25 @@ class AssessmentRepository
             ->get();
     }
 
+    public function getByDate(array $filters = []): Collection
+    {
+        $query = $this->model->query();
+
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        $query->with([
+            'child:id,family_id,child_name,child_gender,child_school,child_birth_date',
+        ]);
+
+        return $query->orderBy('scheduled_date', 'asc')->get();
+    }
+
     public function setScheduledDate(int $observationId, string $date)
     {
         return $this->model->where('observation_id', $observationId)->update([

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ObservationsScheduledResource extends JsonResource
+class AssessmentsScheduledResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,19 +19,33 @@ class ObservationsScheduledResource extends JsonResource
             ? $this->scheduled_date
             : Carbon::parse($this->scheduled_date);
 
-        $primaryGuardian = $this->child->family->guardians->first();
+        $types = [];
+
+        if ($this->fisio) {
+            $types[] = 'Fisio';
+        }
+        if ($this->wicara) {
+            $types[] = 'Wicara';
+        }
+        if ($this->paedagog) {
+            $types[] = 'Paedagog';
+        }
+        if ($this->okupasi) {
+            $types[] = 'Okupasi';
+        }
+
+        $type = implode(', ', $types);
 
         $response = [
-            "observation_id" => $this->id,
-            'age_category' => $this->age_category,
+            "assessment_id" => $this->id,
             'child_name' => $this->child->child_name,
             'child_gender' => $this->child->child_gender,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
-            'guardian_name' => $primaryGuardian->guardian_name,
+            'assessment_type' => $type,
+            'status' => $this->status,
             'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
             'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
-            'status' => $this->status,
         ];
 
         return $response;
