@@ -37,15 +37,16 @@ class ObservationsCompletedResource extends JsonResource
             ? $this->completed_at
             : Carbon::parse($this->completed_at);
 
+        $primaryGuardian = $this->child->family->guardians->first();
+
         $response = [
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
+            'guardian_name' => $primaryGuardian->guardian_name,
+            'guardian_phone' => $primaryGuardian->guardian_phone,
             'observer' => $this->therapist->therapist_name,
-            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
-            'child_school' => $this->child->child_school,
-            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
-            // Hanya jam:menit
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'),
             'time' => $scheduled_date_formatted->format('H.i') . ' - ' . $completed_at_formatted->format('H.i'),
             'status' => $this->status,
         ];

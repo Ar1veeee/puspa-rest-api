@@ -30,29 +30,6 @@ class AssessmentController extends Controller
         $this->assessmentService = $assessmentService;
     }
 
-    // Menampilkan asesmen terdaftar berdasarkan status (terjadwal, selesai) dan tipe (fisio, wicara, dll)
-    public function indexByStatus(Request $request, string $status): JsonResponse
-    {
-        $validated = $request->validate([
-            'type' => ['required', 'string', 'in:fisio,okupasi,wicara,paedagog'],
-        ]);
-
-        // Tipe terapis
-        $type = $validated['type'];
-        $user = $request->user();
-
-        // Validasi apakah terapis tersebut adalah tipe terapis yang valid
-        if ($user->role !== 'asesor') {
-            return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor yang memiliki izin untuk melihat daftar asesmen'], 403);
-        }
-
-        $assessments = $this->assessmentService->getChildrenAssessmentsByType($status, $type);
-
-        $response = AssessmentListResource::collection($assessments);
-        $message = 'Daftar Asesmen ' . ucfirst($type) . ' ' . ucfirst($status);
-        return $this->successResponse($response, $message);
-    }
-
     public function storeTherapistAssessment(AssessmentTherapistRequest $request, Assessment $assessment): JsonResponse
     {
         $data = $request->validated();

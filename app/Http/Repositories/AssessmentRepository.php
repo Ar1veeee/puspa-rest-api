@@ -19,13 +19,27 @@ class AssessmentRepository
         return $this->model->create($data);
     }
 
-    public function getByScheduledType(string $status, $assessmentType)
+    // mendapatkan data asesmen dengan filter by status, dan tipe
+    public function getAssessmentWithFilter(array $filters = [])
     {
         $query = $this->model->query();
 
         $validTypes = ['fisio', 'okupasi', 'wicara', 'paedagog'];
-        if (!in_array($assessmentType, $validTypes)) {
+
+        if (empty($filters['type']) || !in_array($filters['type'], $validTypes)) {
             return new Collection();
+        }
+
+        $query->where($filters['type'], true);
+
+        $query->where('status', $filters['status']);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['date'])) {
+            $query->whereDate('scheduled_date', $filters['date']);
         }
 
         return $query
@@ -48,8 +62,6 @@ class AssessmentRepository
                     );
                 }
             ])
-            ->where('status', $status)
-            ->where($assessmentType, true)
             ->orderBy('scheduled_date', 'asc')
             ->get();
     }

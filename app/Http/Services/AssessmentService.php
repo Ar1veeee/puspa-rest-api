@@ -68,25 +68,23 @@ class AssessmentService
         return $this->guardianRepository->getAssessments($userId);
     }
 
-    public function getAssessmentsScheduled(array $filters = [])
+    public function getAssessmentsByType(array $filters = [])
     {
-        $status = 'scheduled';
+        $queryFilters = [];
 
-        $queryFilters = [
-            'status' => $status,
-        ];
-
-        // Jika ada tanggal, tambahkan
-        if (!empty($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
+        if (isset($filters['type'])) {
+            $queryFilters['type'] = $filters['type'];
         }
 
-        return $this->assessmentRepository->getByDate($queryFilters);
-    }
+        if (isset($filters['date'])) {
+            $queryFilters['date'] = $filters['date'];
+        }
 
-    public function getChildrenAssessmentsByType(string $status, $type)
-    {
-        return $this->assessmentRepository->getByScheduledType($status, $type);
+        if (!empty($filters['status'])) {
+            $queryFilters['status'] = $filters['status'];
+        }
+
+        return $this->assessmentRepository->getAssessmentWithFilter($queryFilters);
     }
 
     // Data umum di pertanyaan ortu

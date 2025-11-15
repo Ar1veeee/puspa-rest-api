@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,10 @@ class AssessmentListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $scheduled_date_formatted = $this->scheduled_date instanceof Carbon
+            ? $this->scheduled_date
+            : Carbon::parse($this->scheduled_date);
+
         $guardian = $this->child?->family?->guardians?->first();
 
         return [
@@ -23,7 +28,9 @@ class AssessmentListResource extends JsonResource
             'child_gender' => $this->child?->child_gender,
             'guardian_name' => $guardian?->guardian_name,
             'guardian_phone' => $guardian?->guardian_phone,
-            'scheduled_date' => $this->scheduled_date?->toDateString(),
+            'administrator' => $this->admin?->admin_name,
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
+            'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
             'status' => $this->status,
         ];
     }

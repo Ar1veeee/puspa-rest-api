@@ -1,24 +1,16 @@
 <?php
 
-use App\Http\Controllers\Owner\EmployeeController as OwnerEmployeeManagement;
-
-use App\Http\Controllers\Owner_Admin\UserController as OwnerAdminUserManagement;
-
-use App\Http\Controllers\Admin\UserController as AdminUserManagement;
 use App\Http\Controllers\Admin\ObservationController as AdminObservationManagement;
-use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentManagement;
-
+use App\Http\Controllers\Admin\UserController as AdminUserManagement;
+use App\Http\Controllers\Admin_Assessor\AssessmentController as AdminAssessorAssessmentManagement;
 use App\Http\Controllers\Admin_Assessor_Therapist\ObservationController as AdminAssessorTherapistObservationManagement;
-
-use App\Http\Controllers\Assessor_Therapist\ObservationController as AssessorTherapistObservationManagement;
-
 use App\Http\Controllers\Assessor\AssessmentController as AssessorAssessmentManagement;
-
-use App\Http\Controllers\Parent\ProfileController as ParentProfileManagement;
-use App\Http\Controllers\Parent\ChildController as ParentChildManagement;
-
+use App\Http\Controllers\Assessor_Therapist\ObservationController as AssessorTherapistObservationManagement;
+use App\Http\Controllers\Owner\EmployeeController as OwnerEmployeeManagement;
+use App\Http\Controllers\Owner_Admin\UserController as OwnerAdminUserManagement;
 use App\Http\Controllers\Parent\AssessmentController as ParentAssessmentManagement;
-
+use App\Http\Controllers\Parent\ChildController as ParentChildManagement;
+use App\Http\Controllers\Parent\ProfileController as ParentProfileManagement;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ResetPasswordController;
@@ -145,12 +137,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/observations/{observation}/submit', [AssessorTherapistObservationManagement::class, 'submit']);
         });
 
-        // ================== ROLE ASSESSOR ==================
+        // ================== ROLE ASSESSOR & ADMIN ==================
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/scheduled', [AdminAssessmentManagement::class, 'indexScheduledByDate']); // using query: date
-                Route::get('/{status}', [AssessorAssessmentManagement::class, 'indexByStatus'])
-                    ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']); // using query: type
+                Route::get('/{type}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
+                    ->whereIn('status', ['scheduled', 'completed']); // using query: status and date
                 Route::post('/{assessment}', [AssessorAssessmentManagement::class, 'storeTherapistAssessment']);
                 Route::get('/{assessment}/answer', [AssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
             });
