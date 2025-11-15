@@ -24,17 +24,4 @@ class AssessmentController extends Controller
     {
         $this->assessmentService = $assessmentService;
     }
-
-    public function indexScheduledByDate(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
-        ]);
-
-        $observations = $this->assessmentService->getAssessmentsScheduled($validated);
-
-        $response = AssessmentsScheduledResource::collection($observations);
-
-        return $this->successResponse($response, 'Daftar Asesmen Terjadwal', 200);
-    }
 }

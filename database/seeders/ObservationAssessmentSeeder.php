@@ -57,7 +57,7 @@ class ObservationAssessmentSeeder extends Seeder
                 'therapist_id' => $therapists->random()->id,
                 'scheduled_date' => $now->addDays(rand(1, 10)),
                 'age_category' => $ageCategory,
-                'status' => 'Completed',
+                'status' => 'completed',
                 'completed_at' => $now->addHours(rand(1, 5)),
                 'is_continued_to_assessment' => $faker->boolean(70),
                 'created_at' => $now,
