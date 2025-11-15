@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
+            $table->foreignUlid('admin_id')->nullable()->constrained('admins')->nullOnDelete();
             $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->boolean('fisio')->nullable()->default(false);
             $table->boolean('wicara')->nullable()->default(false);

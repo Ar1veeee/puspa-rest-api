@@ -14,7 +14,7 @@ class Observation extends Model
 
     protected $table = 'observations';
 
-    protected $primaryKey = 'id';
+    protected $primarassyKey = 'id';
 
     protected $keyType = 'int';
 
@@ -24,6 +24,7 @@ class Observation extends Model
 
     protected $fillable = [
         'child_id',
+        'admin_id',
         'therapist_id',
         'scheduled_date',
         'age_category',
@@ -52,6 +53,11 @@ class Observation extends Model
     public function child(): BelongsTo
     {
         return $this->belongsTo(Child::class, 'child_id', 'id');
+    }
+
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'admin_id', 'id');
     }
 
     public function therapist(): BelongsTo

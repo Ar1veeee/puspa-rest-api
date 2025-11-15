@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\Assessment;
 use App\Models\Child;
 use App\Models\Observation;
@@ -24,11 +25,12 @@ class ObservationAssessmentSeeder extends Seeder
         $now = Carbon::now();
 
         $children = Child::all();
+        $admins = Admin::all();
         $therapists = Therapist::all();
         $questions = ObservationQuestion::all();
 
-        if ($children->isEmpty() || $therapists->isEmpty() || $questions->isEmpty()) {
-            $this->command->warn('Tidak ada data Child, Therapist, atau ObservationQuestion. Melewatkan ObservationAssessmentSeeder.');
+        if ($children->isEmpty() || $admins->isEmpty() || $therapists->isEmpty() || $questions->isEmpty()) {
+            $this->command->warn('Tidak ada data Child, Admin, Therapist, atau ObservationQuestion. Melewatkan ObservationAssessmentSeeder.');
             return;
         }
 
@@ -51,6 +53,7 @@ class ObservationAssessmentSeeder extends Seeder
 
             $observation = Observation::create([
                 'child_id' => $child->id,
+                'admin_id' => $admins->random()->id,
                 'therapist_id' => $therapists->random()->id,
                 'scheduled_date' => $now->addDays(rand(1, 10)),
                 'age_category' => $ageCategory,
@@ -86,6 +89,7 @@ class ObservationAssessmentSeeder extends Seeder
             if ($observation->is_continued_to_assessment) {
                 Assessment::create([
                     'observation_id' => $observation->id,
+                    'admin_id' => $admins->random()->id,
                     'child_id' => $child->id,
                     'fisio' => $faker->boolean,
                     'okupasi' => $faker->boolean,

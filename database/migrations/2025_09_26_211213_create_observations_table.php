@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('observations', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
+            $table->foreignUlid('admin_id')->nullable()->constrained('admins')->nullOnDelete();
             $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
             $table->dateTime('scheduled_date')->nullable();
             $table->enum('age_category', ['balita', 'anak-anak', 'remaja', 'lainya']);

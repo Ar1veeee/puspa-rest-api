@@ -13,7 +13,6 @@ class Therapist extends Model
     use HasUlids;
     use HasFactory;
 
-
     protected $table = 'therapists';
 
     protected $primaryKey = 'id';

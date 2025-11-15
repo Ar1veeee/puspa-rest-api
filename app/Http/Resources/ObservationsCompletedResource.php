@@ -41,7 +41,7 @@ class ObservationsCompletedResource extends JsonResource
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
-            'observer' => $this->therapist?->therapist_name,
+            'observer' => $this->therapist->therapist_name,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_school' => $this->child->child_school,
             'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal

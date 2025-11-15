@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Admin extends Model
 {
     use HasUlids;
     use HasFactory;
-
 
     protected $table = 'admins';
 
@@ -40,13 +40,23 @@ class Admin extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function observations(): HasMany
+    {
+        return $this->hasMany(Assessment::class, 'admin_id', 'id');
+    }
+
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(Assessment::class, 'admin_id', 'id');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
             if (empty($model->id)) {
-                $model->id = (string) \Symfony\Component\Uid\Ulid::generate();
+                $model->id = (string)\Symfony\Component\Uid\Ulid::generate();
             }
         });
     }

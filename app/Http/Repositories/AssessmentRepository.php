@@ -73,11 +73,12 @@ class AssessmentRepository
         return $query->orderBy('scheduled_date', 'asc')->get();
     }
 
-    public function setScheduledDate(int $observationId, string $date)
+    public function setScheduledDate(int $observationId, string $date, $admin)
     {
         return $this->model->where('observation_id', $observationId)->update([
             'scheduled_date' => $date,
-            'status' => 'scheduled'
+            'status' => 'scheduled',
+            'admin_id' => $admin->id,
         ]);
     }
 }

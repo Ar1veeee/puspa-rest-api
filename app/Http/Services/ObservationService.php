@@ -85,16 +85,11 @@ class ObservationService
 
     public function updateObservationDate(array $data, Observation $observation)
     {
-        $updateData = $this->prepareObservationDateUpdate($data, $observation);
+        $admin = $this->getAuthenticatedAdmin();
 
-        if (empty($updateData)) {
-            return $observation;
-        }
+        $this->prepareObservationDateUpdate($data, $observation, $admin);
 
-        $updated = $this->observationRepository->update($observation->id, $updateData);
         $this->clearObservationCaches();
-
-        return $updated;
     }
 
     public function submitObservation(array $data, Observation $observation)
@@ -131,13 +126,15 @@ class ObservationService
         try {
             $updateObservation = [];
 
+            $admin = $this->getAuthenticatedAdmin();
+
             if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
                 $newDateTime = Carbon::createFromFormat(
                     'Y-m-d H:i',
                     $data['scheduled_date'] . ' ' . $data['scheduled_time']
                 );
 
-                $this->assessmentRepository->setScheduledDate($observation->id, $newDateTime);
+                $this->assessmentRepository->setScheduledDate($observation->id, $newDateTime, $admin);
             }
 
             $updateObservation['is_continued_to_assessment'] = true;
@@ -179,6 +176,24 @@ class ObservationService
         }
 
         return $therapist;
+    }
+
+    private function getAuthenticatedAdmin()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new Exception('Tidak ada pengguna yang terautentikasi.');
+        }
+
+        $admin = $user->admin;
+
+        if (!$admin) {
+            throw new Exception('Profil admin tidak ditemukan untuk pengguna ini.');
+        }
+
+        return $admin;
     }
 
     private function getQuestionsForAnswers(array $answers)
@@ -281,9 +296,8 @@ class ObservationService
         ]);
     }
 
-    private function prepareObservationDateUpdate(array $data, $observation): array
+    private function prepareObservationDateUpdate(array $data, $observation, $admin)
     {
-        $updateData = [];
 
         if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
             $newDateTime = Carbon::createFromFormat(
@@ -292,15 +306,16 @@ class ObservationService
             );
 
             if ($newDateTime && !$newDateTime->equalTo($observation->scheduled_date)) {
-                $updateData['scheduled_date'] = $newDateTime;
+                $observation->update([
+                    'admin_id' => $admin->id,
+                    'scheduled_date' => $newDateTime,
+                    'status' => 'scheduled',
+                ]);
             }
 
-            if ($observation->status === 'pending') {
-                $updateData['status'] = 'scheduled';
-            }
         }
 
-        return $updateData;
+//        return $updateData;
     }
 
     private function getCacheKey(string $baseKey): string

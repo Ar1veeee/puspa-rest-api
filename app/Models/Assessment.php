@@ -24,6 +24,7 @@ class Assessment extends Model
     protected $fillable = [
         'observation_id',
         'child_id',
+        'admin_id',
         'therapist_id',
         'scheduled_date',
         'status',
@@ -121,6 +122,10 @@ class Assessment extends Model
         return $this->belongsTo(Child::class, 'child_id', 'id');
     }
 
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'admin_id', 'id');
+    }
     public function therapist(): BelongsTo
     {
         return $this->belongsTo(Therapist::class, 'therapist_id', 'id');

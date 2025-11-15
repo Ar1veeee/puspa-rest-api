@@ -38,6 +38,7 @@ class AssessmentsScheduledResource extends JsonResource
 
         $response = [
             "assessment_id" => $this->id,
+            'administrator' => $this->admin?->admin_name,
             'child_name' => $this->child->child_name,
             'child_gender' => $this->child->child_gender,
             'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
