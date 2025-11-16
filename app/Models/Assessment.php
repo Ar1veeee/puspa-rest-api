@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Assessment extends Model
@@ -28,10 +29,6 @@ class Assessment extends Model
         'therapist_id',
         'scheduled_date',
         'status',
-        'fisio',
-        'wicara',
-        'paedagog',
-        'okupasi',
     ];
 
     protected $casts = [
@@ -41,6 +38,11 @@ class Assessment extends Model
         'paedagog' => 'boolean',
         'okupasi' => 'boolean',
     ];
+
+    public function assessmentDetails(): HasMany
+    {
+        return $this->hasMany(AssessmentDetail::class, 'assessment_id', 'id');
+    }
 
     public function pedagogicalAssessmentGuardian(): HasOne
     {
@@ -120,14 +122,5 @@ class Assessment extends Model
     public function child(): BelongsTo
     {
         return $this->belongsTo(Child::class, 'child_id', 'id');
-    }
-
-    public function admin(): BelongsTo
-    {
-        return $this->belongsTo(Admin::class, 'admin_id', 'id');
-    }
-    public function therapist(): BelongsTo
-    {
-        return $this->belongsTo(Therapist::class, 'therapist_id', 'id');
     }
 }

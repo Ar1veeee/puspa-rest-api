@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\Assessment;
+use App\Models\AssessmentDetail;
 use App\Models\Child;
 use App\Models\Observation;
 use App\Models\ObservationAnswer;
@@ -86,17 +87,23 @@ class ObservationAssessmentSeeder extends Seeder
                 'recommendation' => $faker->sentence(10),
             ]);
 
+            $validTypes = ['fisio','okupasi', 'wicara', 'paedagog'];
+
             if ($observation->is_continued_to_assessment) {
-                Assessment::create([
+                $assessment = Assessment::create([
                     'observation_id' => $observation->id,
-                    'admin_id' => $admins->random()->id,
                     'child_id' => $child->id,
-                    'fisio' => $faker->boolean,
-                    'okupasi' => $faker->boolean,
-                    'wicara' => $faker->boolean,
-                    'paedagog' => $faker->boolean,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+                AssessmentDetail::create([
+                    'assessment_id' => $assessment->id,
+                    'type' => $validTypes[array_rand($validTypes)],
+                    'admin_id' => $admins->random()->id,
+                    'therapist_id' => null,
+                    'status' => 'scheduled',
                     'scheduled_date' => $now->addDays(rand(11, 20)),
-                    'status' => 'Scheduled',
+                    'completed_at' => null,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);

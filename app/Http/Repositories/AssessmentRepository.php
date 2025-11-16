@@ -3,13 +3,16 @@
 namespace App\Http\Repositories;
 
 use App\Models\Assessment;
+use App\Models\AssessmentDetail;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class AssessmentRepository
 {
     protected $model;
 
-    public function __construct(Assessment $model)
+    public function __construct(AssessmentDetail $model)
     {
         $this->model = $model;
     }
@@ -30,9 +33,7 @@ class AssessmentRepository
             return new Collection();
         }
 
-        $query->where($filters['type'], true);
-
-        $query->where('status', $filters['status']);
+        $query->where('type', $filters['type']);
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -44,7 +45,7 @@ class AssessmentRepository
 
         return $query
             ->with([
-                'child' => function ($query) {
+                'assessment.child' => function ($query) {
                     $query->select(
                         'id',
                         'family_id',
@@ -53,41 +54,34 @@ class AssessmentRepository
                         'child_gender'
                     );
                 },
-                'child.family.guardians' => function ($query) {
+                'assessment.child.family.guardians' => function ($query) {
                     $query->select(
                         'id',
                         'family_id',
                         'guardian_name',
                         'guardian_phone'
                     );
-                }
+                },
+                'therapist:id,therapist_name',
+                'admin:id,admin_name',
             ])
             ->orderBy('scheduled_date', 'asc')
             ->get();
     }
 
-    public function getByDate(array $filters = []): Collection
+    public function markAsComplete(int $assessment_id, string $type)
     {
-        $query = $this->model->query();
-
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        if (isset($filters['scheduled_date'])) {
-            $query->whereDate('scheduled_date', $filters['scheduled_date']);
-        }
-
-        $query->with([
-            'child:id,family_id,child_name,child_gender,child_school,child_birth_date',
+        return $this->model->where('assessment_id', $assessment_id)->where('type', $type)->update([
+            'status' => 'completed',
+            'completed_at' => Carbon::now(),
         ]);
-
-        return $query->orderBy('scheduled_date', 'asc')->get();
     }
 
-    public function setScheduledDate(int $observationId, string $date, $admin)
+    public function setScheduledDate(int $observation_id, string $date, $admin)
     {
-        return $this->model->where('observation_id', $observationId)->update([
+        $assessment_id = Assessment::where('observation_id', $observation_id)->value('id');
+
+        return $this->model->where('assessment_id', $assessment_id)->update([
             'scheduled_date' => $date,
             'status' => 'scheduled',
             'admin_id' => $admin->id,

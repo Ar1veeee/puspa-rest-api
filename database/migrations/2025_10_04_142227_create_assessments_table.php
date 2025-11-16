@@ -14,14 +14,6 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
-            $table->foreignUlid('admin_id')->nullable()->constrained('admins')->nullOnDelete();
-            $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
-            $table->boolean('fisio')->nullable()->default(false);
-            $table->boolean('wicara')->nullable()->default(false);
-            $table->boolean('paedagog')->nullable()->default(false);
-            $table->boolean('okupasi')->nullable()->default(false);
-            $table->dateTime('scheduled_date')->nullable()->default(null);
-            $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
             $table->timestamps();
         });
     }

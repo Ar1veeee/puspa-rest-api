@@ -19,13 +19,14 @@ class AssessmentListResource extends JsonResource
             ? $this->scheduled_date
             : Carbon::parse($this->scheduled_date);
 
-        $guardian = $this->child?->family?->guardians?->first();
+        $child = $this->assessment?->child;
+        $guardian = $this->assessment?->child?->family?->guardians?->first();
 
         return [
-            'assessment_id' => $this->id,
-            'child_name' => $this->child?->child_name,
-            'child_age' => $this->child?->child_birth_date?->diff(now())->format('%y Tahun %m Bulan'),
-            'child_gender' => $this->child?->child_gender,
+            'id' => $this->id,
+            'assessment_id' => $this->assessment->id,
+            'child_id' => $child?->id,
+            'child_name' => $child?->child_name,
             'guardian_name' => $guardian?->guardian_name,
             'guardian_phone' => $guardian?->guardian_phone,
             'administrator' => $this->admin?->admin_name,

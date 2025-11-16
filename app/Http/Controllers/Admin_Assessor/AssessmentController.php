@@ -8,6 +8,7 @@ use App\Http\Resources\AssessmentListResource;
 use App\Http\Services\AssessmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AssessmentController extends Controller
 {
@@ -36,7 +37,6 @@ class AssessmentController extends Controller
             'date' => ['nullable', 'date', 'date_format:Y-m-d'],
         ]);
 
-        // Tipe terapis
         $validated['type'] = $type;
         $user = $request->user();
 

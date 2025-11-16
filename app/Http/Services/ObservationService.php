@@ -6,6 +6,7 @@ use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
+use App\Models\Assessment;
 use App\Models\Observation;
 use App\Models\User;
 use App\Traits\ClearsCaches;
@@ -285,15 +286,39 @@ class ObservationService
 
     private function createAssessmentFromObservation($observation, array $data): void
     {
-        $this->assessmentRepository->create([
+        $assessment = Assessment::create([
             'observation_id' => $observation->id,
             'child_id' => $observation->child_id,
-            'therapist_id' => null,
-            'fisio' => $data['fisio'] ?? false,
-            'wicara' => $data['wicara'] ?? false,
-            'paedagog' => $data['paedagog'] ?? false,
-            'okupasi' => $data['okupasi'] ?? false,
         ]);
+
+        $assessmentTypes = [];
+
+        if ($data['fisio'] ?? false) {
+            $assessmentTypes[] = 'fisio';
+        }
+        if ($data['okupasi'] ?? false) {
+            $assessmentTypes[] = 'okupasi';
+        }
+        if ($data['wicara'] ?? false) {
+            $assessmentTypes[] = 'wicara';
+        }
+        if ($data['paedagog'] ?? false) {
+            $assessmentTypes[] = 'paedagog';
+        }
+
+        foreach ($assessmentTypes as $type) {
+            $this->assessmentRepository->create([
+                'assessment_id' => $assessment->id,
+                'type' => $type,
+                'admin_id' => null,
+                'therapist_id' => null,
+                'status' => 'pending',
+                'scheduled_date' => null,
+                'completed_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     private function prepareObservationDateUpdate(array $data, $observation, $admin)

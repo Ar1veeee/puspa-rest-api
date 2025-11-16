@@ -15,6 +15,7 @@ use App\Http\Repositories\PedagogicalAssessmentRepository;
 use App\Http\Repositories\PhysioAssessmentRepository;
 use App\Http\Repositories\SpeechAssessmentRepository;
 use App\Models\Assessment;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -325,10 +326,11 @@ class AssessmentService
     // Soft calling
     public function createPhysioAssessmentTherapist(Assessment $assessment, array $data)
     {
-        $therapist = $this->getAuthenticatedTherapist();
+        $therapist = $this->getAuthenticatedTherapist('fisio');
 
-        if (!$assessment->fisio) {
-            throw new ModelNotFoundException('Penilaian fisio tidak diaktifkan untuk asesmen ini.');
+        $physioDetail = $assessment->assessmentDetails()->where('type', 'fisio')->first();
+        if (!$physioDetail) {
+            throw new ModelNotFoundException('Penilaian fisio tidak ditemukan untuk asesmen ini.');
         }
 
         return DB::transaction(function () use ($assessment, $therapist, $data) {
@@ -344,6 +346,7 @@ class AssessmentService
             $spasticityType = $this->physioAssessmentRepository->createSpasticityType($data);
             $playFunction = $this->physioAssessmentRepository->createPlayFunctionTest($data);
             $diagnosis = $this->physioAssessmentRepository->createPhysiotherapyDiagnosis($data);
+            $this->assessmentRepository->markAsComplete($assessment->id, 'fisio');
 
             return $this->physioAssessmentRepository->createAssessmentTherapist([
                 'assessment_id' => $assessment->id,
@@ -393,10 +396,11 @@ class AssessmentService
     // Soft calling
     public function createOccuAssessmentTherapist(Assessment $assessment, array $data)
     {
-        $therapist = $this->getAuthenticatedTherapist();
+        $therapist = $this->getAuthenticatedTherapist('okupasi');
 
-        if (!$assessment->okupasi) {
-            throw new ModelNotFoundException('Penilaian okupasi tidak diaktifkan untuk asesmen ini.');
+        $occuDetail = $assessment->assessmentDetails()->where('type', 'okupasi')->first();
+        if (!$occuDetail) {
+            throw new ModelNotFoundException('Penilaian okupasi tidak ditemukan untuk asesmen ini.');
         }
 
         return DB::transaction(function () use ($assessment, $therapist, $data) {
@@ -405,6 +409,8 @@ class AssessmentService
             $concentration = $this->occupationalAssessmentRepository->createConcentrationProblemSolving($data);
             $knowledge = $this->occupationalAssessmentRepository->createConceptKnowledge($data);
             $motoric = $this->occupationalAssessmentRepository->createMotoricPlanning($data);
+            $this->assessmentRepository->markAsComplete($assessment->id, 'okupasi');
+
 
             return $this->occupationalAssessmentRepository->createAssessmentTherapist(
                 array_merge($data, [
@@ -436,15 +442,17 @@ class AssessmentService
     // Soft calling
     public function createSpeechAssessmentTherapist(Assessment $assessment, array $data)
     {
-        if (!$assessment->wicara) {
-            throw new ModelNotFoundException('Penilaian wicara tidak diaktifkan untuk asesmen ini.');
-        }
+        $therapist = $this->getAuthenticatedTherapist('wicara');
 
-        $therapist = $this->getAuthenticatedTherapist();
+        $speechDetail = $assessment->assessmentDetails()->where('type', 'wicara')->first();
+        if (!$speechDetail) {
+            throw new ModelNotFoundException('Penilaian wicara tidak ditemukan untuk asesmen ini.');
+        }
 
         return DB::transaction(function () use ($assessment, $therapist, $data) {
             $oralFacial = $this->speechAssessmentRepository->createOralFacial($data);
             $languageSkill = $this->speechAssessmentRepository->createLanguageSkill($data);
+            $this->assessmentRepository->markAsComplete($assessment->id, 'wicara');
 
             return $this->speechAssessmentRepository->createAssessmentTherapist([
                 'assessment_id' => $assessment->id,
@@ -486,11 +494,12 @@ class AssessmentService
     // Soft calling
     public function createPedaAssessmentTherapist(Assessment $assessment, array $data)
     {
-        if (!$assessment->paedagog) {
-            throw new ModelNotFoundException('Penilaian paedagog tidak diaktifkan untuk asesmen ini.');
-        }
+        $therapist = $this->getAuthenticatedTherapist('paedagog');
 
-        $therapist = $this->getAuthenticatedTherapist();
+        $pedaDetail = $assessment->assessmentDetails()->where('type', 'paedagog')->first();
+        if (!$pedaDetail) {
+            throw new ModelNotFoundException('Penilaian paedagog tidak ditemukan untuk asesmen ini.');
+        }
 
         return DB::transaction(function () use ($assessment, $therapist, $data) {
             $reading = $this->pedagogicalAssessmentRepository->createReadingAspect($data);
@@ -498,6 +507,7 @@ class AssessmentService
             $counting = $this->pedagogicalAssessmentRepository->createCountingAspect($data);
             $learningReadiness = $this->pedagogicalAssessmentRepository->createLearningReadinessAspect($data);
             $generalKnowledge = $this->pedagogicalAssessmentRepository->createGeneralKnowledgeAspect($data);
+            $this->assessmentRepository->markAsComplete($assessment->id, 'paedagog');
 
             return $this->pedagogicalAssessmentRepository->createAssessmentTherapist(
                 array_merge($data, [
@@ -513,7 +523,7 @@ class AssessmentService
         });
     }
 
-    private function getAuthenticatedTherapist()
+    private function getAuthenticatedTherapist(string $expected_type = null)
     {
         $user = Auth::user();
 
@@ -525,6 +535,15 @@ class AssessmentService
 
         if (!$therapist) {
             throw new \Exception('Profil terapis tidak ditemukan untuk pengguna ini.');
+        }
+
+        if (!$expected_type) {
+            if ($therapist->therapist_section !== $expected_type) {
+                throw new AuthorizationException(
+                    'Anda tidak memiliki izin untuk asesmen ' . $expected_type .
+                    '. Anda adalah asesor ' . $therapist->therapist_section . '.'
+                );
+            }
         }
 
         return $therapist;
