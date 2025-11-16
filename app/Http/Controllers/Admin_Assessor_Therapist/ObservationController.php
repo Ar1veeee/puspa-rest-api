@@ -28,14 +28,20 @@ class ObservationController extends Controller
         $this->observationService = $observationService;
     }
 
-    public function indexByStatus(Request $request): JsonResponse
+    public function indexByStatus(Request $request, string $status): JsonResponse
     {
+        $validStatus = ['pending', 'scheduled', 'completed'];
+        if (!in_array($status, $validStatus)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Status observasi tidak valid']], 422);
+        }
+
         $validated = $request->validate([
-            'status' => ['nullable', 'string', 'in:pending,scheduled,completed'],
+            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'search' => ['nullable', 'string', 'max:100'],
         ]);
 
+        $validated['status'] = $status;
         $observations = $this->observationService->getObservations($validated);
-        $status = $validated['status'] ?? 'all';
 
         $resourceCollection = match ($status) {
             'pending' => ObservationsPendingResource::collection($observations),
@@ -49,7 +55,7 @@ class ObservationController extends Controller
         return $this->successResponse($resourceCollection, $message, 200);
     }
 
-    public function showByType(Request $request, Observation $observation): JsonResponse
+    public function showDetailByType(Request $request, Observation $observation): JsonResponse
     {
         $validated = $request->validate([
             'type' => ['required', 'string', 'in:scheduled,completed,question,answer'],

@@ -43,34 +43,41 @@ class ObservationService
 
     public function getObservations(array $filters = [])
     {
-        $status = $filters['status'] ?? null;
+        $status = $filters['status'];
+        $date = $filters['date'] ?? null;
+        $search = $filters['search'] ?? null;
+
+        $queryFilters = [];
+        if ($status) {
+            $queryFilters['status'] = $status;
+        }
+        if ($date) {
+            $queryFilters['scheduled_date'] = $date;
+        }
+        if ($search) {
+            $queryFilters['search'] = $search;
+        }
 
         if ($status === 'pending' || $status === 'scheduled') {
             $cacheKey = "observations_{$status}";
+
+            if ($date) {
+                $cacheKey .= "_{$date}";
+            }
+
+            if ($search) {
+                $safeSearch = str_replace(' ', '_', $search);
+                $cacheKey .= "_search_{$safeSearch}";
+            }
+
             $ttl = ($status === 'pending') ? self::CACHE_TTL_PENDING : self::CACHE_TTL_SCHEDULED;
 
-            return Cache::remember($cacheKey, $ttl, function () use ($status) {
-                return $this->observationRepository->getByFilters(['status' => $status]);
+            return Cache::remember($cacheKey, $ttl, function () use ($queryFilters) {
+                return $this->observationRepository->getByFilters($queryFilters);
             });
         }
 
-        return $this->observationRepository->getByFilters($filters);
-    }
-
-    public function getObservationsScheduled(array $filters = [])
-    {
-        $status = 'scheduled';
-
-        $queryFilters = [
-            'status' => $status,
-        ];
-
-        // Jika ada tanggal, tambahkan
-        if (!empty($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
-        }
-
-        return $this->observationRepository->getByDate($queryFilters);
+        return $this->observationRepository->getByFilters($queryFilters);
     }
 
     public function getObservationQuestions(Observation $observation)

@@ -122,14 +122,17 @@ Route::prefix('v1')->group(function () {
             Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild']);
 
             Route::put('/observations/{observation}', [AdminObservationManagement::class, 'updateObservationDate']);
-            Route::get('/observations/scheduled', [AdminObservationManagement::class, 'indexScheduledByDate']); // using query: date
             Route::put('/observations/{observation}/agreement', [AdminObservationManagement::class, 'assessmentAgreement']);
         });
 
         // ================== ROLE ADMIN, THERAPIST, ASSESSOR ==================
         Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
-            Route::get('/observations', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus']); // using query: status
-            Route::get('/observations/{observation}', [AdminAssessorTherapistObservationManagement::class, 'showByType']); // using query: type
+            // for status pending using query: search
+            // for status scheduled & completed using query: date, search
+            Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus']);
+            // using query: status
+            Route::get('/observations/{observation}/detail', [AdminAssessorTherapistObservationManagement::class, 'showDetailByType'])
+                ->whereIn('type', ['scheduled', 'completed','question','answer']);
         });
 
         // ================== ROLE THERAPIST & ASSESSOR ==================

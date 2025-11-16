@@ -23,18 +23,6 @@ class ObservationController extends Controller
         $this->observationService = $observationService;
     }
 
-    public function indexScheduledByDate(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
-        ]);
-
-        $observations = $this->observationService->getObservationsScheduled($validated);
-        $response = ObservationsScheduledResource::collection($observations);
-
-        return $this->successResponse($response, 'Daftar Observasi Terjadwal', 200);
-    }
-
     public function updateObservationDate(ObservationUpdateRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();
