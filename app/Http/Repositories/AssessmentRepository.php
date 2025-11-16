@@ -35,12 +35,19 @@ class AssessmentRepository
 
         $query->where('type', $filters['type']);
 
-        if (!empty($filters['status'])) {
+        if (isset($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['date'])) {
-            $query->whereDate('scheduled_date', $filters['date']);
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        if (isset($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $query->whereHas('assessment.child', function ($childQuery) use ($searchTerm) {
+                $childQuery->where('child_name', 'LIKE', '%' . $searchTerm . '%');
+            });
         }
 
         return $query
@@ -69,9 +76,10 @@ class AssessmentRepository
             ->get();
     }
 
-    public function markAsComplete(int $assessment_id, string $type)
+    public function markAsComplete(int $assessment_id, string $type, $therapist_id)
     {
         return $this->model->where('assessment_id', $assessment_id)->where('type', $type)->update([
+            'therapist_id' => $therapist_id,
             'status' => 'completed',
             'completed_at' => Carbon::now(),
         ]);

@@ -78,11 +78,15 @@ class AssessmentService
         }
 
         if (isset($filters['date'])) {
-            $queryFilters['date'] = $filters['date'];
+            $queryFilters['scheduled_date'] = $filters['date'];
         }
 
-        if (!empty($filters['status'])) {
+        if (isset($filters['status'])) {
             $queryFilters['status'] = $filters['status'];
+        }
+
+        if (isset($filters['search'])) {
+            $queryFilters['search'] = $filters['search'];
         }
 
         return $this->assessmentRepository->getAssessmentWithFilter($queryFilters);
@@ -346,11 +350,10 @@ class AssessmentService
             $spasticityType = $this->physioAssessmentRepository->createSpasticityType($data);
             $playFunction = $this->physioAssessmentRepository->createPlayFunctionTest($data);
             $diagnosis = $this->physioAssessmentRepository->createPhysiotherapyDiagnosis($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'fisio');
+            $this->assessmentRepository->markAsComplete($assessment->id, 'fisio', $therapist->id);
 
             return $this->physioAssessmentRepository->createAssessmentTherapist([
                 'assessment_id' => $assessment->id,
-                'therapist_id' => $therapist->id,
                 'general_examination_id' => $general->id,
                 'system_anamnesis_id' => $systemAnamnesis->id,
                 'sensory_examination_id' => $sensory->id,
@@ -409,13 +412,12 @@ class AssessmentService
             $concentration = $this->occupationalAssessmentRepository->createConcentrationProblemSolving($data);
             $knowledge = $this->occupationalAssessmentRepository->createConceptKnowledge($data);
             $motoric = $this->occupationalAssessmentRepository->createMotoricPlanning($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'okupasi');
+            $this->assessmentRepository->markAsComplete($assessment->id, 'okupasi', $therapist->id);
 
 
             return $this->occupationalAssessmentRepository->createAssessmentTherapist(
                 array_merge($data, [
                     'assessment_id' => $assessment->id,
-                    'therapist_id' => $therapist->id,
                     'bodily_self_sense_id' => $balance->id,
                     'balance_coordination_id' => $bodily->id,
                     'concentration_problem_solving_id' => $concentration->id,
@@ -452,11 +454,10 @@ class AssessmentService
         return DB::transaction(function () use ($assessment, $therapist, $data) {
             $oralFacial = $this->speechAssessmentRepository->createOralFacial($data);
             $languageSkill = $this->speechAssessmentRepository->createLanguageSkill($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'wicara');
+            $this->assessmentRepository->markAsComplete($assessment->id, 'wicara', $therapist->id);
 
             return $this->speechAssessmentRepository->createAssessmentTherapist([
                 'assessment_id' => $assessment->id,
-                'therapist_id' => $therapist->id,
                 'oral_facial_aspect_id' => $oralFacial->id,
                 'language_skill_aspect_id' => $languageSkill->id,
             ]);
@@ -507,12 +508,11 @@ class AssessmentService
             $counting = $this->pedagogicalAssessmentRepository->createCountingAspect($data);
             $learningReadiness = $this->pedagogicalAssessmentRepository->createLearningReadinessAspect($data);
             $generalKnowledge = $this->pedagogicalAssessmentRepository->createGeneralKnowledgeAspect($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'paedagog');
+            $this->assessmentRepository->markAsComplete($assessment->id, 'paedagog', $therapist->id);
 
             return $this->pedagogicalAssessmentRepository->createAssessmentTherapist(
                 array_merge($data, [
                     'assessment_id' => $assessment->id,
-                    'therapist_id' => $therapist->id,
                     'reading_aspect_id' => $reading->id,
                     'writing_aspect_id' => $writing->id,
                     'counting_aspect_id' => $counting->id,

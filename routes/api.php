@@ -144,9 +144,10 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
                 Route::get('/{type}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
-                    ->whereIn('status', ['scheduled', 'completed']); // using query: status and date
+                    ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
+                Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
                 Route::post('/{assessment}', [AssessorAssessmentManagement::class, 'storeTherapistAssessment']);
-                Route::get('/{assessment}/answer', [AssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
+                Route::get('/{assessment}/answer', [AdminAssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
             });
         });
 

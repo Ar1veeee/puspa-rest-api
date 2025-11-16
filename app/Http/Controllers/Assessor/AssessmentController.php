@@ -5,16 +5,9 @@ namespace App\Http\Controllers\Assessor;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AssessmentTherapistRequest;
-use App\Http\Resources\AssessmentListResource;
-use App\Http\Resources\OccupationalTherapistDataAssessmentResource;
-use App\Http\Resources\PedagogicalTherapistDataAssessmentResource;
-use App\Http\Resources\PhysioTherapistDataAssessmentResource;
-use App\Http\Resources\SpeechTherapistDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
@@ -64,68 +57,5 @@ class AssessmentController extends Controller
         $message = sprintf('Assessment %s Berhasil Disimpan', ucfirst($type));
 
         return $this->successResponse([], $message, 201);
-    }
-
-    /*
-     * Menampilkan jawaban asesmen terapis
-     */
-    public function showTherapistAssessmentAnswer(Request $request, Assessment $assessment): JsonResponse
-    {
-        // Validasi query parameter
-        $validated = $request->validate([
-            'type' => ['required', 'string', 'in:fisio,wicara,okupasi,paedagog'],
-        ]);
-
-        $type = $validated['type'];
-        $user = $request->user();
-
-        if ($user->role !== 'asesor') {
-            return $this->errorResponse(
-                'Forbidden',
-                ['error' => 'Hanya asesor yang memiliki izin untuk melihat jawaban asesmen'],
-                403
-            );
-        }
-
-        try {
-            // Mengambil data berdasarkan tipe
-            [$data, $message] = match ($type) {
-                'fisio' => [
-                    $this->assessmentService->getPhysioAssessmentTherapist($assessment),
-                    'Data Fisio Asesmen Terapis'
-                ],
-                'wicara' => [
-                    $this->assessmentService->getSpeechAssessmentTherapist($assessment),
-                    'Data Wicara Asesmen Terapis'
-                ],
-                'okupasi' => [
-                    $this->assessmentService->getOccuAssessmentTherapist($assessment),
-                    'Data Okupasi Asesmen Terapis'
-                ],
-                'paedagog' => [
-                    $this->assessmentService->getPedaAssessmentTherapist($assessment),
-                    'Data Paedagog Asesmen Terapis'
-                ],
-            };
-
-            $resource = $this->getTherapistResourceByType($type, $data);
-
-            return $this->successResponse($resource, $message, 200);
-
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse($e->getMessage(), [], 404);
-        } catch (\Exception $e) {
-            return $this->errorResponse('Gagal mengambil data assessment', [], 500);
-        }
-    }
-
-    private function getTherapistResourceByType(string $type, $data)
-    {
-        return match ($type) {
-            'fisio' => new PhysioTherapistDataAssessmentResource($data),
-            'wicara' => new SpeechTherapistDataAssessmentResource($data),
-            'okupasi' => new OccupationalTherapistDataAssessmentResource($data),
-            'paedagog' => new PedagogicalTherapistDataAssessmentResource($data),
-        };
     }
 }

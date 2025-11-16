@@ -72,11 +72,11 @@ class ObservationController extends Controller
         [$response, $message] = match ($type) {
             'scheduled' => [
                 new ObservationScheduledDetailResource($observation),
-                'Observasi Scheduled Detail'
+                'Detail Observasi Terjadwal'
             ],
             'completed' => [
                 new ObservationCompletedDetailResource($observation),
-                'Observasi Completed Detail'
+                'Detail Observasi Selesai'
             ],
             'question' => [
                 ObservationQuestionsResource::collection(
@@ -86,7 +86,7 @@ class ObservationController extends Controller
             ],
             'answer' => [
                 new ObservationDetailAnswerResource($observation),
-                'Observasi Detail Answer'
+                'Detail Jawaban Observasi'
             ],
         };
 
