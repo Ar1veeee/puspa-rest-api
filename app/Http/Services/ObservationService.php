@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Http\Repositories\AssessmentRepository;
+use App\Http\Repositories\AssessmentDetailRepository;
 use App\Http\Repositories\ObservationRepository;
 use App\Http\Repositories\ObservationQuestionRepository;
 use App\Http\Repositories\ObservationAnswerRepository;
@@ -32,7 +32,7 @@ class ObservationService
         ObservationRepository         $observationRepository,
         ObservationQuestionRepository $observationQuestionRepository,
         ObservationAnswerRepository   $observationAnswerRepository,
-        AssessmentRepository          $assessmentRepository
+        AssessmentDetailRepository $assessmentRepository
     )
     {
         $this->observationRepository = $observationRepository;

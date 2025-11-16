@@ -25,18 +25,6 @@ class Assessment extends Model
     protected $fillable = [
         'observation_id',
         'child_id',
-        'admin_id',
-        'therapist_id',
-        'scheduled_date',
-        'status',
-    ];
-
-    protected $casts = [
-        'scheduled_date' => 'datetime',
-        'fisio' => 'boolean',
-        'wicara' => 'boolean',
-        'paedagog' => 'boolean',
-        'okupasi' => 'boolean',
     ];
 
     public function assessmentDetails(): HasMany

@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Http\Repositories\AssessmentRepository;
+use App\Http\Repositories\AssessmentDetailRepository;
 use App\Http\Repositories\ChildBirthRepository;
 use App\Http\Repositories\ChildEducationRepository;
 use App\Http\Repositories\ChildHealthRepository;
@@ -39,7 +39,7 @@ class AssessmentService
     protected $pedagogicalAssessmentRepository;
 
     public function __construct(
-        AssessmentRepository             $assessmentRepository,
+        AssessmentDetailRepository       $assessmentRepository,
         GuardianRepository               $guardianRepository,
         ChildPsychosocialRepository      $childPsychosocialRepository,
         ChildPregnancyRepository         $childPregnancyRepository,
