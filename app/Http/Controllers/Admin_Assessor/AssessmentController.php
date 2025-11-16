@@ -16,7 +16,6 @@ use App\Models\AssessmentDetail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AssessmentController extends Controller
 {
