@@ -15,6 +15,9 @@ use App\Http\Repositories\PedagogicalAssessmentRepository;
 use App\Http\Repositories\PhysioAssessmentRepository;
 use App\Http\Repositories\SpeechAssessmentRepository;
 use App\Models\Assessment;
+use App\Models\AssessmentDetail;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -521,6 +524,38 @@ class AssessmentService
                 ])
             );
         });
+    }
+
+    public function updateScheduledDate(array $data, AssessmentDetail $assessment)
+    {
+        $admin = $this->getAuthenticatedAdmin();
+
+        if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
+            $newDateTime = Carbon::createFromFormat(
+                'Y-m-d H:i',
+                $data['scheduled_date'] . ' ' . $data['scheduled_time']
+            );
+
+            $this->assessmentRepository->updateScheduledDate($assessment->id, $newDateTime, $admin);
+        }
+    }
+
+    private function getAuthenticatedAdmin()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new Exception('Tidak ada pengguna yang terautentikasi.');
+        }
+
+        $admin = $user->admin;
+
+        if (!$admin) {
+            throw new Exception('Profil admin tidak ditemukan untuk pengguna ini.');
+        }
+
+        return $admin;
     }
 
     private function getAuthenticatedTherapist(string $expected_type = null)

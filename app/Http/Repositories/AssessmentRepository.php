@@ -95,4 +95,13 @@ class AssessmentRepository
             'admin_id' => $admin->id,
         ]);
     }
+
+    public function updateScheduledDate(int $assessment_id, string $date, $admin)
+    {
+        return $this->model->where('assessment_id', $assessment_id)->update([
+            'scheduled_date' => $date,
+            'status' => 'scheduled',
+            'admin_id' => $admin->id,
+        ]);
+    }
 }

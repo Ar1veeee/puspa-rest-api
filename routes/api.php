@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ObservationController as AdminObservationManagement;
 use App\Http\Controllers\Admin\UserController as AdminUserManagement;
+use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentManagement;
 use App\Http\Controllers\Admin_Assessor\AssessmentController as AdminAssessorAssessmentManagement;
 use App\Http\Controllers\Admin_Assessor_Therapist\ObservationController as AdminAssessorTherapistObservationManagement;
 use App\Http\Controllers\Assessor\AssessmentController as AssessorAssessmentManagement;
@@ -145,8 +146,9 @@ Route::prefix('v1')->group(function () {
             Route::prefix('assessments')->group(function () {
                 Route::get('/{type}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
                     ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
-                Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
+                Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate']);
                 Route::post('/{assessment}', [AssessorAssessmentManagement::class, 'storeTherapistAssessment']);
+                Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
                 Route::get('/{assessment}/answer', [AdminAssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
             });
         });
