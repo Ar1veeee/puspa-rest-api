@@ -15,6 +15,7 @@ use App\Http\Services\ObservationService;
 use App\Models\Observation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ObservationController extends Controller
 {
