@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('physio_assessment_therapists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assessment_id')->unique()->constrained('assessments')->onDelete('cascade');
-            $table->foreignUlid('therapist_id')->constrained('therapists')->onDelete('cascade');
 
             $table->foreignId('general_examination_id')->nullable()
                 ->constrained('physio_general_examinations', 'id', 'fk_physio_general_exam')->onDelete('set null');

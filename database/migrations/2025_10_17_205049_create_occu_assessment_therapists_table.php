@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('occu_assessment_therapists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assessment_id')->unique()->constrained('assessments')->onDelete('cascade');
-            $table->foreignUlid('therapist_id')->constrained('therapists')->onDelete('cascade');
             $table->foreignId('bodily_self_sense_id')->nullable()->constrained('occu_bodily_self_senses')->onDelete('set null');
             $table->foreignId('balance_coordination_id')->nullable();
             $table->foreign('balance_coordination_id', 'fk_occu_balance_id')

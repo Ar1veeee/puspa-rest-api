@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('speech_assessment_therapists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assessment_id')->unique()->constrained('assessments')->onDelete('cascade');
-            $table->foreignUlid('therapist_id')->constrained('therapists')->onDelete('cascade');
             $table->foreignId('oral_facial_aspect_id')->nullable()->constrained('speech_oral_facial_aspects')->onDelete('set null');
             $table->foreignId('language_skill_aspect_id')->nullable()->constrained('speech_language_skill_aspects')->onDelete('set null');
             $table->timestamps();
