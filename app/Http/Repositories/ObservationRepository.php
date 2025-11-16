@@ -23,11 +23,6 @@ class ObservationRepository
         return $this->model->create($data);
     }
 
-    public function getById($id)
-    {
-        return $this->model->find($id);
-    }
-
     public function getByFilters(array $filters = [])
     {
         $query = $this->model->query();

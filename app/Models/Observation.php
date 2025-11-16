@@ -14,7 +14,7 @@ class Observation extends Model
 
     protected $table = 'observations';
 
-    protected $primarassyKey = 'id';
+    protected $primaryKey = 'id';
 
     protected $keyType = 'int';
 
@@ -37,6 +37,7 @@ class Observation extends Model
     ];
 
     protected $casts = [
+        'scheduled_date' => 'datetime',
         'is_continued_to_assessment' => 'boolean',
     ];
 
@@ -47,7 +48,7 @@ class Observation extends Model
 
     public function assessment(): HasOne
     {
-        return $this->hasOne(ObservationAnswer::class, 'observation_id', 'id');
+        return $this->hasOne(Assessment::class, 'observation_id', 'id');
     }
 
     public function child(): BelongsTo
