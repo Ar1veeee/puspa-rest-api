@@ -25,6 +25,48 @@ class AssessmentDetailRepository
         return $this->model->create($data);
     }
 
+    public function getParentsAssessmentWithFilter(array $filters)
+    {
+        $query = $this->model->query();
+
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        if (isset($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $query->whereHas('assessment.child', function ($childQuery) use ($searchTerm) {
+                $childQuery->where('child_name', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        return $query
+            ->with([
+                'assessment.child' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'child_name',
+                        'child_birth_date',
+                        'child_gender'
+                    );
+                },
+                'assessment.child.family.guardians' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'guardian_name',
+                        'guardian_phone'
+                    );
+                },
+                'therapist:id,therapist_name',
+                'admin:id,admin_name',
+            ])
+            ->orderBy('scheduled_date', 'asc')
+            ->where('parent_status', $filters['parent_status'])
+            ->get();
+    }
+
     // mendapatkan data asesmen dengan filter by status, dan tipe
     public function getAssessmentWithFilter(array $filters = [])
     {

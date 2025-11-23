@@ -50,15 +50,8 @@ class GuardianRepository
         }
 
         return Child::with([
-            'assessment' => function ($query) {
-                $query->select(
-                    'id',
-                    'child_id',
-                    'scheduled_date',
-                    'status',
-                    'created_at',
-                    'updated_at',
-                )
+            'assessment.assessmentDetails' => function ($query) {
+                $query->where('status', 'scheduled')
                     ->orderBy('scheduled_date', 'asc');
             }
         ])
@@ -72,7 +65,7 @@ class GuardianRepository
                 'child_birth_place'
             )
             ->where('family_id', $guardian->family_id)
-            ->whereHas('assessment', function ($query) {
+            ->whereHas('assessment.assessmentDetails', function ($query) {
                 $query->where('status', 'scheduled');
             })
             ->get();

@@ -36,6 +36,11 @@ return new class extends Migration {
             ])->default('pending');
             $table->dateTime('scheduled_date')->nullable();
             $table->time('completed_at')->nullable();
+            $table->enum('parent_status', [
+                'completed',
+                'not_completed'
+            ])->default('not_completed');
+            $table->time('parent_completed_at')->nullable();
             $table->timestamps();
         });
     }

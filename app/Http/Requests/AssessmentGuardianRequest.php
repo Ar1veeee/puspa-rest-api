@@ -74,10 +74,10 @@ class AssessmentGuardianRequest extends FormRequest
                 'string'
             ],
             'crying_immediately' => ['required', 'boolean'],
-            'birth_condition' => ['required', 'string', Rule::in(['normal', 'biru', 'kuning', 'kejang'])],
+            'birth_condition' => ['nullable', 'string', Rule::in(['biru', 'kuning', 'kejang'])],
             'birth_condition_duration' => [
                 'nullable',
-                Rule::requiredIf($this->input('birth_condition') !== 'normal'),
+                Rule::requiredIf($this->input('birth_condition') === 'biru' || $this->input('birth_condition') === 'kuning' || $this->input('birth_condition') === 'kejang'),
                 'integer',
                 'min:0'
             ],
@@ -93,17 +93,16 @@ class AssessmentGuardianRequest extends FormRequest
             'head_circumference' => ['nullable', 'numeric', 'min:0'],
             'birth_complications_other' => ['nullable', 'string'],
             'postpartum_depression' => ['required', 'boolean'],
-
-            'postbirth_condition' => ['required', 'string', Rule::in(['normal', 'biru', 'kuning', 'kejang'])],
+            'postbirth_condition' => ['nullable', 'string', Rule::in(['biru', 'kuning', 'kejang'])],
             'postbirth_condition_duration' => [
                 'nullable',
-                Rule::requiredIf($this->input('postbirth_condition') !== 'normal'),
+                Rule::requiredIf($this->input('postbirth_condition') === 'biru' || $this->input('birth_condition') === 'kuning' || $this->input('birth_condition') === 'kejang'),
                 'integer',
                 'min:0'
             ],
             'postbirth_condition_age' => [
                 'nullable',
-                Rule::requiredIf($this->input('postbirth_condition') !== 'normal'),
+                Rule::requiredIf($this->input('postbirth_condition') === 'biru' || $this->input('birth_condition') === 'kuning' || $this->input('birth_condition') === 'kejang'),
                 'integer',
                 'min:0'
             ],

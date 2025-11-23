@@ -26,6 +26,8 @@ class AssessmentDetail extends Model
         'scheduled_date',
         'status',
         'completed_at',
+        'parent_status',
+        'parent_completed_at',
     ];
 
     protected $casts = [

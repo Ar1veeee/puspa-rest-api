@@ -20,10 +20,14 @@ use App\Http\Resources\SpeechTherapistDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Http\Services\GuardianService;
 use App\Models\Assessment;
+use App\Models\AssessmentDetail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class AssessmentController extends Controller
 {
@@ -35,7 +39,7 @@ class AssessmentController extends Controller
 
     public function __construct(
         AssessmentService $assessmentService,
-        GuardianService $guardianService
+        GuardianService   $guardianService
     )
     {
         $this->assessmentService = $assessmentService;
@@ -45,8 +49,18 @@ class AssessmentController extends Controller
     public function indexChildrenAssessment(): JsonResponse
     {
         $userId = auth()->id();
+
         $childAssessment = $this->assessmentService->getChildrenAssessment($userId);
-        return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak');
+
+        $filteredAssessments = $childAssessment->filter(function ($item) {
+            return $item !== null;
+        });
+
+        if ($filteredAssessments->isEmpty()) {
+            return $this->successResponse([], 'Tidak ada jadwal asesmen yag ditemukan');
+        }
+
+        return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak', 200);
     }
 
     public function storeGuardianAssessment(AssessmentGuardianRequest $request, Assessment $assessment): JsonResponse
@@ -74,15 +88,36 @@ class AssessmentController extends Controller
             return $this->successResponse($result, $message, 201);
 
         } catch (\Exception $e) {
-            return $this->errorResponse('Gagal menyimpan data assessment', [], 500);
+            return $this->errorResponse('Gagal menyimpan data assessment', [$e], 500);
+        }
+    }
+
+    public function markAsCompleteAssessment(AssessmentDetail $assessmentDetail): JsonResponse
+    {
+        $assessmentDetail->load('assessment.child');
+        $this->authorize('view', $assessmentDetail);
+
+        try {
+            $this->assessmentService->completedAssessment($assessmentDetail);
+            return $this->successResponse([], 'Assessment telah berhasil diselesaikan', 200);
+        } catch (\Exception $e) {
+            return $this->errorResponse(
+                'Asesmen belum dapat diselesaikan',
+                $e->errors(),
+                422
+            );
         }
     }
 
     // Menampilkan jadwal asesmen semua anak yang dimiliki orang tua
-    public function show(Assessment $assessment)
+    public function show(AssessmentDetail $assessment)
     {
         $this->authorize('view', $assessment);
-        return $this->successResponse(new AssessmentsDetailResource($assessment), 'Detail Assessment Untuk Anak');
+
+        return $this->successResponse(
+            new AssessmentsDetailResource($assessment),
+            'Detail Assessment Untuk Anak'
+        );
     }
 
     /*

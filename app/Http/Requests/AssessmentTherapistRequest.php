@@ -286,8 +286,10 @@ class AssessmentTherapistRequest extends FormRequest
             'identity_age_desc' => $descRules,
 
             // Section A: Balance & Coordination
-            'left_right_discrimination_score' => $scoreRules,
-            'left_right_discrimination_desc' => $descRules,
+            'left_right_use_shoes_score' => $scoreRules,
+            'left_right_use_shoes_desc' => $descRules,
+            'left_right_identify_score' => $scoreRules,
+            'left_right_identify_desc' => $descRules,
             'spatial_position_up_down_score' => $scoreRules,
             'spatial_position_up_down_desc' => $descRules,
             'spatial_position_out_in_score' => $scoreRules,

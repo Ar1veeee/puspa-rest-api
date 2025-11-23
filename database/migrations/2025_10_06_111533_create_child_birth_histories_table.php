@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->enum('if_normal', ['kepala dulu', 'kaki dulu', 'pantat dulu'])->nullable();
             $table->text('caesar_vacuum_reason')->nullable();
             $table->boolean('crying_immediately');
-            $table->enum('birth_condition', ['normal', 'biru', 'kuning', 'kejang'])->default('normal');
+            $table->enum('birth_condition', ['biru', 'kuning', 'kejang'])->nullable();
             $table->integer('birth_condition_duration')->nullable();
             $table->boolean('incubator_used');
             $table->integer('incubator_duration')->nullable();

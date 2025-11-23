@@ -14,8 +14,10 @@ class OccuBalanceCoordination extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'left_right_discrimination_score',
-        'left_right_discrimination_desc',
+        'left_right_use_shoes_score',
+        'left_right_use_shoes_desc',
+        'left_right_identify_score',
+        'left_right_identify_desc',
         'spatial_position_up_down_score',
         'spatial_position_up_down_desc',
         'spatial_position_out_in_score',

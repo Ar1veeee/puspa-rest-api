@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('child_post_birth_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assessment_id')->constrained('assessments')->cascadeOnDelete();
-            $table->enum('postbirth_condition', ['normal', 'biru', 'kuning', 'kejang'])->default('normal');
+            $table->enum('postbirth_condition', ['biru', 'kuning', 'kejang'])->nullable();
             $table->integer('postbirth_condition_duration')->nullable();
             $table->integer('postbirth_condition_age')->nullable();
             $table->boolean('has_ever_fallen');

@@ -14,10 +14,13 @@ class ChildrenAssessmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $assessment = $this->whenLoaded('assessment');
+        $assessment = $this->assessment->assessmentDetails
+            ->where('status', 'scheduled')
+            ->sortBy('scheduled_date')
+            ->first();
 
         return [
-            'assessment_id' => $assessment->id,
+            'assessment_id' => $assessment->assessment_id,
             'child_id' => $this->id,
             'family_id' => $this->family_id,
             'child_name' => $this->child_name,

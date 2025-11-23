@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Assessor;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AssessmentTherapistRequest;
+use App\Http\Resources\ParentsAssessmentListResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AssessmentController extends Controller
 {
@@ -21,6 +24,32 @@ class AssessmentController extends Controller
     )
     {
         $this->assessmentService = $assessmentService;
+    }
+
+    public function indexCompletedParentsAssessment(Request $request, string $status)
+    {
+        $valid_status = ['completed', 'not_completed'];
+        if (!in_array($status, $valid_status)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Status observasi tidak valid']], 422);
+        }
+
+        $validated = $request->validate([
+            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $validated['status'] = $status;
+        $user = $request->user();
+
+        if ($user->role === 'terapis') {
+            return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
+        }
+
+        $assessments = $this->assessmentService->getParentsAssessment($validated);
+
+        $response = ParentsAssessmentListResource::collection($assessments);
+        $message = 'Daftar Asesmen Orang Tua';
+        return $this->successResponse($response, $message);
     }
 
     public function storeTherapistAssessment(AssessmentTherapistRequest $request, Assessment $assessment): JsonResponse

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ObservationController as AdminObservationManagement;
 use App\Http\Controllers\Admin\UserController as AdminUserManagement;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentManagement;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin_Assessor\AssessmentController as AdminAssessorAssessmentManagement;
 use App\Http\Controllers\Admin_Assessor_Therapist\ObservationController as AdminAssessorTherapistObservationManagement;
 use App\Http\Controllers\Assessor\AssessmentController as AssessorAssessmentManagement;
@@ -108,7 +109,8 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ADMIN ==================
         Route::middleware(['role:admin', 'throttle:authenticated'])->group(function () {
             Route::put('/admins/update-password', [AdminUserManagement::class, 'updatePasswordAdmin']);
-
+            Route::get('/admins/dashboard/stats', [AdminDashboard::class, 'getDashboardStats']);
+            Route::get('/admins/dashboard/today-schedule', [AdminDashboard::class, 'getTodaySchedule']);
             Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail']);
             Route::post('/admins', [AdminUserManagement::class, 'storeAdmin']);
             Route::put('/admins/{admin}', [AdminUserManagement::class, 'updateAdmin']);
@@ -133,7 +135,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus']);
             // using query: status
             Route::get('/observations/{observation}/detail', [AdminAssessorTherapistObservationManagement::class, 'showDetailByType'])
-                ->whereIn('type', ['scheduled', 'completed','question','answer']);
+                ->whereIn('type', ['scheduled', 'completed', 'question', 'answer']);
         });
 
         // ================== ROLE THERAPIST & ASSESSOR ==================
@@ -150,6 +152,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('/{assessment}', [AssessorAssessmentManagement::class, 'storeTherapistAssessment']);
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
                 Route::get('/{assessment}/answer', [AdminAssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
+                Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);
             });
         });
 
@@ -168,10 +171,11 @@ Route::prefix('v1')->group(function () {
             // Untuk menampilkan asasmen terjadwal milik anak
             Route::get('/assessments', [ParentAssessmentManagement::class, 'indexChildrenAssessment']);
 
-            Route::prefix('assessments/{assessment}')->group(function () {
-                Route::get('/', [ParentAssessmentManagement::class, 'show']);
-                Route::post('/', [ParentAssessmentManagement::class, 'storeGuardianAssessment']);
-                Route::get('/answer', [ParentAssessmentManagement::class, 'showGuardianAssessmentAnswer']);
+            Route::prefix('assessments')->group(function () {
+                Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show']);
+                Route::post('/{assessment}', [ParentAssessmentManagement::class, 'storeGuardianAssessment']);
+                Route::get('/{assessment}/answer', [ParentAssessmentManagement::class, 'showGuardianAssessmentAnswer']);
+                Route::get('/{assessmentDetail}/completed', [ParentAssessmentManagement::class, 'markAsCompleteAssessment']);
             });
         });
     });

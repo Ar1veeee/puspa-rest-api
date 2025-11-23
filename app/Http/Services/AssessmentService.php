@@ -22,6 +22,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AssessmentService
 {
@@ -67,9 +68,84 @@ class AssessmentService
         $this->pedagogicalAssessmentRepository = $pedagogicalAssessmentRepository;
     }
 
+    /**
+     * Mapping type assessment to table which must be filled with parent
+     */
+    private array $requiredTablesMap = [
+        'fisio' => [
+            'child_psychosocial_histories',
+            'child_pregnancy_histories',
+            'child_birth_histories',
+            'child_post_birth_histories',
+            'child_health_histories',
+            'child_education_histories',
+            'physio_assessment_guardians',
+        ],
+        'okupasi' => [
+            'child_psychosocial_histories',
+            'child_pregnancy_histories',
+            'child_birth_histories',
+            'child_post_birth_histories',
+            'child_health_histories',
+            'child_education_histories',
+            'occupational_assessment_guardians',
+        ],
+        'wicara' => [
+            'child_psychosocial_histories',
+            'child_pregnancy_histories',
+            'child_birth_histories',
+            'child_post_birth_histories',
+            'child_health_histories',
+            'child_education_histories',
+            'speech_assessment_guardians',
+        ],
+        'paedagog' => [
+            'child_psychosocial_histories',
+            'child_pregnancy_histories',
+            'child_birth_histories',
+            'child_post_birth_histories',
+            'child_health_histories',
+            'child_education_histories',
+            'pedagogical_assessment_guardians',
+        ],
+    ];
+
+    /**
+     * Label error message
+     */
+    private array $tableLabels = [
+        'child_psychosocial_histories' => 'Riwayat Psikososial Anak',
+        'child_pregnancy_histories' => 'Riwayat Kehamilan',
+        'child_birth_histories' => 'Riwayat Kelahiran',
+        'child_post_birth_histories' => 'Riwayat Pasca Kelahiran',
+        'child_health_histories' => 'Riwayat Kesehatan Anak',
+        'child_education_histories' => 'Riwayat Pendidikan Anak',
+        'physio_assessment_guardians' => 'Assessment Fisioterapi',
+        'occupational_assessment_guardians' => 'Assessment Okupasi',
+        'speech_assessment_guardians' => 'Assessment Wicara',
+        'pedagogical_assessment_guardians' => 'Assessment Paedagog',
+    ];
+
     public function getChildrenAssessment(string $userId)
     {
         return $this->guardianRepository->getAssessments($userId);
+    }
+
+    public function getParentsAssessment(array $filters = [])
+    {
+        $queryFilters = [];
+
+        $queryFilters['parent_status'] = $filters['status'];
+
+        if (isset($filters['date'])) {
+            $queryFilters['scheduled_date'] = $filters['date'];
+        }
+
+        if (isset($filters['search'])) {
+            $queryFilters['search'] = $filters['search'];
+        }
+
+        return $this->assessmentRepository->getParentsAssessmentWithFilter($queryFilters);
     }
 
     public function getAssessmentsByType(array $filters = [])
@@ -279,6 +355,18 @@ class AssessmentService
         }
 
         return $occuData;
+    }
+
+    public function completedAssessment(AssessmentDetail $assessmentDetail)
+    {
+        $this->validateAssessmentCompletion($assessmentDetail);
+
+        AssessmentDetail::where(['assessment_id' => $assessmentDetail->assessment_id])
+            ->update([
+                    'parent_status' => 'completed',
+                    'parent_completed_at' => Carbon::now(),
+                ]
+            );
     }
 
     public function createGeneralData(Assessment $assessment, array $data)
@@ -582,5 +670,40 @@ class AssessmentService
         }
 
         return $therapist;
+    }
+
+    private function validateAssessmentCompletion(AssessmentDetail $assessment)
+    {
+        $type = $assessment->type;
+        $assessment_id = $assessment->assessment_id;
+
+
+        if (!isset($this->requiredTablesMap[$type])) {
+            throw ValidationException::withMessages([
+                'type' => ['Tipe assessment tidak valid.']
+            ]);
+        }
+
+        $requiredTables = $this->requiredTablesMap[$type];
+        $missingForms = [];
+
+        foreach ($requiredTables as $table) {
+            $exists = DB::table($table)
+                ->where('assessment_id', $assessment_id)
+                ->exists();
+
+            if (!$exists) {
+                $missingForms[] = $this->tableLabels[$table] ?? $table;
+            }
+        }
+
+        if (!empty($missingForms)) {
+            throw ValidationException::withMessages([
+                'incomplete_forms' => [
+                    'Anda belum menyelesaikan form berikut: ' . implode(', ', $missingForms)
+                ],
+                'missing_forms' => $missingForms
+            ]);
+        }
     }
 }

@@ -10,8 +10,10 @@ return new class extends Migration
     {
         Schema::create('occu_balance_coordinations', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('left_right_discrimination_score');
-            $table->text('left_right_discrimination_desc')->nullable();
+            $table->tinyInteger('left_right_use_shoes_score');
+            $table->text('left_right_use_shoes_desc')->nullable();
+            $table->tinyInteger('left_right_identify_score');
+            $table->text('left_right_identify_desc')->nullable();
             $table->tinyInteger('spatial_position_up_down_score');
             $table->text('spatial_position_up_down_desc')->nullable();
             $table->tinyInteger('spatial_position_out_in_score');
