@@ -20,7 +20,7 @@ return new class extends Migration {
 
             $table->enum('type',
                 [
-                    'general_parent',
+                    'umum_parent',
                     'fisio_parent',
                     'okupasi_parent',
                     'paedagog_parent',

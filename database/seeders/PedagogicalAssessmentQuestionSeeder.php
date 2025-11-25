@@ -66,7 +66,7 @@ class PedagogicalAssessmentQuestionSeeder extends Seeder
             ]],
         ];
 
-        $defaultOptions = [1, 2, 3, 4, 5];
+        $defaultOptions = [0, 1, 2, 3];
 
         foreach ($groups as $gIndex => $g) {
 

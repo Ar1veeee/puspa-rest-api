@@ -16,6 +16,7 @@ return new class extends Migration {
                 ->constrained('assessments')
                 ->cascadeOnDelete();
             $table->enum('type', [
+                'umum',
                 'fisio',
                 'okupasi',
                 'wicara',
@@ -36,10 +37,10 @@ return new class extends Migration {
             ])->default('pending');
             $table->dateTime('scheduled_date')->nullable();
             $table->time('completed_at')->nullable();
-            $table->enum('parent_status', [
+            $table->enum('parent_completed_status', [
                 'completed',
-                'not_completed'
-            ])->default('not_completed');
+                'pending'
+            ])->default('pending');
             $table->time('parent_completed_at')->nullable();
             $table->timestamps();
         });

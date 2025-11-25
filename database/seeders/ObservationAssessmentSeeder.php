@@ -87,8 +87,6 @@ class ObservationAssessmentSeeder extends Seeder
                 'recommendation' => $faker->sentence(10),
             ]);
 
-            $validTypes = ['fisio','okupasi', 'wicara', 'paedagog'];
-
             if ($observation->is_continued_to_assessment) {
                 $assessment = Assessment::create([
                     'observation_id' => $observation->id,
@@ -96,9 +94,10 @@ class ObservationAssessmentSeeder extends Seeder
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
+
                 AssessmentDetail::create([
                     'assessment_id' => $assessment->id,
-                    'type' => $validTypes[array_rand($validTypes)],
+                    'type' => 'umum',
                     'admin_id' => $admins->random()->id,
                     'therapist_id' => null,
                     'status' => 'scheduled',
@@ -107,6 +106,23 @@ class ObservationAssessmentSeeder extends Seeder
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]);
+
+                $otherTypes = ['fisio', 'okupasi', 'wicara', 'paedagog'];
+                $selectedTypes = $faker->randomElements($otherTypes, $faker->numberBetween(0, count($otherTypes)));
+
+                foreach ($selectedTypes as $type) {
+                    AssessmentDetail::create([
+                        'assessment_id' => $assessment->id,
+                        'type' => $type,
+                        'admin_id' => $admins->random()->id,
+                        'therapist_id' => null,
+                        'status' => 'scheduled',
+                        'scheduled_date' => $now->addDays(rand(11, 20)),
+                        'completed_at' => null,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+                }
             }
         }
     }
