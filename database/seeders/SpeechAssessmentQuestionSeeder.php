@@ -511,7 +511,7 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                 'group_title' => $g['title'],
                 'group_key' => $g['key'],
                 'filled_by' => 'assessor',
-                'sort_order' => $groupIndex + 1,
+                'sort_order' => 8,
             ]);
 
             foreach ($g['questions'] as $qIndex => $question) {

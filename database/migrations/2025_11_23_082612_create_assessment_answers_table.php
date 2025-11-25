@@ -28,8 +28,7 @@ return new class extends Migration {
                     'fisio_assessor',
                     'okupasi_assessor',
                     'paedagog_assessor',
-                    'wicara_oral_assessor',
-                    'wicara_bahasa_assessor'
+                    'wicara_assessor',
                 ]
             );
 

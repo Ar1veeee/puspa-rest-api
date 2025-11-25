@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             ParentSpeechAssessmentQuestionSeeder::class,
             ParentPedagogicalAssessmentQuestionSeeder::class,
             ParentPhysioAssessmentQuestionSeeder::class,
+
+            DummyDataSeeder::class,
         ]);
     }
 }

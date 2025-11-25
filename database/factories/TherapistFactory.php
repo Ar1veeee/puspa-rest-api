@@ -4,24 +4,27 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Therapist>
- */
 class TherapistFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->create(['role' => 'terapis']),
+            'id' => (string)Str::ulid(),
+            'user_id' => User::factory()->therapist()->create()->id,
             'therapist_name' => fake()->name(),
-            'therapist_section' => fake()->randomElement(['Okupasi', 'Fisio', 'Wicara', 'Paedagog']),
+            'therapist_section' => fake()->randomElement(['okupasi', 'fisio', 'wicara', 'paedagog']),
             'therapist_phone' => fake()->phoneNumber(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
+    }
+
+    public function section(string $section): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'therapist_section' => $section,
+        ]);
     }
 }

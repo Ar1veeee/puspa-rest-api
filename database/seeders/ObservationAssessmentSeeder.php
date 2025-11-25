@@ -11,7 +11,6 @@ use App\Models\ObservationAnswer;
 use App\Models\ObservationQuestion;
 use App\Models\Therapist;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
 
