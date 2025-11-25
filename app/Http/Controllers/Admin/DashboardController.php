@@ -3,45 +3,52 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AssessmentDetail;
-use App\Models\Child;
-use App\Models\Observation;
-use Carbon\Carbon;
+use App\Http\Services\AdminDashboardService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function getDashboardStats()
+    public function __construct(
+        private AdminDashboardService $service
+    ) {}
+
+    public function index(Request $request): JsonResponse
     {
-        $today = Carbon::now();
+        $validated = $request->validate([
+            'date' => 'nullable|date'
+        ]);
 
-        $assessmentTodayCount = AssessmentDetail::where('status', 'scheduled')
-            ->whereDate('scheduled_date', $today)
-            ->count();
+        $date = $validated['date'] ?? now()->toDateString();
 
-        $observationTodayCount = Observation::where('status', 'scheduled')
-            ->whereDate('scheduled_date', $today)
-            ->count();
-
-        $activePatientCount = Child::count();
-
-        $patientCategoryDistribution = AssessmentDetail::select(
-            'type',
-            DB::raw('count(*) as count')
-        )
-            ->whereIn('status', ['scheduled', 'completed'])
-            ->groupBy('type')
-            ->get();
+        $data = $this->service->getDashboardData($date);
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'assessment_today_count' => $assessmentTodayCount,
-                'observation_today_count' => $observationTodayCount,
-                'active_patient_count' => $activePatientCount,
-                'category_distribution' => $patientCategoryDistribution,
-            ]
+            'data' => $data
+        ]);
+    }
+
+    public function todayTherapySchedule(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'date' => 'nullable|date',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:5|max:100',
+            'search' => 'nullable|string|max:100',
+            'type' => 'nullable|in:fisio,okupasi,wicara,paedagog'
+        ]);
+
+        $date = $validated['date'] ?? now()->toDateString();
+        $perPage = $validated['per_page'] ?? 15;
+        $search = $validated['search'] ?? null;
+        $type = $validated['type'] ?? null;
+
+        $data = $this->service->getTodayTherapySchedule($date, $perPage, $search, $type);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
         ]);
     }
 }
