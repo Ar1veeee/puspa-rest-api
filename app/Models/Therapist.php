@@ -46,26 +46,6 @@ class Therapist extends Model
         return $this->hasMany(Assessment::class, 'therapist_id', 'id');
     }
 
-    public function speech_assessment_therapists(): HasMany
-    {
-        return $this->hasMany(SpeechAssessmentTherapist::class, 'therapist_id', 'id');
-    }
-
-    public function peda_assessment_therapists(): HasMany
-    {
-        return $this->hasMany(PedaAssessmentTherapist::class, 'therapist_id', 'id');
-    }
-
-    public function occu_assessment_therapists(): HasMany
-    {
-        return $this->hasMany(OccuAssessmentTherapist::class, 'therapist_id', 'id');
-    }
-
-    public function physio_assessment_therapists(): HasMany
-    {
-        return $this->hasMany(PhysioAssessmentTherapist::class, 'therapist_id', 'id');
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

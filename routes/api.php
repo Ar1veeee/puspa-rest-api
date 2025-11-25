@@ -149,10 +149,17 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{type}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
                     ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
                 Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate']);
-                Route::post('/{assessment}', [AssessorAssessmentManagement::class, 'storeTherapistAssessment']);
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
-                Route::get('/{assessment}/answer', [AdminAssessorAssessmentManagement::class, 'showTherapistAssessmentAnswer']);
+            });
+        });
+
+        // ================== ROLE ASSESSOR ==================
+        Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
+            Route::prefix('assessments')->group(function () {
+                Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType']);
                 Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);
+                Route::post('/{assessment}/submit/{type}', [AssessorAssessmentManagement::class, 'storeAssessorAssessment']);
+                Route::get('/{assessment}/answer/{type}', [AssessorAssessmentManagement::class, 'indexAnswersAssessment']);
             });
         });
 
@@ -172,10 +179,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/assessments', [ParentAssessmentManagement::class, 'indexChildrenAssessment']);
 
             Route::prefix('assessments')->group(function () {
-                Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show']);
-                Route::post('/{assessment}', [ParentAssessmentManagement::class, 'storeGuardianAssessment']);
-                Route::get('/{assessment}/answer', [ParentAssessmentManagement::class, 'showGuardianAssessmentAnswer']);
+                Route::get('/{type}/question', [ParentAssessmentManagement::class, 'indexParentQuestionsByType']);
+                Route::post('/{assessment}/submit/{type}', [ParentAssessmentManagement::class, 'storeParentAssessment']);
+                Route::get('/{assessment}/answer/{type}', [ParentAssessmentManagement::class, 'indexAnswersAssessment']);
                 Route::get('/{assessmentDetail}/completed', [ParentAssessmentManagement::class, 'markAsCompleteAssessment']);
+                Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show']);
             });
         });
     });

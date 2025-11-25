@@ -20,6 +20,17 @@ class DatabaseSeeder extends Seeder
 
             FamilyChildGuardianSeeder::class,
             ObservationAssessmentSeeder::class,
+
+            OccupationalAssessmentQuestionSeeder::class,
+            PedagogicalAssessmentQuestionSeeder::class,
+            SpeechAssessmentQuestionSeeder::class,
+            PhysioAssessmentQuestionSeeder::class,
+
+            ParentGeneralAssessmentQuestionSeeder::class,
+            ParentOccupationalAssessmentQuestionSeeder::class,
+            ParentSpeechAssessmentQuestionSeeder::class,
+            ParentPedagogicalAssessmentQuestionSeeder::class,
+            ParentPhysioAssessmentQuestionSeeder::class,
         ]);
     }
 }

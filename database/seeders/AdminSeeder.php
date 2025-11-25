@@ -18,9 +18,6 @@ class AdminSeeder extends Seeder
     {
         $admins = [
             ['name' => 'Annisa Koirul', 'username' => 'adminAnnisa', 'email' => 'annisa@admin.com', 'password' => Hash::make('Annisa123.'), 'phone' => '089522001987'],
-            ['name' => 'Zamzam Berli', 'username' => 'adminZamzam', 'email' => 'zamzam@admin.com', 'password' => Hash::make('Zamzam123.'), 'phone' => '089522001901'],
-            ['name' => 'Ema Emi', 'username' => 'adminEma', 'email' => 'ema@admin.com', 'password' => Hash::make('Ema1234.'), 'phone' => '089522001945'],
-            ['name' => 'Rendra Prasetyo', 'username' => 'adminRendra', 'email' => 'rendra@admin.com', 'password' => Hash::make('Rendra123.'), 'phone' => '089522004949'],
         ];
 
         foreach ($admins as $admin) {

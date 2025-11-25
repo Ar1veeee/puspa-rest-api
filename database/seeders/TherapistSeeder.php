@@ -18,6 +18,9 @@ class TherapistSeeder extends Seeder
     {
         $therapists = [
             ['name' => 'Alief Arifun', 'username' => 'okupasiAlief', 'email' => 'alief@terapis.com', 'password' => Hash::make('Alief123.'), 'phone' => '089299886565', 'section' => 'okupasi', 'role' => 'asesor'],
+            ['name' => 'Zamzam Berli', 'username' => 'fisioZamzam', 'email' => 'zamzam@admin.com', 'password' => Hash::make('Zamzam123.'), 'phone' => '089522001901', 'section' => 'fisio', 'role' => 'asesor'],
+            ['name' => 'Ema Emi', 'username' => 'wicaraEma', 'email' => 'ema@admin.com', 'password' => Hash::make('Ema1234.'), 'phone' => '089522001945', 'section' => 'wicara', 'role' => 'asesor'],
+            ['name' => 'Rendra Prasetyo', 'username' => 'paedagogRendra', 'email' => 'rendra@admin.com', 'password' => Hash::make('Rendra123.'), 'phone' => '089522004949', 'section' => 'paedagog', 'role' => 'asesor'],
             ['name' => 'Nindya Zahri', 'username' => 'fisioNindya', 'email' => 'nindya@terapis.com', 'password' => Hash::make('Nindya123.'), 'phone' => '089299886188', 'section' => 'fisio', 'role' => 'terapis'],
             ['name' => 'Alfian Plumek', 'username' => 'okupasiAlfian', 'email' => 'alfian@terapis.com', 'password' => Hash::make('Alfian123.'), 'phone' => '089299881199', 'section' => 'okupasi', 'role' => 'terapis'],
             ['name' => 'Rano Karno', 'username' => 'wicaraRano', 'email' => 'rano@terapis.com', 'password' => Hash::make('Rano123.'), 'phone' => '089299224288', 'section' => 'wicara', 'role' => 'terapis'],

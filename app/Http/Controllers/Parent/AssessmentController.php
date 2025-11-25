@@ -4,30 +4,21 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Requests\AssessmentGuardianRequest;
 use App\Http\Requests\GuardianFamilyUpdateRequest;
+use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\AssessmentsDetailResource;
 use App\Http\Resources\ChildrenAssessmentResource;
 use App\Http\Resources\GeneralDataAssessmentResource;
 use App\Http\Resources\OccupationalGuardianDataAssessmentResource;
-use App\Http\Resources\OccupationalTherapistDataAssessmentResource;
 use App\Http\Resources\PedagogicalGuardianDataAssessmentResource;
-use App\Http\Resources\PedagogicalTherapistDataAssessmentResource;
 use App\Http\Resources\PhysioGuardianDataAssessmentResource;
-use App\Http\Resources\PhysioTherapistDataAssessmentResource;
 use App\Http\Resources\SpeechGuardianDataAssessmentResource;
-use App\Http\Resources\SpeechTherapistDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Http\Services\GuardianService;
-use App\Models\Assessment;
 use App\Models\AssessmentDetail;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 class AssessmentController extends Controller
 {
@@ -46,6 +37,27 @@ class AssessmentController extends Controller
         $this->guardianService = $guardianService;
     }
 
+    public function indexParentQuestionsByType(string $type): JsonResponse
+    {
+        $valid_types = [
+            'parent_general',
+            'parent_wicara',
+            'parent_paedagog',
+            'parent_okupasi',
+            'parent_fisio'
+        ];
+
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        }
+
+        $questions = $this->assessmentService->getQuestionsByType($type);
+
+        $message = 'Daftar Pertanyaan Asesmen ' . ucfirst($type);
+
+        return $this->successResponse($questions, $message, 200);
+    }
+
     public function indexChildrenAssessment(): JsonResponse
     {
         $userId = auth()->id();
@@ -57,39 +69,38 @@ class AssessmentController extends Controller
         });
 
         if ($filteredAssessments->isEmpty()) {
-            return $this->successResponse([], 'Tidak ada jadwal asesmen yag ditemukan');
+            return $this->successResponse([], 'Tidak ada jadwal asesmen yang ditemukan');
         }
 
         return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak', 200);
     }
 
-    public function storeGuardianAssessment(AssessmentGuardianRequest $request, Assessment $assessment): JsonResponse
+    public function indexAnswersAssessment(AssessmentDetail $assessment, string $type)
     {
-        $type = $request->input('type');
-
-        try {
-            // Menyimpan data berdasarkan tipe
-            $result = match ($type) {
-                'umum' => $this->assessmentService->createGeneralData($assessment, $request->validated()),
-                'fisio' => $this->assessmentService->createPhysioAssessmentGuardian($assessment, $request->validated()),
-                'wicara' => $this->assessmentService->createSpeechAssessmentGuardian($assessment, $request->validated()),
-                'okupasi' => $this->assessmentService->createOccuAssessmentGuardian($assessment, $request->validated()),
-                'paedagog' => $this->assessmentService->createPedaAssessmentGuardian($assessment, $request->validated()),
-            };
-
-            $message = match ($type) {
-                'umum' => 'Data umum berhasil disimpan',
-                'fisio' => 'Data fisio berhasil disimpan',
-                'wicara' => 'Data wicara berhasil disimpan',
-                'okupasi' => 'Data okupasi berhasil disimpan',
-                'paedagog' => 'Data paedagog berhasil disimpan',
-            };
-
-            return $this->successResponse($result, $message, 201);
-
-        } catch (\Exception $e) {
-            return $this->errorResponse('Gagal menyimpan data assessment', [$e], 500);
+        $valid_types = ['general_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
         }
+
+        $response = $this->assessmentService->getAnswers($assessment, $type);
+
+        $message = 'Riwayat Jawaban Asesmen ' . ucfirst($type);
+
+        return $this->successResponse($response, $message, 200);
+    }
+
+    public function storeParentAssessment(StoreAssessmentRequest $request, AssessmentDetail $assessment, string $type): JsonResponse
+    {
+        $valid_types = ['general_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        }
+
+        $data = $request->validated();
+
+        $this->assessmentService->storeOrUpdateParentAssessment($data, $assessment, $type);
+
+        return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
 
     public function markAsCompleteAssessment(AssessmentDetail $assessmentDetail): JsonResponse
@@ -118,56 +129,6 @@ class AssessmentController extends Controller
             new AssessmentsDetailResource($assessment),
             'Detail Assessment Untuk Anak'
         );
-    }
-
-    /*
-     * Menampilkan jawaban asesmen pertanyaan ortu
-     */
-    public function showGuardianAssessmentAnswer(Request $request, Assessment $assessment): JsonResponse
-    {
-        $this->authorize('view', $assessment);
-
-        // Validasi query parameter
-        $validated = $request->validate([
-            'type' => ['required', 'string', 'in:umum,fisio,wicara,okupasi,paedagog'],
-        ]);
-
-        $type = $validated['type'];
-
-        try {
-            // Mengambil data berdasarkan tipe
-            [$data, $message] = match ($type) {
-                'umum' => [
-                    $this->assessmentService->getGeneral($assessment),
-                    'Data Umum Asesmen Pertanyaan'
-                ],
-                'fisio' => [
-                    $this->assessmentService->getPhysioGuardian($assessment),
-                    'Data Fisio Asesmen Pertanyaan'
-                ],
-                'wicara' => [
-                    $this->assessmentService->getSpeechGuardian($assessment),
-                    'Data Wicara Asesmen Pertanyaan'
-                ],
-                'okupasi' => [
-                    $this->assessmentService->getOccupationalGuardian($assessment),
-                    'Data Okupasi Asesmen Pertanyaan'
-                ],
-                'paedagog' => [
-                    $this->assessmentService->getPedagogicalGuardian($assessment),
-                    'Data Paedagog Asesmen Pertanyaan'
-                ],
-            };
-
-            $resource = $this->getGuardianResourceByType($type, $data);
-
-            return $this->successResponse($resource, $message, 200);
-
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse($e->getMessage(), [], 404);
-        } catch (\Exception $e) {
-            return $this->errorResponse('Gagal mengambil data assessment', [], 500);
-        }
     }
 
     public function updateFamilyData(GuardianFamilyUpdateRequest $request)

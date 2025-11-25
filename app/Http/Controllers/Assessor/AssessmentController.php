@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Assessor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Requests\AssessmentTherapistRequest;
+use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\ParentsAssessmentListResource;
 use App\Http\Services\AssessmentService;
-use App\Models\Assessment;
+use App\Models\AssessmentDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +24,32 @@ class AssessmentController extends Controller
     )
     {
         $this->assessmentService = $assessmentService;
+    }
+
+    public function indexAssessorQuestionsByType(string $type): JsonResponse
+    {
+        $valid_types = [
+            'paedagog',
+            'wicara_oral',
+            'wicara_bahasa',
+            'fisio',
+            'okupasi',
+            'parent_general',
+            'parent_wicara',
+            'parent_paedagog',
+            'parent_okupasi',
+            'parent_fisio'
+        ];
+
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        }
+
+        $questions = $this->assessmentService->getQuestionsByType($type);
+
+        $message = 'Daftar Pertanyaan Asesmen ' . ucfirst($type);
+
+        return $this->successResponse($questions, $message, 200);
     }
 
     public function indexCompletedParentsAssessment(Request $request, string $status)
@@ -49,42 +75,51 @@ class AssessmentController extends Controller
 
         $response = ParentsAssessmentListResource::collection($assessments);
         $message = 'Daftar Asesmen Orang Tua';
-        return $this->successResponse($response, $message);
+        return $this->successResponse($response, $message, 200);
     }
 
-    public function storeTherapistAssessment(AssessmentTherapistRequest $request, Assessment $assessment): JsonResponse
+    public function indexAnswersAssessment(AssessmentDetail $assessment, string $type)
     {
+        $valid_types = [
+            'paedagog_assessor',
+            'wicara_oral_assessor',
+            'wicara_bahasa_assessor',
+            'fisio_assessor',
+            'okupasi_assessor',
+            'general_parent',
+            'wicara_parent',
+            'paedagog_parent',
+            'okupasi_parent',
+            'fisio_parent'
+        ];
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        }
+
+        $response = $this->assessmentService->getAnswers($assessment, $type);
+
+        $message = 'Riwayat Jawaban Asesmen ' . ucfirst($type);
+
+        return $this->successResponse($response, $message, 200);
+    }
+
+    public function storeAssessorAssessment(StoreAssessmentRequest $request, AssessmentDetail $assessment, string $type): JsonResponse
+    {
+        $valid_types = [
+            'paedagog_assessor',
+            'wicara_oral_assessor',
+            'wicara_bahasa_assessor',
+            'fisio_assessor',
+            'okupasi_assessor',
+        ];
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        }
+
         $data = $request->validated();
-        $type = $data['type'];
-        $user = $request->user();
 
-        if ($user->role === 'asesor') {
-            $section = $user->therapist->therapist_section;
-            if ($section !== $type) {
-                return $this->errorResponse(
-                    'Forbidden',
-                    ['error' => 'Anda hanya diizinkan untuk melakukan aksi pada asesmen ' . $section],
-                    403
-                );
-            }
-        }
+        $this->assessmentService->storeOrUpdateAssessorAssessment($data, $assessment, $type);
 
-        $method = match ($type) {
-            'fisio' => 'createPhysioAssessmentTherapist',
-            'okupasi' => 'createOccuAssessmentTherapist',
-            'wicara' => 'createSpeechAssessmentTherapist',
-            'paedagog' => 'createPedaAssessmentTherapist',
-            default => null,
-        };
-
-        if (!$method) {
-            return $this->errorResponse('Bad Request', ['error' => 'Invalid assessment type'], 400);
-        }
-
-        $this->assessmentService->$method($assessment, $data);
-
-        $message = sprintf('Assessment %s Berhasil Disimpan', ucfirst($type));
-
-        return $this->successResponse([], $message, 201);
+        return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
 }

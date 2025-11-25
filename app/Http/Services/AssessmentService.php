@@ -3,23 +3,13 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\AssessmentDetailRepository;
-use App\Http\Repositories\ChildBirthRepository;
-use App\Http\Repositories\ChildEducationRepository;
-use App\Http\Repositories\ChildHealthRepository;
-use App\Http\Repositories\ChildPostBirthRepository;
-use App\Http\Repositories\ChildPregnancyRepository;
+use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\GuardianRepository;
-use App\Http\Repositories\ChildPsychosocialRepository;
-use App\Http\Repositories\OccupationalAssessmentRepository;
-use App\Http\Repositories\PedagogicalAssessmentRepository;
-use App\Http\Repositories\PhysioAssessmentRepository;
-use App\Http\Repositories\SpeechAssessmentRepository;
-use App\Models\Assessment;
 use App\Models\AssessmentDetail;
+use App\Models\AssessmentQuestion;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -27,104 +17,19 @@ use Illuminate\Validation\ValidationException;
 class AssessmentService
 {
     protected $assessmentRepository;
+    protected $assessmentDetailRepository;
     protected $guardianRepository;
-    protected $childPsychosocialRepository;
-    protected $childPregnancyRepository;
-    protected $childBirthRepository;
-    protected $childPostBirthRepository;
-    protected $childHealthRepository;
-    protected $childEducationRepository;
-    protected $physioAssessmentRepository;
-    protected $speechAssessmentRepository;
-    protected $occupationalAssessmentRepository;
-    protected $pedagogicalAssessmentRepository;
 
     public function __construct(
-        AssessmentDetailRepository       $assessmentRepository,
-        GuardianRepository               $guardianRepository,
-        ChildPsychosocialRepository      $childPsychosocialRepository,
-        ChildPregnancyRepository         $childPregnancyRepository,
-        ChildBirthRepository             $childBirthRepository,
-        ChildPostBirthRepository         $childPostBirthRepository,
-        ChildHealthRepository            $childHealthRepository,
-        ChildEducationRepository         $childEducationRepository,
-        PhysioAssessmentRepository       $physioAssessmentRepository,
-        SpeechAssessmentRepository       $speechAssessmentRepository,
-        OccupationalAssessmentRepository $occupationalAssessmentRepository,
-        PedagogicalAssessmentRepository  $pedagogicalAssessmentRepository,
+        AssessmentRepository       $assessmentRepository,
+        AssessmentDetailRepository $assessmentDetailRepository,
+        GuardianRepository         $guardianRepository,
     )
     {
         $this->assessmentRepository = $assessmentRepository;
+        $this->assessmentDetailRepository = $assessmentDetailRepository;
         $this->guardianRepository = $guardianRepository;
-        $this->childPsychosocialRepository = $childPsychosocialRepository;
-        $this->childPregnancyRepository = $childPregnancyRepository;
-        $this->childBirthRepository = $childBirthRepository;
-        $this->childPostBirthRepository = $childPostBirthRepository;
-        $this->childHealthRepository = $childHealthRepository;
-        $this->childEducationRepository = $childEducationRepository;
-        $this->physioAssessmentRepository = $physioAssessmentRepository;
-        $this->speechAssessmentRepository = $speechAssessmentRepository;
-        $this->occupationalAssessmentRepository = $occupationalAssessmentRepository;
-        $this->pedagogicalAssessmentRepository = $pedagogicalAssessmentRepository;
     }
-
-    /**
-     * Mapping type assessment to table which must be filled with parent
-     */
-    private array $requiredTablesMap = [
-        'fisio' => [
-            'child_psychosocial_histories',
-            'child_pregnancy_histories',
-            'child_birth_histories',
-            'child_post_birth_histories',
-            'child_health_histories',
-            'child_education_histories',
-            'physio_assessment_guardians',
-        ],
-        'okupasi' => [
-            'child_psychosocial_histories',
-            'child_pregnancy_histories',
-            'child_birth_histories',
-            'child_post_birth_histories',
-            'child_health_histories',
-            'child_education_histories',
-            'occupational_assessment_guardians',
-        ],
-        'wicara' => [
-            'child_psychosocial_histories',
-            'child_pregnancy_histories',
-            'child_birth_histories',
-            'child_post_birth_histories',
-            'child_health_histories',
-            'child_education_histories',
-            'speech_assessment_guardians',
-        ],
-        'paedagog' => [
-            'child_psychosocial_histories',
-            'child_pregnancy_histories',
-            'child_birth_histories',
-            'child_post_birth_histories',
-            'child_health_histories',
-            'child_education_histories',
-            'pedagogical_assessment_guardians',
-        ],
-    ];
-
-    /**
-     * Label error message
-     */
-    private array $tableLabels = [
-        'child_psychosocial_histories' => 'Riwayat Psikososial Anak',
-        'child_pregnancy_histories' => 'Riwayat Kehamilan',
-        'child_birth_histories' => 'Riwayat Kelahiran',
-        'child_post_birth_histories' => 'Riwayat Pasca Kelahiran',
-        'child_health_histories' => 'Riwayat Kesehatan Anak',
-        'child_education_histories' => 'Riwayat Pendidikan Anak',
-        'physio_assessment_guardians' => 'Assessment Fisioterapi',
-        'occupational_assessment_guardians' => 'Assessment Okupasi',
-        'speech_assessment_guardians' => 'Assessment Wicara',
-        'pedagogical_assessment_guardians' => 'Assessment Paedagog',
-    ];
 
     public function getChildrenAssessment(string $userId)
     {
@@ -145,7 +50,7 @@ class AssessmentService
             $queryFilters['search'] = $filters['search'];
         }
 
-        return $this->assessmentRepository->getParentsAssessmentWithFilter($queryFilters);
+        return $this->assessmentDetailRepository->getParentsAssessmentWithFilter($queryFilters);
     }
 
     public function getAssessmentsByType(array $filters = [])
@@ -168,193 +73,66 @@ class AssessmentService
             $queryFilters['search'] = $filters['search'];
         }
 
-        return $this->assessmentRepository->getAssessmentWithFilter($queryFilters);
+        return $this->assessmentDetailRepository->getAssessmentWithFilter($queryFilters);
     }
 
-    // Data umum di pertanyaan ortu
-    public function getGeneral(Assessment $assessment)
+    public function getQuestionsByType(string $type): array
     {
-        $assessment->load([
-            'child.family.guardians',
-            'psychosocialHistory',
-            'pregnancyHistory',
-            'birthHistory',
-            'postBirthHistory',
-            'healthHistory',
-            'educationHistory',
-        ]);
+        $groups = $this->assessmentRepository->getQuestionByType($type);
 
-        return $assessment;
+        return [
+            'assessment_type' => $type,
+            'groups' => $groups->map(function ($group) {
+                return [
+                    'group_id'   => $group->id,
+                    'group_key'  => $group->group_key,
+                    'title'      => $group->group_title,
+                    'filled_by'  => $group->filled_by,
+                    'sort_order' => $group->sort_order,
+
+                    'questions' => $group->questions->map(function ($q) {
+                        return [
+                            'id'             => $q->id,
+                            'question_code'  => $q->question_code,
+                            'question_number'=> $q->question_number,
+                            'question_text'  => $q->question_text,
+                            'answer_type'    => $q->answer_type,
+                            'answer_options' => $q->answer_options,
+                            'answer_format'  => $q->answer_format,
+                            'extra_schema'   => $q->extra_schema,
+                        ];
+                    }),
+                ];
+            }),
+        ];
     }
 
-    public function getPhysioGuardian(Assessment $assessment)
+
+    public function getAnswers(AssessmentDetail $assessment_detail, string $type)
     {
-        $physioData = $assessment->physioAssessmentGuardian()->first();
-        if (!$physioData) {
-            throw new ModelNotFoundException('Data assessment fisio tidak ditemukan.');
+        return $this->assessmentRepository->getHistoryByAssessmentId($assessment_detail->assessment_id, $type);
+    }
+
+    public function storeOrUpdateParentAssessment(array $payload, AssessmentDetail $assessment_detail, string $type)
+    {
+        $this->validateConditional($payload['answers']);
+
+        $this->assessmentRepository->saveParentAnswers($payload, $assessment_detail->assessment_id, $type);
+
+        return true;
+    }
+
+    public function storeOrUpdateAssessorAssessment(array $payload, AssessmentDetail $assessment_detail, string $type)
+    {
+        $assessor = $this->getAuthenticatedAssessor();
+
+        if (!$this->isTherapistAllowed($assessor->therapist_section, $type)) {
+            throw new \Exception("Terapis tidak memiliki izin untuk mengisi asesmen tipe: {$type}", 403);
         }
 
-        return $physioData;
-    }
+        $this->assessmentRepository->saveAssessorAnswers($payload, $assessment_detail->assessment_id, $type, $assessor);
 
-    public function getSpeechGuardian(Assessment $assessment)
-    {
-        $speechData = $assessment->speechAssessmentGuardian()->first();
-        if (!$speechData) {
-            throw new ModelNotFoundException('Data assessment wicara tidak ditemukan.');
-        }
-
-        return $speechData;
-    }
-
-    public function getOccupationalGuardian(Assessment $assessment)
-    {
-        $assessment->load([
-            'occupationalAssessmentGuardian' => function ($query) {
-                $query->with([
-                    'auditoryCommunication',
-                    'sensoryModalityTest',
-                    'sensoryProcessingScreening',
-                    'adlMotorSkill',
-                    'behaviorSocial',
-                    'behaviorScale',
-                ]);
-            },
-        ]);
-
-        $occupationalData = $assessment->occupationalAssessmentGuardian;
-
-        if (!$occupationalData) {
-            throw new ModelNotFoundException('Data assessment okupasi tidak ditemukan.');
-        }
-
-        return $occupationalData;
-    }
-
-    public function getPedagogicalGuardian(Assessment $assessment)
-    {
-        $assessment->load([
-            'pedagogicalAssessmentGuardian' => function ($query) {
-                $query->with([
-                    'academicAspect',
-                    'visualImpairmentAspect',
-                    'auditoryImpairmentAspect',
-                    'cognitiveImpairmentAspect',
-                    'motorImpairmentAspect',
-                    'behavioralImpairmentAspect',
-                    'socialCommunicationAspect',
-                ]);
-            },
-        ]);
-
-        $pedagogicalData = $assessment->pedagogicalAssessmentGuardian;
-
-        if (!$pedagogicalData) {
-            throw new ModelNotFoundException('Data assessment okupasi tidak ditemukan.');
-        }
-
-        return $pedagogicalData;
-    }
-
-    // Assessment sisi terapis
-    public function getPhysioAssessmentTherapist(Assessment $assessment)
-    {
-        $assessment->load([
-            'physioAssessmentTherapist' => function ($query) {
-                $query->with([
-                    'therapist',
-                    'generalExamination',
-                    'systemAnamnesis',
-                    'sensoryExamination',
-                    'reflexExamination',
-                    'muscleStrengthExamination',
-                    'spasticityExamination',
-                    'jointLaxityTest',
-                    'grossMotorExamination',
-                    'musclePalpation',
-                    'spasticityType',
-                    'playFunctionTest',
-                    'physiotherapyDiagnosis',
-                ]);
-            },
-        ]);
-
-        $physioData = $assessment->physioAssessmentTherapist;
-
-        if (!$physioData) {
-            throw new ModelNotFoundException('Data assessment fisio tidak ditemukan.');
-        }
-
-        return $physioData;
-    }
-
-    public function getPedaAssessmentTherapist(Assessment $assessment)
-    {
-        $assessment->load([
-            'pedaAssessmentTherapist' => function ($query) {
-                $query->with([
-                    'therapist',
-                    'readingAspect',
-                    'writingAspect',
-                    'countingAspect',
-                    'learningReadinessAspect',
-                    'generalKnowledgeAspect',
-                ]);
-            },
-        ]);
-
-        $pedaData = $assessment->pedaAssessmentTherapist;
-
-        if (!$pedaData) {
-            throw new ModelNotFoundException('Data assessment paedagogical tidak ditemukan.');
-        }
-
-        return $pedaData;
-    }
-
-    public function getSpeechAssessmentTherapist(Assessment $assessment)
-    {
-        $assessment->load([
-            'speechAssessmentTherapist' => function ($query) {
-                $query->with([
-                    'therapist',
-                    'oralFacialAspect',
-                    'languageSkillAspect',
-                ]);
-            },
-        ]);
-
-        $speechData = $assessment->speechAssessmentTherapist;
-
-        if (!$speechData) {
-            throw new ModelNotFoundException('Data assessment wicara tidak ditemukan.');
-        }
-
-        return $speechData;
-    }
-
-    public function getOccuAssessmentTherapist(Assessment $assessment)
-    {
-        $assessment->load([
-            'occuAssessmentTherapist' => function ($query) {
-                $query->with([
-                    'therapist',
-                    'bodilySelfSense',
-                    'balanceCoordination',
-                    'concentrationProblemSolving',
-                    'conceptKnowledge',
-                    'motoricPlanning',
-                ]);
-            },
-        ]);
-
-        $occuData = $assessment->occuAssessmentTherapist;
-
-        if (!$occuData) {
-            throw new ModelNotFoundException('Data assessment okupasi tidak ditemukan.');
-        }
-
-        return $occuData;
+        return true;
     }
 
     public function completedAssessment(AssessmentDetail $assessmentDetail)
@@ -369,251 +147,6 @@ class AssessmentService
             );
     }
 
-    public function createGeneralData(Assessment $assessment, array $data)
-    {
-        return DB::transaction(function () use ($assessment, $data) {
-            $this->childPsychosocialRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-            $this->childPregnancyRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-            $this->childBirthRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-            $this->childPostBirthRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-            $this->childHealthRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-            $this->childEducationRepository->create(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                ])
-            );
-        });
-    }
-
-    public function createPhysioAssessmentGuardian(Assessment $assessment, array $data)
-    {
-        if (!$assessment->fisio) {
-            throw new ModelNotFoundException('Penilaian fisio tidak diaktifkan untuk asesmen ini.');
-        }
-
-        return $this->physioAssessmentRepository->createAssessmentGuardian(
-            array_merge($data, [
-                'assessment_id' => $assessment->id,
-            ])
-        );
-    }
-
-    // Soft calling
-    public function createPhysioAssessmentTherapist(Assessment $assessment, array $data)
-    {
-        $therapist = $this->getAuthenticatedTherapist('fisio');
-
-        $physioDetail = $assessment->assessmentDetails()->where('type', 'fisio')->first();
-        if (!$physioDetail) {
-            throw new ModelNotFoundException('Penilaian fisio tidak ditemukan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $therapist, $data) {
-            $general = $this->physioAssessmentRepository->createGeneralExamination($data);
-            $systemAnamnesis = $this->physioAssessmentRepository->createSystemAnamnesis($data);
-            $sensory = $this->physioAssessmentRepository->createSensoryExamination($data);
-            $reflex = $this->physioAssessmentRepository->createReflexExamination($data);
-            $spasticityExam = $this->physioAssessmentRepository->createSpasticityExamination($data);
-            $muscleStrength = $this->physioAssessmentRepository->createMuscleStrengthExamination($data);
-            $jointLaxity = $this->physioAssessmentRepository->createJointLaxityTest($data);
-            $grossMotor = $this->physioAssessmentRepository->createGrossMotorExamination($data);
-            $musclePalpation = $this->physioAssessmentRepository->createMusclePalpation($data);
-            $spasticityType = $this->physioAssessmentRepository->createSpasticityType($data);
-            $playFunction = $this->physioAssessmentRepository->createPlayFunctionTest($data);
-            $diagnosis = $this->physioAssessmentRepository->createPhysiotherapyDiagnosis($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'fisio', $therapist->id);
-
-            return $this->physioAssessmentRepository->createAssessmentTherapist([
-                'assessment_id' => $assessment->id,
-                'general_examination_id' => $general->id,
-                'system_anamnesis_id' => $systemAnamnesis->id,
-                'sensory_examination_id' => $sensory->id,
-                'reflex_examination_id' => $reflex->id,
-                'muscle_strength_examination_id' => $muscleStrength->id,
-                'spasticity_examination_id' => $spasticityExam->id,
-                'joint_laxity_test_id' => $jointLaxity->id,
-                'gross_motor_examination_id' => $grossMotor->id,
-                'muscle_palpation_id' => $musclePalpation->id,
-                'spasticity_type_id' => $spasticityType->id,
-                'play_function_test_id' => $playFunction->id,
-                'physiotherapy_diagnosis_id' => $diagnosis->id,
-            ]);
-        });
-    }
-
-    public function createOccuAssessmentGuardian(Assessment $assessment, array $data)
-    {
-        if (!$assessment->okupasi) {
-            throw new ModelNotFoundException('Penilaian okupasi tidak diaktifkan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $data) {
-            $auditory = $this->occupationalAssessmentRepository->createAuditoryCommunication($data);
-            $sensoryModality = $this->occupationalAssessmentRepository->createSensoryModality($data);
-            $sensoryProcessing = $this->occupationalAssessmentRepository->createSensoryProcessing($data);
-            $adlMotor = $this->occupationalAssessmentRepository->createAdlMotorSkill($data);
-            $behaviorSocial = $this->occupationalAssessmentRepository->createBehaviorSocial($data);
-            $behaviorScale = $this->occupationalAssessmentRepository->createBehaviorScale($data);
-
-            return $this->occupationalAssessmentRepository->createAssessmentGuardian([
-                'assessment_id' => $assessment->id,
-                'auditory_communication_id' => $auditory->id,
-                'sensory_modality_id' => $sensoryModality->id,
-                'sensory_processing_screening_id' => $sensoryProcessing->id,
-                'adl_motor_skill_id' => $adlMotor->id,
-                'behavior_social_id' => $behaviorSocial->id,
-                'behavior_scale_id' => $behaviorScale->id,
-            ]);
-        });
-    }
-
-    // Soft calling
-    public function createOccuAssessmentTherapist(Assessment $assessment, array $data)
-    {
-        $therapist = $this->getAuthenticatedTherapist('okupasi');
-
-        $occuDetail = $assessment->assessmentDetails()->where('type', 'okupasi')->first();
-        if (!$occuDetail) {
-            throw new ModelNotFoundException('Penilaian okupasi tidak ditemukan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $therapist, $data) {
-            $balance = $this->occupationalAssessmentRepository->createBalanceCoordination($data);
-            $bodily = $this->occupationalAssessmentRepository->createBodilySelfSense($data);
-            $concentration = $this->occupationalAssessmentRepository->createConcentrationProblemSolving($data);
-            $knowledge = $this->occupationalAssessmentRepository->createConceptKnowledge($data);
-            $motoric = $this->occupationalAssessmentRepository->createMotoricPlanning($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'okupasi', $therapist->id);
-
-
-            return $this->occupationalAssessmentRepository->createAssessmentTherapist(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                    'bodily_self_sense_id' => $balance->id,
-                    'balance_coordination_id' => $bodily->id,
-                    'concentration_problem_solving_id' => $concentration->id,
-                    'concept_knowledge_id' => $knowledge->id,
-                    'motoric_planning_id' => $motoric->id,
-                ])
-            );
-        });
-    }
-
-    public function createSpeechAssessmentGuardian(Assessment $assessment, array $data)
-    {
-        if (!$assessment->wicara) {
-            throw new ModelNotFoundException('Penilaian wicara tidak diaktifkan untuk asesmen ini.');
-        }
-
-        return $this->speechAssessmentRepository->createAssessmentGuardian(
-            array_merge($data, [
-                'assessment_id' => $assessment->id,
-            ])
-        );
-    }
-
-    // Soft calling
-    public function createSpeechAssessmentTherapist(Assessment $assessment, array $data)
-    {
-        $therapist = $this->getAuthenticatedTherapist('wicara');
-
-        $speechDetail = $assessment->assessmentDetails()->where('type', 'wicara')->first();
-        if (!$speechDetail) {
-            throw new ModelNotFoundException('Penilaian wicara tidak ditemukan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $therapist, $data) {
-            $oralFacial = $this->speechAssessmentRepository->createOralFacial($data);
-            $languageSkill = $this->speechAssessmentRepository->createLanguageSkill($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'wicara', $therapist->id);
-
-            return $this->speechAssessmentRepository->createAssessmentTherapist([
-                'assessment_id' => $assessment->id,
-                'oral_facial_aspect_id' => $oralFacial->id,
-                'language_skill_aspect_id' => $languageSkill->id,
-            ]);
-        });
-    }
-
-    public function createPedaAssessmentGuardian(Assessment $assessment, array $data)
-    {
-        if (!$assessment->paedagog) {
-            throw new ModelNotFoundException('Penilaian paedagog tidak diaktifkan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $data) {
-            $academic = $this->pedagogicalAssessmentRepository->createAcademicAspect($data);
-            $auditory = $this->pedagogicalAssessmentRepository->createAuditoryImpairmentAspect($data);
-            $behavioral = $this->pedagogicalAssessmentRepository->createBehavioralImpairmentAspect($data);
-            $cognitive = $this->pedagogicalAssessmentRepository->createCognitiveImpairmentAspect($data);
-            $motor = $this->pedagogicalAssessmentRepository->createMotorImpairmentAspect($data);
-            $socialCommunication = $this->pedagogicalAssessmentRepository->createSocialCommunicationAspect($data);
-            $visual = $this->pedagogicalAssessmentRepository->createVisualImpairmentAspect($data);
-
-            return $this->pedagogicalAssessmentRepository->createAssessmentGuardian([
-                'assessment_id' => $assessment->id,
-                'academic_aspect_id' => $academic->id,
-                'visual_impairment_aspect_id' => $visual->id,
-                'auditory_impairment_aspect_id' => $auditory->id,
-                'cognitive_impairment_aspect_id' => $cognitive->id,
-                'motor_impairment_aspects_id' => $motor->id,
-                'behavioral_impairment_aspect_id' => $behavioral->id,
-                'social_communication_aspect_id' => $socialCommunication->id,
-            ]);
-        });
-    }
-
-    // Soft calling
-    public function createPedaAssessmentTherapist(Assessment $assessment, array $data)
-    {
-        $therapist = $this->getAuthenticatedTherapist('paedagog');
-
-        $pedaDetail = $assessment->assessmentDetails()->where('type', 'paedagog')->first();
-        if (!$pedaDetail) {
-            throw new ModelNotFoundException('Penilaian paedagog tidak ditemukan untuk asesmen ini.');
-        }
-
-        return DB::transaction(function () use ($assessment, $therapist, $data) {
-            $reading = $this->pedagogicalAssessmentRepository->createReadingAspect($data);
-            $writing = $this->pedagogicalAssessmentRepository->createWritingAspect($data);
-            $counting = $this->pedagogicalAssessmentRepository->createCountingAspect($data);
-            $learningReadiness = $this->pedagogicalAssessmentRepository->createLearningReadinessAspect($data);
-            $generalKnowledge = $this->pedagogicalAssessmentRepository->createGeneralKnowledgeAspect($data);
-            $this->assessmentRepository->markAsComplete($assessment->id, 'paedagog', $therapist->id);
-
-            return $this->pedagogicalAssessmentRepository->createAssessmentTherapist(
-                array_merge($data, [
-                    'assessment_id' => $assessment->id,
-                    'reading_aspect_id' => $reading->id,
-                    'writing_aspect_id' => $writing->id,
-                    'counting_aspect_id' => $counting->id,
-                    'learning_readiness_aspect_id' => $learningReadiness->id,
-                    'general_knowledge_aspect_id' => $generalKnowledge->id,
-                ])
-            );
-        });
-    }
-
     public function updateScheduledDate(array $data, AssessmentDetail $assessment)
     {
         $admin = $this->getAuthenticatedAdmin();
@@ -624,7 +157,7 @@ class AssessmentService
                 $data['scheduled_date'] . ' ' . $data['scheduled_time']
             );
 
-            $this->assessmentRepository->updateScheduledDate($assessment->id, $newDateTime, $admin);
+            $this->assessmentDetailRepository->updateScheduledDate($assessment->id, $newDateTime, $admin);
         }
     }
 
@@ -634,24 +167,28 @@ class AssessmentService
         $user = Auth::user();
 
         if (!$user) {
-            throw new Exception('Tidak ada pengguna yang terautentikasi.');
+            throw new \Exception('Tidak ada pengguna yang terautentikasi.');
         }
 
         $admin = $user->admin;
 
         if (!$admin) {
-            throw new Exception('Profil admin tidak ditemukan untuk pengguna ini.');
+            throw new \Exception('Profil admin tidak ditemukan untuk pengguna ini.');
         }
 
         return $admin;
     }
 
-    private function getAuthenticatedTherapist(string $expected_type = null)
+    private function getAuthenticatedAssessor()
     {
         $user = Auth::user();
 
         if (!$user) {
             throw new \Exception('Tidak ada pengguna yang terautentikasi.');
+        }
+
+        if ($user->role !== 'asesor') {
+            throw new \Exception('Hanya akun dengan role asesor yang diizinkan mengisi asesmen.', 403);
         }
 
         $therapist = $user->therapist;
@@ -660,16 +197,66 @@ class AssessmentService
             throw new \Exception('Profil terapis tidak ditemukan untuk pengguna ini.');
         }
 
-        if (!$expected_type) {
-            if ($therapist->therapist_section !== $expected_type) {
-                throw new AuthorizationException(
-                    'Anda tidak memiliki izin untuk asesmen ' . $expected_type .
-                    '. Anda adalah asesor ' . $therapist->therapist_section . '.'
-                );
+        return $therapist;
+    }
+
+    private function isTherapistAllowed(string $section, string $assessmentType): bool
+    {
+        $map = [
+            'fisio'    => ['fisio', 'fisio_assessor'],
+            'okupasi'  => ['okupasi', 'okupasi_assessor'],
+            'paedagog' => ['paedagog', 'paedagog_assessor'],
+            'wicara'   => ['wicara_oral_assessor', 'wicara_bahasa_assessor'],
+        ];
+
+        return in_array($assessmentType, $map[$section] ?? []);
+    }
+
+    private function validateConditional(array $answers)
+    {
+        $answer_collection = collect($answers);
+
+        $questions_ids = $answer_collection->pluck('question_id');
+        $questions = AssessmentQuestion::whereIn('id', $questions_ids)->get()->keyBy('id');
+
+        foreach ($answers as $answer) {
+            $question = $questions[$answer['question_id']] ?? null;
+
+            if (!$question || !$question->extra_schema) continue;
+
+            $extra = json_decode($question->extra_schema, true);
+            if (!isset($extra['conditional_rules'])) continue;
+
+            foreach ($extra['conditional_rules'] as $rule) {
+                $this->applyConditionalRule($rule, $answer_collection, $answer['question_id']);
             }
         }
+    }
 
-        return $therapist;
+    private function applyConditionalRule(array $rule, $answers, int $current_question_id)
+    {
+        $target = $answers->firstWhere('question_id', $rule['when']);
+
+        if (!$target) return;
+
+        $value = $target['answer'] ?? null;
+
+        $passed = match ($rule['operator']) {
+            '==' => $value == ($rule['value'] ?? null),
+            '!=' => $value != ($rule['value'] ?? null),
+            'not_empty' => !empty($value),
+            default => true
+        };
+
+        if ($passed && ($rule['required'] ?? false)) {
+            $current = collect($answers)->firstWhere('question_id', $current_question_id);
+
+            if (!$current || empty($current['answer'])) {
+                throw ValidationException::withMessages([
+                    "answer" => ["Jawaban untuk question {$current_question_id} wajib diisi."]
+                ]);
+            }
+        }
     }
 
     private function validateAssessmentCompletion(AssessmentDetail $assessment)

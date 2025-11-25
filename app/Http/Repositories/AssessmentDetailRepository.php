@@ -132,7 +132,7 @@ class AssessmentDetailRepository
 
     public function setScheduledDate(int $observation_id, string $date, $admin)
     {
-        $assessment_id = $this->assessmentRepository->findIdByObservationId($observation_id);
+        $assessment_id = $this->assessmentRepository->getIdByObservationId($observation_id);
 
         if ($assessment_id) {
             return $this->updateScheduledDate($assessment_id, $date, $admin);
