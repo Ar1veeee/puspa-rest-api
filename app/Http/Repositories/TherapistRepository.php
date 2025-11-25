@@ -15,9 +15,12 @@ class TherapistRepository
 
     public function getAll()
     {
-        return $this->model->with(['user' => function ($query) {
-            $query->select('id', 'username', 'email', 'is_active');
-        }])->get();
+        return $this->model->whereHas('user', function ($query) {
+            $query->where('is_active', 1);
+        })
+            ->with(['user' => function ($query) {
+                $query->select('id', 'username', 'email', 'is_active');
+            }])->get();
     }
 
     public function getById($id)

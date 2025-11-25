@@ -85,22 +85,22 @@ class AssessmentService
             'assessment_type' => $type,
             'groups' => $groups->map(function ($group) {
                 return [
-                    'group_id'   => $group->id,
-                    'group_key'  => $group->group_key,
-                    'title'      => $group->group_title,
-                    'filled_by'  => $group->filled_by,
+                    'group_id' => $group->id,
+                    'group_key' => $group->group_key,
+                    'title' => $group->group_title,
+                    'filled_by' => $group->filled_by,
                     'sort_order' => $group->sort_order,
 
                     'questions' => $group->questions->map(function ($q) {
                         return [
-                            'id'             => $q->id,
-                            'question_code'  => $q->question_code,
-                            'question_number'=> $q->question_number,
-                            'question_text'  => $q->question_text,
-                            'answer_type'    => $q->answer_type,
+                            'id' => $q->id,
+                            'question_code' => $q->question_code,
+                            'question_number' => $q->question_number,
+                            'question_text' => $q->question_text,
+                            'answer_type' => $q->answer_type,
                             'answer_options' => $q->answer_options,
-                            'answer_format'  => $q->answer_format,
-                            'extra_schema'   => $q->extra_schema,
+                            'answer_format' => $q->answer_format,
+                            'extra_schema' => $q->extra_schema,
                         ];
                     }),
                 ];
@@ -136,7 +136,6 @@ class AssessmentService
         $assessor = $this->getAuthenticatedAssessor();
 
         $detail_type = str_replace('_assessor', '', $type);
-
         $detail = $assessment->assessmentDetails()->where('type', $detail_type)->first();
 
         if (!$detail) {
@@ -208,10 +207,10 @@ class AssessmentService
     private function isTherapistAllowed(string $section, string $assessmentType): bool
     {
         $map = [
-            'fisio'    => ['fisio', 'fisio_assessor'],
-            'okupasi'  => ['okupasi', 'okupasi_assessor'],
+            'fisio' => ['fisio', 'fisio_assessor'],
+            'okupasi' => ['okupasi', 'okupasi_assessor'],
             'paedagog' => ['paedagog', 'paedagog_assessor'],
-            'wicara'   => ['wicara_oral_assessor', 'wicara_bahasa_assessor'],
+            'wicara' => ['wicara', 'wicara_assessor'],
         ];
 
         return in_array($assessmentType, $map[$section] ?? []);

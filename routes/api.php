@@ -8,7 +8,9 @@ use App\Http\Controllers\Admin_Assessor\AssessmentController as AdminAssessorAss
 use App\Http\Controllers\Admin_Assessor_Therapist\ObservationController as AdminAssessorTherapistObservationManagement;
 use App\Http\Controllers\Assessor\AssessmentController as AssessorAssessmentManagement;
 use App\Http\Controllers\Assessor_Therapist\ObservationController as AssessorTherapistObservationManagement;
+use App\Http\Controllers\Assessor_Therapist\DashboardController as AssessorTherapistDashboard;
 use App\Http\Controllers\Owner\EmployeeController as OwnerEmployeeManagement;
+use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
 use App\Http\Controllers\Owner_Admin\UserController as OwnerAdminUserManagement;
 use App\Http\Controllers\Parent\AssessmentController as ParentAssessmentManagement;
 use App\Http\Controllers\Parent\ChildController as ParentChildManagement;
@@ -94,6 +96,7 @@ Route::prefix('v1')->group(function () {
 
         // ================== ROLE OWNER ==================
         Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
+            Route::get('/owners/dashboard', [OwnerDashboard::class, 'index']);
             Route::get('/users/{type}/unverified', [OwnerEmployeeManagement::class, 'indexUnverified']);
             Route::get('/users/{user}/promote-to-assessor', [OwnerEmployeeManagement::class, 'promoteToAssessor']);
             Route::get('/users/{user}/activate', [OwnerEmployeeManagement::class, 'activateAccount']);
@@ -109,8 +112,8 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ADMIN ==================
         Route::middleware(['role:admin', 'throttle:authenticated'])->group(function () {
             Route::put('/admins/update-password', [AdminUserManagement::class, 'updatePasswordAdmin']);
-            Route::get('/admins/dashboard/stats', [AdminDashboard::class, 'getDashboardStats']);
-            Route::get('/admins/dashboard/today-schedule', [AdminDashboard::class, 'getTodaySchedule']);
+            Route::get('/admins/dashboard/stats', [AdminDashboard::class, 'index']);
+            Route::get('/admins/dashboard/today-schedule', [AdminDashboard::class, 'todayTherapySchedule']);
             Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail']);
             Route::post('/admins', [AdminUserManagement::class, 'storeAdmin']);
             Route::put('/admins/{admin}', [AdminUserManagement::class, 'updateAdmin']);
@@ -140,6 +143,8 @@ Route::prefix('v1')->group(function () {
 
         // ================== ROLE THERAPIST & ASSESSOR ==================
         Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
+            Route::get('/asse-thera/dashboard', [AssessorTherapistDashboard::class, 'index']);
+            Route::get('/asse-thera/upcoming-observations', [AssessorTherapistDashboard::class, 'upcomingObservations']);
             Route::post('/observations/{observation}/submit', [AssessorTherapistObservationManagement::class, 'submit']);
         });
 
@@ -154,7 +159,7 @@ Route::prefix('v1')->group(function () {
         });
 
         // ================== ROLE ASSESSOR ==================
-        Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
+        Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
                 Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType']);
                 Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);

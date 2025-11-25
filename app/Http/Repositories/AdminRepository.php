@@ -15,9 +15,14 @@ class AdminRepository
 
     public function getAll()
     {
-        return $this->model->with(['user' => function ($query) {
-            $query->select('id', 'username', 'email', 'is_active');
-        }])->get();
+        return $this->model->whereHas('user', function ($query) {
+            $query->where('is_active', 1);
+        })
+            ->with(['user' => function ($query) {
+                $query->select('id', 'username', 'email', 'is_active')
+                    ->where('is_active', 1);
+            }])
+            ->get();
     }
 
     public function getById($id)

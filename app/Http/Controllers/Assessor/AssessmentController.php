@@ -83,8 +83,7 @@ class AssessmentController extends Controller
     {
         $valid_types = [
             'paedagog_assessor',
-            'wicara_oral_assessor',
-            'wicara_bahasa_assessor',
+            'wicara_assessor',
             'fisio_assessor',
             'okupasi_assessor',
             'umum_parent',
@@ -108,8 +107,7 @@ class AssessmentController extends Controller
     {
         $valid_types = [
             'paedagog_assessor',
-            'wicara_oral_assessor',
-            'wicara_bahasa_assessor',
+            'wicara_assessor',
             'fisio_assessor',
             'okupasi_assessor',
         ];

@@ -49,7 +49,7 @@ class AssessmentRepository
                 'assessment_questions.question_text',
                 'assessment_questions.answer_type',
                 'assessment_answers.answer_value',
-//                'assessment_questions.section',
+                'assessment_questions.section',
                 'assessment_question_groups.group_title',
                 'assessment_question_groups.sort_order'
             )
