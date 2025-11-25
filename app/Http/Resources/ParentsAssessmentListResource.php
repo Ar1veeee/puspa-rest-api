@@ -34,17 +34,20 @@ class ParentsAssessmentListResource extends JsonResource
 
         $types = [];
 
+        if ($type === 'umum') {
+            $types = 'Asesmen Umum';
+        }
         if ($type === 'fisio') {
-            $types = 'Assessment Fisio';
+            $types = 'Asesmen Fisio';
         }
         if ($type === 'wicara') {
-            $types = 'Assessment Wicara';
+            $types = 'Asesmen Wicara';
         }
         if ($type === 'okupasi') {
-            $types = 'Assessment Okupasi';
+            $types = 'Asesmen Okupasi';
         }
         if ($type === 'paedagog') {
-            $types = 'Assessment Paedagog';
+            $types = 'Asesmen Paedagog';
         }
 
         return [

@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Http\Repositories\AssessmentDetailRepository;
 use App\Http\Repositories\AssessmentRepository;
 use App\Http\Repositories\GuardianRepository;
+use App\Models\Assessment;
 use App\Models\AssessmentDetail;
 use App\Models\AssessmentQuestion;
 use App\Models\User;
@@ -40,7 +41,7 @@ class AssessmentService
     {
         $queryFilters = [];
 
-        $queryFilters['parent_status'] = $filters['status'];
+        $queryFilters['parent_completed_status'] = $filters['status'];
 
         if (isset($filters['date'])) {
             $queryFilters['scheduled_date'] = $filters['date'];
@@ -107,47 +108,51 @@ class AssessmentService
         ];
     }
 
-
-    public function getAnswers(AssessmentDetail $assessment_detail, string $type)
+    public function getAnswers(Assessment $assessment, string $type)
     {
-        return $this->assessmentRepository->getHistoryByAssessmentId($assessment_detail->assessment_id, $type);
+        return $this->assessmentRepository->getHistoryByAssessmentId($assessment->id, $type);
     }
 
-    public function storeOrUpdateParentAssessment(array $payload, AssessmentDetail $assessment_detail, string $type)
+    public function storeOrUpdateParentAssessment(array $payload, Assessment $assessment, string $type)
     {
+        $detail_type = str_replace('_parent', '', $type);
+
+        $detail = $assessment->assessmentDetails()->where('type', $detail_type)->first();
+
+        if (!$detail) {
+            throw new \Exception("Asesmen dengan ID: {$assessment->id} tidak memiliki tipe {$detail_type}");
+        }
+
         $this->validateConditional($payload['answers']);
 
-        $this->assessmentRepository->saveParentAnswers($payload, $assessment_detail->assessment_id, $type);
+        $this->assessmentRepository->saveParentAnswers($payload, $detail, $type);
 
         return true;
     }
 
-    public function storeOrUpdateAssessorAssessment(array $payload, AssessmentDetail $assessment_detail, string $type)
+
+    public function storeOrUpdateAssessorAssessment(array $payload, Assessment $assessment, string $type)
     {
         $assessor = $this->getAuthenticatedAssessor();
+
+        $detail_type = str_replace('_assessor', '', $type);
+
+        $detail = $assessment->assessmentDetails()->where('type', $detail_type)->first();
+
+        if (!$detail) {
+            throw new \Exception("Asesmen dengan ID: {$assessment->id} tidak memiliki tipe {$detail_type}");
+        }
 
         if (!$this->isTherapistAllowed($assessor->therapist_section, $type)) {
             throw new \Exception("Terapis tidak memiliki izin untuk mengisi asesmen tipe: {$type}", 403);
         }
 
-        $this->assessmentRepository->saveAssessorAnswers($payload, $assessment_detail->assessment_id, $type, $assessor);
+        $this->assessmentRepository->saveAssessorAnswers($payload, $detail, $type, $assessor);
 
         return true;
     }
 
-    public function completedAssessment(AssessmentDetail $assessmentDetail)
-    {
-        $this->validateAssessmentCompletion($assessmentDetail);
-
-        AssessmentDetail::where(['assessment_id' => $assessmentDetail->assessment_id])
-            ->update([
-                    'parent_status' => 'completed',
-                    'parent_completed_at' => Carbon::now(),
-                ]
-            );
-    }
-
-    public function updateScheduledDate(array $data, AssessmentDetail $assessment)
+    public function updateScheduledDate(array $data, Assessment $assessment)
     {
         $admin = $this->getAuthenticatedAdmin();
 
@@ -212,6 +217,24 @@ class AssessmentService
         return in_array($assessmentType, $map[$section] ?? []);
     }
 
+    private function validateAssessmentCompletion(Assessment $assessmentDetail)
+    {
+        $assessmentId = $assessmentDetail->assessment_id;
+
+        $details = AssessmentDetail::where('assessment_id', $assessmentId)->get();
+
+        $incomplete = $details->filter(function ($d) {
+            return $d->parent_completed_status === 'pending';
+        });
+
+        if ($incomplete->isNotEmpty()) {
+            throw new \Exception('Masih ada asesmen yang belum diselesaikan oleh terapis.');
+        }
+
+        return true;
+    }
+
+
     private function validateConditional(array $answers)
     {
         $answer_collection = collect($answers);
@@ -256,41 +279,6 @@ class AssessmentService
                     "answer" => ["Jawaban untuk question {$current_question_id} wajib diisi."]
                 ]);
             }
-        }
-    }
-
-    private function validateAssessmentCompletion(AssessmentDetail $assessment)
-    {
-        $type = $assessment->type;
-        $assessment_id = $assessment->assessment_id;
-
-
-        if (!isset($this->requiredTablesMap[$type])) {
-            throw ValidationException::withMessages([
-                'type' => ['Tipe assessment tidak valid.']
-            ]);
-        }
-
-        $requiredTables = $this->requiredTablesMap[$type];
-        $missingForms = [];
-
-        foreach ($requiredTables as $table) {
-            $exists = DB::table($table)
-                ->where('assessment_id', $assessment_id)
-                ->exists();
-
-            if (!$exists) {
-                $missingForms[] = $this->tableLabels[$table] ?? $table;
-            }
-        }
-
-        if (!empty($missingForms)) {
-            throw ValidationException::withMessages([
-                'incomplete_forms' => [
-                    'Anda belum menyelesaikan form berikut: ' . implode(', ', $missingForms)
-                ],
-                'missing_forms' => $missingForms
-            ]);
         }
     }
 }

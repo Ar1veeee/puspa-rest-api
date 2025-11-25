@@ -7,44 +7,25 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AssessmentsDetailResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
-        $type = $this->type;
-
-        $types = [];
-
-        if ($type === 'fisio')
-        {
-            $types = 'Assessment Fisio';
-        }
-        if ($type === 'wicara')
-        {
-            $types = 'Assessment Wicara';
-        }
-        if ($type === 'okupasi')
-        {
-            $types = 'Assessment Okupasi';
-        }
-        if ($type === 'paedagog')
-        {
-            $types = 'Assessment Paedagog';
-        }
-
         return [
-            'assessment_id' => $this->assessment_id,
-            'observation_id' => $this->assessment->observation_id,
-            'child_id' => $this->assessment->child_id,
-            'type' => $types,
-            'scheduled_date' => $this->scheduled_date->toDateString(),
-            'status' => $this->status,
-            'completed' => $this->parent_completed_at ?? null,
-            'created_at' => $this->created_at->format('d F Y H:i:s'),
-            'updated_at' => $this->updated_at->format('d F Y H:i:s'),
+            'assessment_id' => $this->id,
+            'child' => new ChildrenAssessmentResource($this->child),
+
+            'details' => $this->assessmentDetails->map(function ($d) {
+                return [
+                    'assessment_detail_id' => $d->id,
+                    'type' => $d->type,
+                    'status' => $d->status,
+                    'scheduled_date' => $d->scheduled_date,
+                    'completed_at' => $d->completed_at,
+                    'parent_completed_status' => $d->parent_completed_status,
+                    'parent_completed_at' => $d->parent_completed_at,
+                    'therapist_id' => $d->therapist_id,
+                    'admin_id' => $d->admin_id,
+                ];
+            }),
         ];
     }
 }

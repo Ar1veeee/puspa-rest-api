@@ -300,6 +300,7 @@ class ObservationService
 
         $assessmentTypes = [];
 
+        $assessmentTypes[] = 'umum';
         if ($data['fisio'] ?? false) {
             $assessmentTypes[] = 'fisio';
         }

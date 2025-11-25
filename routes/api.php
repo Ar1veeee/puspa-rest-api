@@ -182,7 +182,6 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{type}/question', [ParentAssessmentManagement::class, 'indexParentQuestionsByType']);
                 Route::post('/{assessment}/submit/{type}', [ParentAssessmentManagement::class, 'storeParentAssessment']);
                 Route::get('/{assessment}/answer/{type}', [ParentAssessmentManagement::class, 'indexAnswersAssessment']);
-                Route::get('/{assessmentDetail}/completed', [ParentAssessmentManagement::class, 'markAsCompleteAssessment']);
                 Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show']);
             });
         });

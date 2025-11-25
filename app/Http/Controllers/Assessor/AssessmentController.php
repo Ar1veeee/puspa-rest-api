@@ -7,6 +7,7 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\ParentsAssessmentListResource;
 use App\Http\Services\AssessmentService;
+use App\Models\Assessment;
 use App\Models\AssessmentDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class AssessmentController extends Controller
 
     public function indexCompletedParentsAssessment(Request $request, string $status)
     {
-        $valid_status = ['completed', 'not_completed'];
+        $valid_status = ['completed', 'pending'];
         if (!in_array($status, $valid_status)) {
             return $this->errorResponse('Validation Error', ['type' => ['Status observasi tidak valid']], 422);
         }
@@ -78,7 +79,7 @@ class AssessmentController extends Controller
         return $this->successResponse($response, $message, 200);
     }
 
-    public function indexAnswersAssessment(AssessmentDetail $assessment, string $type)
+    public function indexAnswersAssessment(Assessment $assessment, string $type)
     {
         $valid_types = [
             'paedagog_assessor',
@@ -86,7 +87,7 @@ class AssessmentController extends Controller
             'wicara_bahasa_assessor',
             'fisio_assessor',
             'okupasi_assessor',
-            'general_parent',
+            'umum_parent',
             'wicara_parent',
             'paedagog_parent',
             'okupasi_parent',
@@ -103,7 +104,7 @@ class AssessmentController extends Controller
         return $this->successResponse($response, $message, 200);
     }
 
-    public function storeAssessorAssessment(StoreAssessmentRequest $request, AssessmentDetail $assessment, string $type): JsonResponse
+    public function storeAssessorAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse
     {
         $valid_types = [
             'paedagog_assessor',

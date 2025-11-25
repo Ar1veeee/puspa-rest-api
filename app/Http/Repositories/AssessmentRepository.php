@@ -59,15 +59,15 @@ class AssessmentRepository
             ->groupBy('group_title');
     }
 
-    public function saveAssessorAnswers(array $data, int $assessment_id, string $type, $assessor)
+    public function saveAssessorAnswers(array $data, AssessmentDetail $detail, string $type, $assessor)
     {
-        return DB::transaction(function () use ($assessment_id, $data, $type, $assessor) {
+        return DB::transaction(function () use ($detail, $data, $type, $assessor) {
             foreach ($data['answers'] as $item) {
                 $value = $item['answer'];
 
                 AssessmentAnswer::updateOrCreate(
                     [
-                        'assessment_id' => $assessment_id,
+                        'assessment_id' => $detail->assessment_id,
                         'question_id' => $item['question_id'],
                         'type' => $type,
                     ],
@@ -78,26 +78,27 @@ class AssessmentRepository
                 );
             }
 
-            AssessmentDetail::where('assessment_id', $assessment_id)
-                ->update([
-                    'status' => 'completed',
-                    'therapist_id' => $assessor->id,
-                    'completed_at' => Carbon::now(),
-                ]);
+            $detail->update([
+                'status' => 'completed',
+                'therapist_id' => $assessor->id,
+                'completed_at' => Carbon::now(),
+            ]);
 
             return true;
         });
     }
 
-    public function saveParentAnswers(array $data, int $assessment_id, string $type)
+    public function saveParentAnswers(array $data, AssessmentDetail $detail, string $type)
     {
-        return DB::transaction(function () use ($assessment_id, $data, $type) {
+        return DB::transaction(function () use ($detail, $data, $type) {
+
             foreach ($data['answers'] as $item) {
+
                 $value = $item['answer'];
 
                 AssessmentAnswer::updateOrCreate(
                     [
-                        'assessment_id' => $assessment_id,
+                        'assessment_id' => $detail->assessment_id,
                         'question_id' => $item['question_id'],
                         'type' => $type,
                     ],
@@ -108,11 +109,10 @@ class AssessmentRepository
                 );
             }
 
-            AssessmentDetail::where('assessment_id', $assessment_id)
-                ->update([
-                    'parent_status' => true,
-                    'parent_completed_at' => Carbon::now(),
-                ]);
+            $detail->update([
+                'parent_completed_status' => 'completed',
+                'parent_completed_at' => Carbon::now(),
+            ]);
 
             return true;
         });

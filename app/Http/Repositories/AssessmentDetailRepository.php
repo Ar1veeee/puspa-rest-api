@@ -63,7 +63,7 @@ class AssessmentDetailRepository
                 'admin:id,admin_name',
             ])
             ->orderBy('scheduled_date', 'asc')
-            ->where('parent_status', $filters['parent_status'])
+            ->where('parent_completed_status', $filters['parent_completed_status'])
             ->get();
     }
 
