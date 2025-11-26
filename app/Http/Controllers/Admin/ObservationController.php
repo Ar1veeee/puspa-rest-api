@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AssessmentUpdateRequest;
 use App\Http\Requests\ObservationUpdateRequest;
-use App\Http\Resources\ObservationsScheduledResource;
 use App\Http\Services\ObservationService;
 use App\Models\Observation;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ObservationController extends Controller
 {
