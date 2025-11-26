@@ -61,15 +61,6 @@ class ObservationService
         if ($status === 'pending' || $status === 'scheduled') {
             $cacheKey = "observations_{$status}";
 
-            if ($date) {
-                $cacheKey .= "_{$date}";
-            }
-
-            if ($search) {
-                $safeSearch = str_replace(' ', '_', $search);
-                $cacheKey .= "_search_{$safeSearch}";
-            }
-
             $ttl = ($status === 'pending') ? self::CACHE_TTL_PENDING : self::CACHE_TTL_SCHEDULED;
 
             return Cache::remember($cacheKey, $ttl, function () use ($queryFilters) {
@@ -347,8 +338,6 @@ class ObservationService
             }
 
         }
-
-//        return $updateData;
     }
 
     private function getCacheKey(string $baseKey): string
