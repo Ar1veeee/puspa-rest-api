@@ -19,7 +19,7 @@ class DummyDataSeeder extends Seeder
         $testTherapist = $this->seedTestTherapist();
         $children = $this->seedFamiliesAndChildren();
 
-        $this->seedObservations($children, $therapists, $testTherapist);
+        $this->seedObservations($children, $therapists, $testTherapist, $admins);
         $this->seedAssessments($therapists, $admins);
 
         $this->command->info('✅ Dashboard Data Seeder Completed!');
@@ -132,7 +132,7 @@ class DummyDataSeeder extends Seeder
     // ===============================================================
     // 6. OBSERVATIONS
     // ===============================================================
-    private function seedObservations($children, $therapists, $testTherapist): void
+    private function seedObservations($children, $therapists, $testTherapist, $admins): void
     {
         $now = now();
 
@@ -143,34 +143,42 @@ class DummyDataSeeder extends Seeder
 
             $count = rand(150, 250);
 
-            $this->command->info(" → Month {$monthDate->format('M Y')} creating $count observations...");
+            $this->command->info("  → Month {$monthDate->format('M Y')}: Creating $count observations");
 
             for ($i = 0; $i < $count; $i++) {
-                $therapist = fake()->boolean(80) ? $therapists->random() : $testTherapist;
-
+                $status = $this->getRandomObservationStatus();
                 $createdAt = fake()->dateTimeBetween($start, $end);
-
                 $scheduleStart = Carbon::parse($createdAt);
                 $scheduleEnd = $scheduleStart->copy()->addDays(14);
 
-                $status = $this->getRandomObservationStatus();
-                $isCompleted = $status === 'completed';
+                $adminId = null;
+                $therapistId = null;
+
+                if ($status === 'scheduled') {
+                    $adminId = $admins->random()->id;
+                    $therapistId = null;
+                } elseif ($status === 'completed') {
+                    $adminId = $admins->random()->id;
+                    $therapist = fake()->boolean(80) ? $therapists->random() : $testTherapist;
+                    $therapistId = $therapist->id;
+                }
 
                 Observation::create([
                     'child_id' => $children->random()->id,
-                    'therapist_id' => $therapist->id,
+                    'admin_id' => $adminId,
+                    'therapist_id' => $therapistId,
                     'scheduled_date' => $status !== 'pending'
                         ? fake()->dateTimeBetween($scheduleStart, $scheduleEnd)
                         : null,
                     'age_category' => fake()->randomElement(['balita', 'anak-anak', 'remaja', 'lainya']),
-                    'total_score' => $isCompleted ? rand(50, 100) : null,
-                    'conclusion' => $isCompleted ? fake()->paragraph() : null,
-                    'recommendation' => $isCompleted ? fake()->paragraph() : null,
+                    'total_score' => $status === 'completed' ? rand(50, 100) : null,
+                    'conclusion' => $status === 'completed' ? fake()->paragraph() : null,
+                    'recommendation' => $status === 'completed' ? fake()->paragraph() : null,
                     'status' => $status,
-                    'completed_at' => $isCompleted
-                        ? fake()->dateTimeBetween($scheduleStart, $scheduleEnd)
-                        : null,
-                    'is_continued_to_assessment' => $isCompleted ? fake()->boolean(60) : false,
+                    'completed_at' => $status === 'completed'
+                        ? fake()->time()
+                        : '00:00:00',
+                    'is_continued_to_assessment' => $status === 'completed' ? fake()->boolean(60) : false,
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                 ]);
@@ -209,8 +217,8 @@ class DummyDataSeeder extends Seeder
             foreach ($types as $type) {
                 $therapist = $therapists->where('therapist_section', $type)->random();
                 $admin = $admins->random();
-
                 $status = fake()->randomElement(['pending', 'scheduled', 'completed']);
+
                 $parentStatus = fake()->randomElement(['pending', 'completed']);
 
                 $rangeStart = Carbon::parse($obs->created_at);
