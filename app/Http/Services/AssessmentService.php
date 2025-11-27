@@ -10,9 +10,7 @@ use App\Models\AssessmentDetail;
 use App\Models\AssessmentQuestion;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AssessmentService
@@ -24,7 +22,7 @@ class AssessmentService
     public function __construct(
         AssessmentRepository       $assessmentRepository,
         AssessmentDetailRepository $assessmentDetailRepository,
-        GuardianRepository         $guardianRepository,
+        GuardianRepository         $guardianRepository
     )
     {
         $this->assessmentRepository = $assessmentRepository;
@@ -64,32 +62,15 @@ class AssessmentService
             $queryFilters['scheduled_date'] = $filters['date'];
         }
 
+        if (isset($filters['type'])) {
+            $queryFilters['type'] = $filters['type'];
+        }
+
         if (isset($filters['search'])) {
             $queryFilters['search'] = $filters['search'];
         }
 
         return $this->assessmentDetailRepository->getAssessmentByStatusWithFilter($queryFilters);
-    }
-
-    public function getAssessmentsByType(array $filters = [])
-    {
-        $queryFilters = [];
-
-        $queryFilters['type'] = $filters['type'];
-
-        if (isset($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
-        }
-
-        if (isset($filters['status'])) {
-            $queryFilters['status'] = $filters['status'];
-        }
-
-        if (isset($filters['search'])) {
-            $queryFilters['search'] = $filters['search'];
-        }
-
-        return $this->assessmentDetailRepository->getAssessmentByTypeWithFilter($queryFilters);
     }
 
     public function getQuestionsByType(string $type): array

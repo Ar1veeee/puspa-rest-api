@@ -135,8 +135,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
             // for status pending using query: search
             // for status scheduled & completed using query: date, search
-            Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus']);
-            // using query: status
+            Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus'])
+                ->whereIn('status', ['pending', 'scheduled', 'completed']);
             Route::get('/observations/{observation}/detail', [AdminAssessorTherapistObservationManagement::class, 'showDetailByType'])
                 ->whereIn('type', ['scheduled', 'completed', 'question', 'answer']);
         });
@@ -151,7 +151,8 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ASSESSOR & ADMIN ==================
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/{status}/', [AdminAssessmentManagement::class, 'indexAssessmentsByStatus']);
+                Route::get('/{status}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
+                    ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']); // using query filter: date, and search
                 Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate']);
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
                 Route::get('/{assessment}/answer/{type}', [AdminAssessorAssessmentManagement::class, 'indexAnswersAssessment']);
@@ -161,8 +162,6 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ASSESSOR ==================
         Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/{type}', [AssessorAssessmentManagement::class, 'indexAssessmentsByType'])
-                    ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
                 Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType']);
                 Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);
                 Route::post('/{assessment}/submit/{type}', [AssessorAssessmentManagement::class, 'storeAssessorAssessment']);
