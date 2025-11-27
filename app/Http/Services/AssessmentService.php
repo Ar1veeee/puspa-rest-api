@@ -54,13 +54,28 @@ class AssessmentService
         return $this->assessmentDetailRepository->getParentsAssessmentWithFilter($queryFilters);
     }
 
+    public function getAssessmentsByStatus(array $filters = [])
+    {
+        $queryFilters = [];
+
+        $queryFilters['status'] = $filters['status'];
+
+        if (isset($filters['date'])) {
+            $queryFilters['scheduled_date'] = $filters['date'];
+        }
+
+        if (isset($filters['search'])) {
+            $queryFilters['search'] = $filters['search'];
+        }
+
+        return $this->assessmentDetailRepository->getAssessmentByStatusWithFilter($queryFilters);
+    }
+
     public function getAssessmentsByType(array $filters = [])
     {
         $queryFilters = [];
 
-        if (isset($filters['type'])) {
-            $queryFilters['type'] = $filters['type'];
-        }
+        $queryFilters['type'] = $filters['type'];
 
         if (isset($filters['date'])) {
             $queryFilters['scheduled_date'] = $filters['date'];
@@ -74,7 +89,7 @@ class AssessmentService
             $queryFilters['search'] = $filters['search'];
         }
 
-        return $this->assessmentDetailRepository->getAssessmentWithFilter($queryFilters);
+        return $this->assessmentDetailRepository->getAssessmentByTypeWithFilter($queryFilters);
     }
 
     public function getQuestionsByType(string $type): array

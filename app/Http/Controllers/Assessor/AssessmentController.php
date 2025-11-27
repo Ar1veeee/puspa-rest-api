@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Assessor;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\StoreAssessmentRequest;
+use App\Http\Resources\AssessmentListResource;
 use App\Http\Resources\ParentsAssessmentListResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
-use App\Models\AssessmentDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AssessmentController extends Controller
 {
@@ -25,6 +24,37 @@ class AssessmentController extends Controller
     )
     {
         $this->assessmentService = $assessmentService;
+    }
+
+    // Menampilkan asesmen terdaftar berdasarkan status (terjadwal, selesai) dan tipe (fisio, wicara, dll)
+    public function indexAssessmentsByType(Request $request, string $type): JsonResponse
+    {
+        $valid_types = ['fisio', 'okupasi', 'wicara', 'paedagog'];
+        if (!in_array($type, $valid_types)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Jenis asesmen tidak valid']], 422);
+        }
+
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', 'in:scheduled,completed'],
+            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $validated['type'] = $type;
+        $user = $request->user();
+
+        if ($user->role === 'terapis') {
+            return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
+        }
+
+        $assessments = $this->assessmentService->getAssessmentsByType($validated);
+
+        $response = AssessmentListResource::collection($assessments);
+        $message = 'Daftar Asesmen ' . ucfirst($type);
+        if (isset($validated['status'])) {
+            $message .= ' ' . ucfirst($validated['status']);
+        }
+        return $this->successResponse($response, $message);
     }
 
     public function indexAssessorQuestionsByType(string $type): JsonResponse
@@ -76,30 +106,6 @@ class AssessmentController extends Controller
 
         $response = ParentsAssessmentListResource::collection($assessments);
         $message = 'Daftar Asesmen Orang Tua';
-        return $this->successResponse($response, $message, 200);
-    }
-
-    public function indexAnswersAssessment(Assessment $assessment, string $type)
-    {
-        $valid_types = [
-            'paedagog_assessor',
-            'wicara_assessor',
-            'fisio_assessor',
-            'okupasi_assessor',
-            'umum_parent',
-            'wicara_parent',
-            'paedagog_parent',
-            'okupasi_parent',
-            'fisio_parent'
-        ];
-        if (!in_array($type, $valid_types)) {
-            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
-        }
-
-        $response = $this->assessmentService->getAnswers($assessment, $type);
-
-        $message = 'Riwayat Jawaban Asesmen ' . ucfirst($type);
-
         return $this->successResponse($response, $message, 200);
     }
 

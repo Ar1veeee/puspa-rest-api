@@ -151,20 +151,21 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ASSESSOR & ADMIN ==================
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/{type}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
-                    ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
+                Route::get('/{status}/', [AdminAssessmentManagement::class, 'indexAssessmentsByStatus']);
                 Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate']);
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
+                Route::get('/{assessment}/answer/{type}', [AdminAssessorAssessmentManagement::class, 'indexAnswersAssessment']);
             });
         });
 
         // ================== ROLE ASSESSOR ==================
         Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
+                Route::get('/{type}', [AssessorAssessmentManagement::class, 'indexAssessmentsByType'])
+                    ->whereIn('status', ['scheduled', 'completed']); // using query: status, date, and search
                 Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType']);
                 Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);
                 Route::post('/{assessment}/submit/{type}', [AssessorAssessmentManagement::class, 'storeAssessorAssessment']);
-                Route::get('/{assessment}/answer/{type}', [AssessorAssessmentManagement::class, 'indexAnswersAssessment']);
             });
         });
 

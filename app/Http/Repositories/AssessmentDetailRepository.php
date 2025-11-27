@@ -67,8 +67,58 @@ class AssessmentDetailRepository
             ->get();
     }
 
-    // mendapatkan data asesmen dengan filter by status, dan tipe
-    public function getAssessmentWithFilter(array $filters = [])
+    // mendapatkan data asesmen berdasarkan status dengan filter tanggal dan pencarian
+    public function getAssessmentByStatusWithFilter(array $filters = [])
+    {
+        $query = $this->model->query();
+
+        $valid_status = ['scheduled', 'completed'];
+
+        if (empty($filters['status']) || !in_array($filters['status'], $valid_status)) {
+            return new Collection();
+        }
+
+        $query->where('status', $filters['status']);
+
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        if (isset($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $query->whereHas('assessment.child', function ($childQuery) use ($searchTerm) {
+                $childQuery->where('child_name', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        return $query
+            ->with([
+                'assessment.child' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'child_name',
+                        'child_birth_date',
+                        'child_gender'
+                    );
+                },
+                'assessment.child.family.guardians' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'guardian_name',
+                        'guardian_phone'
+                    );
+                },
+                'therapist:id,therapist_name',
+                'admin:id,admin_name',
+            ])
+            ->orderBy('scheduled_date', 'asc')
+            ->get();
+    }
+
+    // mendapatkan data asesmen berdasarkan tipe dengan filter status, tanggal dan pencarian
+    public function getAssessmentByTypeWithFilter(array $filters = [])
     {
         $query = $this->model->query();
 
@@ -119,15 +169,6 @@ class AssessmentDetailRepository
             ])
             ->orderBy('scheduled_date', 'asc')
             ->get();
-    }
-
-    public function markAsComplete(int $assessment_id, string $type, $therapist_id)
-    {
-        return $this->model->where('assessment_id', $assessment_id)->where('type', $type)->update([
-            'therapist_id' => $therapist_id,
-            'status' => 'completed',
-            'completed_at' => Carbon::now(),
-        ]);
     }
 
     public function setScheduledDate(int $observation_id, string $date, $admin)
