@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // ================== ROUTE UNAUTHENTICATED ==================
     Route::get('/cors-test', function () {
         return response()->json(['message' => 'CORS test successful!']);
     });
@@ -97,9 +96,12 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE OWNER ==================
         Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
             Route::get('/owners/dashboard', [OwnerDashboard::class, 'index']);
-            Route::get('/users/{type}/unverified', [OwnerEmployeeManagement::class, 'indexUnverified']);
-            Route::get('/users/{user}/promote-to-assessor', [OwnerEmployeeManagement::class, 'promoteToAssessor']);
-            Route::get('/users/{user}/activate', [OwnerEmployeeManagement::class, 'activateAccount']);
+            Route::get('/users/{type}/unverified', [OwnerEmployeeManagement::class, 'indexUnverified'])
+                ->whereIn('type', ['admin', 'therapist']);
+            Route::get('/users/{user}/promote-to-assessor', [OwnerEmployeeManagement::class, 'promoteToAssessor'])
+                ->whereUlid('user', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::get('/users/{user}/activate', [OwnerEmployeeManagement::class, 'activateAccount'])
+                ->whereUlid('user', '[0-9A-HJ-NP-TV-Z]{26}');
         });
 
         // ================== ROLE OWNER & ADMIN ==================
@@ -114,21 +116,31 @@ Route::prefix('v1')->group(function () {
             Route::put('/admins/update-password', [AdminUserManagement::class, 'updatePasswordAdmin']);
             Route::get('/admins/dashboard/stats', [AdminDashboard::class, 'index']);
             Route::get('/admins/dashboard/today-schedule', [AdminDashboard::class, 'todayTherapySchedule']);
-            Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail']);
+            Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail'])
+                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/admins', [AdminUserManagement::class, 'storeAdmin']);
-            Route::put('/admins/{admin}', [AdminUserManagement::class, 'updateAdmin']);
-            Route::delete('/admins/{admin}', [AdminUserManagement::class, 'destroyAdmin']);
+            Route::put('/admins/{admin}', [AdminUserManagement::class, 'updateAdmin'])
+                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::delete('/admins/{admin}', [AdminUserManagement::class, 'destroyAdmin'])
+                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
 
-            Route::get('/therapists/{therapist}', [AdminUserManagement::class, 'showTherapistDetail']);
+            Route::get('/therapists/{therapist}', [AdminUserManagement::class, 'showTherapistDetail'])
+                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/therapists', [AdminUserManagement::class, 'storeTherapist']);
-            Route::put('/therapists/{therapist}', [AdminUserManagement::class, 'updateTherapist']);
-            Route::delete('/therapists/{therapist}', [AdminUserManagement::class, 'destroyTherapist']);
+            Route::put('/therapists/{therapist}', [AdminUserManagement::class, 'updateTherapist'])
+                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::delete('/therapists/{therapist}', [AdminUserManagement::class, 'destroyTherapist'])
+                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
 
-            Route::get('/children/{child}', [AdminUserManagement::class, 'showChild']);
-            Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild']);
+            Route::get('/children/{child}', [AdminUserManagement::class, 'showChild'])
+                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild'])
+                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
 
-            Route::put('/observations/{observation}', [AdminObservationManagement::class, 'updateObservationDate']);
-            Route::put('/observations/{observation}/agreement', [AdminObservationManagement::class, 'assessmentAgreement']);
+            Route::put('/observations/{observation}', [AdminObservationManagement::class, 'updateObservationDate'])
+                ->whereNumber('observation');
+            Route::put('/observations/{observation}/agreement', [AdminObservationManagement::class, 'assessmentAgreement'])
+                ->whereNumber('observation');
         });
 
         // ================== ROLE ADMIN, THERAPIST, ASSESSOR ==================
@@ -138,6 +150,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus'])
                 ->whereIn('status', ['pending', 'scheduled', 'completed']);
             Route::get('/observations/{observation}/detail', [AdminAssessorTherapistObservationManagement::class, 'showDetailByType'])
+                ->whereNumber('observation')
                 ->whereIn('type', ['scheduled', 'completed', 'question', 'answer']);
         });
 
@@ -145,33 +158,70 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::get('/asse-thera/dashboard', [AssessorTherapistDashboard::class, 'index']);
             Route::get('/asse-thera/upcoming-observations', [AssessorTherapistDashboard::class, 'upcomingObservations']);
-            Route::post('/observations/{observation}/submit', [AssessorTherapistObservationManagement::class, 'submit']);
+            Route::post('/observations/{observation}/submit', [AssessorTherapistObservationManagement::class, 'submit'])
+                ->whereNumber('observation');
         });
 
         // ================== ROLE ASSESSOR & ADMIN ==================
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
                 Route::get('/{status}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
+                    ->whereIn('status', ['scheduled', 'completed'])
                     ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']); // using query filter: date, and search
-                Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate']);
-                Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled']);
-                Route::get('/{assessment}/answer/{type}', [AdminAssessorAssessmentManagement::class, 'indexAnswersAssessment']);
+                Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate'])
+                    ->whereNumber('assessment');
+                Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled'])
+                    ->whereNumber('assessment');
+                Route::get('/{assessment}/answer/{type}', [AdminAssessorAssessmentManagement::class, 'indexAnswersAssessment'])
+                    ->whereNumber('assessment')
+                    ->whereIn('type', [
+                        'paedagog_assessor',
+                        'wicara_assessor',
+                        'fisio_assessor',
+                        'okupasi_assessor',
+                        'umum_parent',
+                        'wicara_parent',
+                        'paedagog_parent',
+                        'okupasi_parent',
+                        'fisio_parent'
+                    ]);
             });
         });
 
         // ================== ROLE ASSESSOR ==================
         Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType']);
-                Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexCompletedParentsAssessment']);
-                Route::post('/{assessment}/submit/{type}', [AssessorAssessmentManagement::class, 'storeAssessorAssessment']);
+                Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType'])
+                    ->whereIn('type', [
+                        'paedagog',
+                        'wicara_oral',
+                        'wicara_bahasa',
+                        'fisio',
+                        'okupasi',
+                        'parent_general',
+                        'parent_wicara',
+                        'parent_paedagog',
+                        'parent_okupasi',
+                        'parent_fisio'
+                    ]);
+                Route::get('/{status}/parent', [AssessorAssessmentManagement::class, 'indexParentsAssessment'])
+                    ->whereIn('status', ['completed', 'pending']); // with query filter: date, search
+                Route::post('/{assessment}/submit/{type}', [AssessorAssessmentManagement::class, 'storeAssessorAssessment'])
+                    ->whereNumber('assessment')
+                    ->whereIn('type', [
+                        'paedagog_assessor',
+                        'wicara_assessor',
+                        'fisio_assessor',
+                        'okupasi_assessor'
+                    ]);
             });
         });
 
         // ================== ROLE ORANG TUA / USER ==================
         Route::middleware(['verified', 'role:user', 'throttle:authenticated'])->prefix('my')->group(function () {
             Route::get('/profile', [ParentProfileManagement::class, 'showProfile']);
-            Route::post('/profile/{guardian}', [ParentProfileManagement::class, 'updateProfile']);
+            Route::post('/profile/{guardian}', [ParentProfileManagement::class, 'updateProfile'])
+                ->whereUlid('guardian', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::put('/update-password', [ParentProfileManagement::class, 'updatePassword']);
 
             Route::get('/children', [ParentChildManagement::class, 'indexChildren']);
@@ -184,10 +234,34 @@ Route::prefix('v1')->group(function () {
             Route::get('/assessments', [ParentAssessmentManagement::class, 'indexChildrenAssessment']);
 
             Route::prefix('assessments')->group(function () {
-                Route::get('/{type}/question', [ParentAssessmentManagement::class, 'indexParentQuestionsByType']);
-                Route::post('/{assessment}/submit/{type}', [ParentAssessmentManagement::class, 'storeParentAssessment']);
-                Route::get('/{assessment}/answer/{type}', [ParentAssessmentManagement::class, 'indexAnswersAssessment']);
-                Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show']);
+                Route::get('/{type}/question', [ParentAssessmentManagement::class, 'indexParentQuestionsByType'])
+                    ->whereIn('type', [
+                        'parent_general',
+                        'parent_wicara',
+                        'parent_paedagog',
+                        'parent_okupasi',
+                        'parent_fisio'
+                    ]);
+                Route::post('/{assessment}/submit/{type}', [ParentAssessmentManagement::class, 'storeParentAssessment'])
+                    ->whereNumber('assessment')
+                    ->whereIn('type', [
+                        'umum_parent',
+                        'wicara_parent',
+                        'paedagog_parent',
+                        'okupasi_parent',
+                        'fisio_parent'
+                    ]);
+                Route::get('/{assessment}/answer/{type}', [ParentAssessmentManagement::class, 'indexAnswersAssessment'])
+                    ->whereNumber('assessment')
+                    ->whereIn('type', [
+                        'umum_parent',
+                        'wicara_parent',
+                        'paedagog_parent',
+                        'okupasi_parent',
+                        'fisio_parent'
+                    ]);
+                Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show'])
+                    ->whereNumber('assessment');
             });
         });
     });
