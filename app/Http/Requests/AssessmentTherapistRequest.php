@@ -13,7 +13,7 @@ class AssessmentTherapistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'asesor';
+        return Auth::check() && Auth::user()->isAssessor();
     }
 
     /**

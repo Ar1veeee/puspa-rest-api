@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Assessor;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\StoreAssessmentRequest;
-use App\Http\Resources\AssessmentListResource;
 use App\Http\Resources\ParentsAssessmentListResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
@@ -52,7 +51,7 @@ class AssessmentController extends Controller
         return $this->successResponse($questions, $message, 200);
     }
 
-    public function indexCompletedParentsAssessment(Request $request, string $status)
+    public function indexParentsAssessment(Request $request, string $status)
     {
         $valid_status = ['completed', 'pending'];
         if (!in_array($status, $valid_status)) {
@@ -67,7 +66,7 @@ class AssessmentController extends Controller
         $validated['status'] = $status;
         $user = $request->user();
 
-        if ($user->role === 'terapis') {
+        if ($user->isTherapist()) {
             return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 

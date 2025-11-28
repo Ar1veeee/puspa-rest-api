@@ -39,6 +39,31 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
     ];
 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isTherapist(): bool
+    {
+        return $this->role === 'terapis';
+    }
+
+    public function isAssessor(): bool
+    {
+        return $this->role === 'asesor';
+    }
+
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
+
+    public function isParent(): bool
+    {
+        return $this->role === 'user';
+    }
+
     public function admin(): HasOne
     {
         return $this->hasOne(Admin::class, 'user_id', 'id');

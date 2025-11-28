@@ -9,7 +9,7 @@ class GuardianFamilyUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'user';
+        return Auth::check() && Auth::user()->isParent();
     }
 
     public function rules(): array

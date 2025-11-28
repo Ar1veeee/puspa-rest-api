@@ -12,7 +12,7 @@ class ObservationSubmitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'terapis' || 'asesor';
+        return Auth::check() && Auth::user()->isTherapist()|| Auth::user()->isAssessor();
     }
 
     /**

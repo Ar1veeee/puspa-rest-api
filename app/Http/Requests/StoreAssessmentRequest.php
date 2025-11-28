@@ -12,7 +12,7 @@ class StoreAssessmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'user' || Auth::user()->role === 'asesor';
+        return Auth::check() && Auth::user()->isParent() || Auth::user()->isAssessor();
     }
 
     /**

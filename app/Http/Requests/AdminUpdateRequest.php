@@ -24,7 +24,7 @@ class AdminUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->role === 'admin';
+        return Auth::check() && Auth::user()->isAdmin();
     }
 
     /**
