@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\GuardianRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +19,7 @@ class AuthService
     public function __construct(
         UserRepository     $userRepository,
         GuardianRepository $guardianRepository,
-    )
-    {
+    ) {
         $this->userRepository = $userRepository;
         $this->guardianRepository = $guardianRepository;
     }
@@ -65,6 +65,22 @@ class AuthService
             'user' => $user,
             'token' => $token,
         ];
+    }
+
+    public function updatePassword(array $data, string $user_id, $currentToken)
+    {
+        $this->userRepository->update(
+            ['password' => Hash::make($data['password'])],
+            $user_id
+        );
+
+        $user = User::find($user_id);
+        
+        $user->tokens()
+            ->where('id', '!=', $currentToken->id)
+            ->delete();
+
+        return true;
     }
 
     /**

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class GuardianProfileResource extends JsonResource
+class TherapistOrAssessorProfileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,20 +15,16 @@ class GuardianProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = $this->user->role === 'user' ? 'Orangtua Pasien/Anak' : '';
+        $role = $this->user->role === 'therapist' ? 'Terapis' : 'Asesor';
 
         return [
             'user_id' => $this->user_id,
-            'guardian_id' => $this->id,
-            'family_id' => $this->family_id,
-            'guardian_name' => $this->guardian_name,
-            'guardian_type' => $this->guardian_type,
-            'relationship_with_child' => $this->relationship_with_child,
-            'guardian_birth_date' => $this->guardian_birth_date?->format('d-m-Y'),
-            'guardian_phone' => $this->guardian_phone,
+            'therapist_id' => $this->id,
+            'therapist_name' => $this->therapist_name,
+            'therapist_phone' => $this->therapist_phone,
+            'therapist_section' => $this->therapist_section,
             'email' => $this->user->email,
             'role' => $role,
-            'guardian_occupation' => $this->guardian_occupation,
             'profile_picture' => $this->profile_picture
             ? Storage::url($this->profile_picture)
                 : null,

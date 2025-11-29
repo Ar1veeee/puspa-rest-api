@@ -16,6 +16,7 @@ return new class extends Migration
             $table->char('user_id', 26);
             $table->string('admin_name', 100);
             $table->string('admin_phone', 500);
+            $table->string('profile_picture')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

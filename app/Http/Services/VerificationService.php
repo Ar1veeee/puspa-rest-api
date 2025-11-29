@@ -25,7 +25,7 @@ class VerificationService
 
     public function verifyEmail(string $userId, string $hash): void
     {
-        $user = $this->userRepository->getById($userId);
+        $user = $this->userRepository->findById($userId);
 
         if (!$user) {
             throw new ModelNotFoundException('Pengguna tidak ditemukan.');

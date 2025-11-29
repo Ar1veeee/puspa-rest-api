@@ -37,6 +37,11 @@ class AdminRepository
         }])->findOrFail($id);
     }
 
+    public function findByUserId(string $user_id)
+    {
+        return $this->model->with('user')->where('user_id', $user_id)->first();
+    }
+
     public function create(array $data)
     {
         return $this->model->create($data);

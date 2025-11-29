@@ -9,7 +9,6 @@ use App\Http\Resources\GuardianProfileResource;
 use App\Http\Services\GuardianService;
 use App\Models\Guardian;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,6 +50,4 @@ class ProfileController extends Controller
 
         return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
     }
-
-
 }

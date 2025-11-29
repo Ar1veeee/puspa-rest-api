@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProfileController as AdminProfileManagement;
 use App\Http\Controllers\Admin\ObservationController as AdminObservationManagement;
 use App\Http\Controllers\Admin\UserController as AdminUserManagement;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentManagement;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin_Assessor\AssessmentController as AdminAssessorAss
 use App\Http\Controllers\Admin_Assessor_Therapist\ObservationController as AdminAssessorTherapistObservationManagement;
 use App\Http\Controllers\Assessor\AssessmentController as AssessorAssessmentManagement;
 use App\Http\Controllers\Assessor_Therapist\ObservationController as AssessorTherapistObservationManagement;
+use App\Http\Controllers\Assessor_Therapist\ProfileController as AssessorTherapistProfileManagement;
 use App\Http\Controllers\Assessor_Therapist\DashboardController as AssessorTherapistDashboard;
 use App\Http\Controllers\Owner\EmployeeController as OwnerEmployeeManagement;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboard;
@@ -93,6 +95,9 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:logout');
         Route::get('/auth/protected', [AuthController::class, 'protected']);
 
+        Route::put('/profile/update-password', [AuthController::class, 'updatePassword']);
+
+
         // ================== ROLE OWNER ==================
         Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
             Route::get('/owners/dashboard', [OwnerDashboard::class, 'index']);
@@ -113,9 +118,11 @@ Route::prefix('v1')->group(function () {
 
         // ================== ROLE ADMIN ==================
         Route::middleware(['role:admin', 'throttle:authenticated'])->group(function () {
-            Route::put('/admins/update-password', [AdminUserManagement::class, 'updatePasswordAdmin']);
             Route::get('/admins/dashboard/stats', [AdminDashboard::class, 'index']);
             Route::get('/admins/dashboard/today-schedule', [AdminDashboard::class, 'todayTherapySchedule']);
+            Route::get('/admins/profile', [AdminProfileManagement::class, 'showProfile']);
+            Route::post('/admins/{admin}/profile', [AdminProfileManagement::class, 'updateProfile'])
+                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail'])
                 ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/admins', [AdminUserManagement::class, 'storeAdmin']);
@@ -157,6 +164,9 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE THERAPIST & ASSESSOR ==================
         Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
             Route::get('/asse-thera/dashboard', [AssessorTherapistDashboard::class, 'index']);
+            Route::get('/asse-thera/profile', [AssessorTherapistProfileManagement::class, 'showProfile']);
+            Route::post('/asse-thera/{therapist}/profile', [AssessorTherapistProfileManagement::class, 'updateProfile'])
+                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::get('/asse-thera/upcoming-observations', [AssessorTherapistDashboard::class, 'upcomingObservations']);
             Route::post('/observations/{observation}/submit', [AssessorTherapistObservationManagement::class, 'submit'])
                 ->whereNumber('observation');

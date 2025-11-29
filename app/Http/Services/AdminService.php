@@ -36,6 +36,11 @@ class AdminService
         return $this->adminRepository->getAll();
     }
 
+    public function getProfile(string $user_id)
+    {
+        return $this->adminRepository->findByUserId($user_id);
+    }
+
     /**
      * Get admin detail by ID
      *
@@ -101,12 +106,32 @@ class AdminService
         }
     }
 
-    public function updatePassword(array $data, string $userId)
+    public function updateProfile(array $data, Admin $admin)
     {
-        return $this->userRepository->update(
-            ['password' => Hash::make($data['password'])],
-            $userId
-        );
+        $user = $this->findUserOrFail($admin->user_id);
+
+        if (isset($data['email']) && $data['email'] !== $user->email)
+        {
+            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id))
+            {
+                throw ValidationException::withMessages([
+                    'email' => ['Email sudah digunakan'],
+                ]);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->updateUserData($user, $data);
+            $this->updateAdminData($admin, $data);
+
+            DB::commit();
+
+            return $admin->fresh()->load('user');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -134,25 +159,6 @@ class AdminService
     }
 
     // ========== Private Helper Methods ==========
-
-    /**
-     * Find admin or throw exception
-     *
-     * @param string $id
-     * @return Admin
-     * @throws ModelNotFoundException
-     */
-    private function findAdminOrFail(string $id): Admin
-    {
-        $admin = $this->adminRepository->getById($id);
-
-        if (!$admin) {
-            throw new ModelNotFoundException('Data admin tidak ditemukan.');
-        }
-
-        return $admin;
-    }
-
     /**
      * Find user or throw exception
      *
@@ -162,7 +168,7 @@ class AdminService
      */
     private function findUserOrFail(string $id)
     {
-        $user = $this->userRepository->getById($id);
+        $user = $this->userRepository->findById($id);
 
         if (!$user) {
             throw new ModelNotFoundException('Pengguna tidak ditemukan.');
@@ -285,6 +291,7 @@ class AdminService
         $adminData = array_filter([
             'admin_name' => $data['admin_name'] ?? null,
             'admin_phone' => $data['admin_phone'] ?? null,
+            'profile_picture' => $data['profile_picture'] ?? null,
         ], fn($value) => $value !== null);
 
         if (!empty($adminData)) {

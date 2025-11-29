@@ -176,7 +176,7 @@ class GuardianService
 
     private function findUserOrFail(string $id)
     {
-        $user = $this->userRepository->getById($id);
+        $user = $this->userRepository->findById($id);
 
         if (!$user) {
             throw new ModelNotFoundException('Pengguna tidak ditemukan.');

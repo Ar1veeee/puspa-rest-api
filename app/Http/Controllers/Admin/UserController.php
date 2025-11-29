@@ -9,10 +9,8 @@ use App\Http\Requests\AdminUpdateRequest;
 use App\Http\Requests\ChildFamilyUpdateRequest;
 use App\Http\Requests\TherapistCreateRequest;
 use App\Http\Requests\TherapistUpdateRequest;
-use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\AdminResource;
 use App\Http\Resources\ChildDetailResource;
-use App\Http\Resources\ChildrenResource;
 use App\Http\Resources\TherapistResource;
 use App\Http\Services\AdminService;
 use App\Http\Services\ChildService;
@@ -21,7 +19,6 @@ use App\Models\Admin;
 use App\Models\Child;
 use App\Models\Therapist;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -118,14 +115,5 @@ class UserController extends Controller
         $this->adminService->deleteAdmin($admin);
 
         return $this->successResponse([], 'Data Admin Berhasil Terhapus', 200);
-    }
-
-    // Update Password
-    public function updatePasswordAdmin(UpdatePasswordRequest $request): JsonResponse
-    {
-        $userId = Auth::id();
-        $this->adminService->updatePassword($request->validated(), $userId);
-
-        return $this->successResponse([], 'Update Password Berhasil', 200);
     }
 }

@@ -17,8 +17,10 @@ class TherapistService
     protected $userRepository;
     protected $therapistRepository;
 
-    public function __construct(UserRepository $userRepository, TherapistRepository $therapistRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        TherapistRepository $therapistRepository
+    ) {
         $this->userRepository = $userRepository;
         $this->therapistRepository = $therapistRepository;
     }
@@ -43,6 +45,11 @@ class TherapistService
     public function getTherapistDetail(string $id)
     {
         return $this->therapistRepository->getDetailByIdOrFail($id);
+    }
+
+    public function getProfile(string $user_id)
+    {
+        return $this->therapistRepository->findByUserId($user_id);
     }
 
     /**
@@ -88,6 +95,32 @@ class TherapistService
             DB::commit();
             return $therapist->fresh()->load('user');
         } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateProfile(array $data, Therapist $therapist)
+    {
+        $user = $this->findUserOrFail($therapist->user_id);
+
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Email sudah digunakan'],
+                ]);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->updateUserData($user, $data);
+            $this->updateTherapistData($therapist, $data);
+
+            DB::commit();
+
+            return $therapist->fresh()->load('user');
+        } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -186,6 +219,7 @@ class TherapistService
             'therapist_name' => $data['therapist_name'] ?? null,
             'therapist_section' => $data['therapist_section'] ?? null,
             'therapist_phone' => $data['therapist_phone'] ?? null,
+            'profile_picture' => $data['profile_picture'] ?? null,
         ], fn($value) => $value !== null);
 
         if (!empty($therapistData)) {
@@ -220,7 +254,7 @@ class TherapistService
      */
     private function findUserOrFail(string $id)
     {
-        $user = $this->userRepository->getById($id);
+        $user = $this->userRepository->findById($id);
 
         if (!$user) {
             throw new ModelNotFoundException('Data user terkait tidak ditemukan.');

@@ -27,6 +27,7 @@ class Admin extends Model
         'user_id',
         'admin_name',
         'admin_phone',
+        'profile_picture',
     ];
 
     protected $casts = [

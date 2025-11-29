@@ -28,6 +28,7 @@ class Therapist extends Model
         'therapist_name',
         'therapist_section',
         'therapist_phone',
+        'profile_picture',
     ];
 
     protected $casts = [
