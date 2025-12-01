@@ -72,9 +72,8 @@ class AssessmentController extends Controller
 
         $assessments = $this->assessmentService->getParentsAssessment($validated);
 
-        $response = ParentsAssessmentListResource::collection($assessments);
         $message = 'Daftar Asesmen Orang Tua';
-        return $this->successResponse($response, $message, 200);
+        return $this->successResponse($assessments, $message, 200);
     }
 
     public function storeAssessorAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse

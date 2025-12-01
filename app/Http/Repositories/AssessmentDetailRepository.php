@@ -13,8 +13,7 @@ class AssessmentDetailRepository
     public function __construct(
         AssessmentDetail     $model,
         AssessmentRepository $assessmentRepository
-    )
-    {
+    ) {
         $this->model = $model;
         $this->assessmentRepository = $assessmentRepository;
     }
@@ -39,7 +38,7 @@ class AssessmentDetailRepository
             });
         }
 
-        return $query
+        $data = $query
             ->with([
                 'assessment.child' => function ($query) {
                     $query->select(
@@ -63,7 +62,43 @@ class AssessmentDetailRepository
             ])
             ->orderBy('scheduled_date', 'asc')
             ->where('parent_completed_status', $filters['parent_completed_status'])
-            ->get();
+            ->get()
+            ->groupBy('assessment_id')
+            ->map(function ($group) {
+                $first = $group->first();
+
+                $scheduledDate = $first->scheduled_date
+                    ? \Carbon\Carbon::parse($first->scheduled_date)
+                    : null;
+
+                return [
+                    'id' => $first->id,
+                    'assessment_id' => $first->assessment_id,
+                    'child_name' => $first->assessment->child->child_name ?? null,
+                    'guardian_name' => $first->assessment->child->family->guardians->first()->guardian_name ?? null,
+                    'guardian_phone' => $first->assessment->child->family->guardians->first()->guardian_phone ?? null,
+
+                    'types' => $group->pluck('type')->map(fn($type) => match ($type) {
+                        'umum' => 'Asesmen Umum',
+                        'fisio' => 'Asesmen Fisio',
+                        'wicara' => 'Asesmen Wicara',
+                        'okupasi' => 'Asesmen Okupasi',
+                        'paedagog' => 'Asesmen Paedagog',
+                        default => null,
+                    })->filter()->values(),
+
+                    'administrator' => $first->admin?->admin_name,
+
+                    'scheduled_date' => $scheduledDate?->format('d/m/Y'),
+                    'scheduled_time' => $scheduledDate?->format('H.i'),
+
+                    'status' => $first->status ?? null,
+                ];
+            })
+
+            ->values();
+
+        return $data;
     }
 
     // mendapatkan data asesmen berdasarkan tipe dengan filter status, tanggal dan pencarian
