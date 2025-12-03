@@ -43,4 +43,9 @@ class OwnerService
             'email_verified_at' => Carbon::now()
         ],$user->id);
     }
+    
+    public function deleteAccount(User $user)
+    {
+        return $this->userRepository->delete($user->id);
+    }
 }

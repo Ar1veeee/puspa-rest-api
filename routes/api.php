@@ -107,6 +107,8 @@ Route::prefix('v1')->group(function () {
                 ->whereUlid('user', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::get('/users/{user}/activate', [OwnerEmployeeManagement::class, 'activateAccount'])
                 ->whereUlid('user', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::get('/users/{user}/deactive', [OwnerEmployeeManagement::class, 'deleteAccount'])
+                ->whereUlid('user', '[0-9A-HJ-NP-TV-Z]{26}');
         });
 
         // ================== ROLE OWNER & ADMIN ==================
