@@ -19,7 +19,10 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->on('users')
+                ->references('id')
+                ->onDelete('cascade');
 
             $table->index('user_id', 'user_id_idx');
         });
