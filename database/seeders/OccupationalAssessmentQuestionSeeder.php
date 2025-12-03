@@ -10,7 +10,7 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
 {
     public function run(): void
     {
-        $scoreOptions = [1, 2, 3, 4, 5];
+        $scoreOptions = [1, 2, 3];
 
         $groups = [
             'A' => [
