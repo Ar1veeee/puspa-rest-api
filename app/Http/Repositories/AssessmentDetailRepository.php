@@ -71,6 +71,10 @@ class AssessmentDetailRepository
                     ? \Carbon\Carbon::parse($first->scheduled_date)
                     : null;
 
+                $parentCompleteAt = $first->parent_completed_at
+                    ? \Carbon\Carbon::parse($first->parent_completed_at)
+                    : null;
+
                 return [
                     'id' => $first->id,
                     'assessment_id' => $first->assessment_id,
@@ -90,9 +94,10 @@ class AssessmentDetailRepository
                     'administrator' => $first->admin?->admin_name,
 
                     'scheduled_date' => $scheduledDate?->format('d/m/Y'),
-                    'scheduled_time' => $scheduledDate?->format('H.i'),
+                    'scheduled_time' => $scheduledDate?->format('H.i'), 
+                    'parent_completed_at' => $parentCompleteAt?->format('H.i'),
 
-                    'status' => $first->status ?? null,
+                    'parent_completed_status' => $first->parent_completed_status ?? null,
                 ];
             })
 

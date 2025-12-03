@@ -19,6 +19,10 @@ class AssessmentListResource extends JsonResource
             ? $this->scheduled_date
             : Carbon::parse($this->scheduled_date);
 
+        $completed_at_formatted = $this->completed_at instanceof Carbon
+            ? $this->completed_at
+            : Carbon::parse($this->completed_at);
+
         $child = $this->assessment?->child;
         $guardian = $this->assessment?->child?->family?->guardians?->first();
 
@@ -51,6 +55,7 @@ class AssessmentListResource extends JsonResource
             'assessor' => $this->therapist?->therapist_name,
             'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
             'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
+            'completed_at' => $completed_at_formatted->format('H.i'), // Hanya jam:menit
             'status' => $this->status,
         ];
     }
