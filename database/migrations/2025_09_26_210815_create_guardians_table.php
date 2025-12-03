@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUlid('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('temp_email', 100)->nullable()->unique();
             $table->enum('guardian_type', ['ayah', 'ibu', 'wali']);
-            $table->string('guardian_identity_number', 40)->nullable();
+            $table->string('guardian_identity_number', 40)->unique()->nullable();
             $table->string('guardian_name', 100);
             $table->string('guardian_phone', 500);
             $table->date('guardian_birth_date')->nullable();

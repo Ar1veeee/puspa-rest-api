@@ -112,8 +112,16 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE OWNER & ADMIN ==================
         Route::middleware(['role:admin,owner', 'throttle:authenticated'])->group(function () {
             Route::get('/admins', [OwnerAdminUserManagement::class, 'indexAdmin']);
+            Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail'])
+                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
+
             Route::get('/therapists', [OwnerAdminUserManagement::class, 'indexTherapist']);
+            Route::get('/therapists/{therapist}', [AdminUserManagement::class, 'showTherapistDetail'])
+                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
+
             Route::get('/children', [OwnerAdminUserManagement::class, 'indexChild']);
+            Route::get('/children/{child}', [AdminUserManagement::class, 'showChild'])
+                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
         });
 
         // ================== ROLE ADMIN ==================
@@ -123,24 +131,18 @@ Route::prefix('v1')->group(function () {
             Route::get('/admins/profile', [AdminProfileManagement::class, 'showProfile']);
             Route::post('/admins/{admin}/profile', [AdminProfileManagement::class, 'updateProfile'])
                 ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
-            Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail'])
-                ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/admins', [AdminUserManagement::class, 'storeAdmin']);
             Route::put('/admins/{admin}', [AdminUserManagement::class, 'updateAdmin'])
                 ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::delete('/admins/{admin}', [AdminUserManagement::class, 'destroyAdmin'])
                 ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
 
-            Route::get('/therapists/{therapist}', [AdminUserManagement::class, 'showTherapistDetail'])
-                ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/therapists', [AdminUserManagement::class, 'storeTherapist']);
             Route::put('/therapists/{therapist}', [AdminUserManagement::class, 'updateTherapist'])
                 ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::delete('/therapists/{therapist}', [AdminUserManagement::class, 'destroyTherapist'])
                 ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
 
-            Route::get('/children/{child}', [AdminUserManagement::class, 'showChild'])
-                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild'])
                 ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
 
@@ -235,6 +237,10 @@ Route::prefix('v1')->group(function () {
             Route::put('/update-password', [ParentProfileManagement::class, 'updatePassword']);
 
             Route::get('/children', [ParentChildManagement::class, 'indexChildren']);
+            Route::get('/children/{child}', [ParentChildManagement::class, 'showChild'])
+                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
+            Route::put('/children/{child}', [ParentChildManagement::class, 'updateChild'])
+                ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
             Route::post('/children', [ParentChildManagement::class, 'storeChild']);
 
             // Untuk menyimpan data lengkap ortu Ayah, Ibu, & Wali (Termasuk di Data Umum)

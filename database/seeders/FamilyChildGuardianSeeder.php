@@ -48,7 +48,7 @@ class FamilyChildGuardianSeeder extends Seeder
                 'user_id' => $user->id,
                 'temp_email' => $guardianEmail,
                 'guardian_type' => $faker->randomElement(['ibu', 'ayah']),
-                'guardian_identity_number' => $faker->nik(),
+                'guardian_identity_number' => $faker->unique()->nik(),
                 'guardian_name' => $faker->name,
                 'guardian_phone' => $faker->phoneNumber,
                 'guardian_birth_date' => $faker->dateTimeBetween('-50 years', '-30 years')->format('Y-m-d'),
