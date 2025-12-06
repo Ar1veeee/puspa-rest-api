@@ -32,7 +32,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 447,
+                                    "when" => 553,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -50,7 +50,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 449,
+                                    "when" => 555,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -63,7 +63,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 449,
+                                    "when" => 555,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -76,7 +76,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 449,
+                                    "when" => 555,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -94,7 +94,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 453,
+                                    "when" => 559,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -107,7 +107,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 453,
+                                    "when" => 559,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -120,7 +120,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 453,
+                                    "when" => 559,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -138,7 +138,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 457,
+                                    "when" => 563,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -154,14 +154,14 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "type" => "table",
                         "extra" => [
                             "rows" => [
-                                "Mengucapkan kata",
-                                "Menggabungkan 2 kata",
-                                "Mengucapkan kalimat",
-                                "Mengenal huruf",
-                                "Membaca kata sederhana"
+                                "Mengujarkan satu kata",
+                                "Mengujakan dua kata",
+                                "Mengujarkan tigas kata/lebih (kalimat)",
+                                "Mengujarkan pertanyaan sederhana",
+                                "Percakapan / cerita"
                             ],
                             "columns" => ["usia"],
-                            "suffix" => "Tahun"
+                            "suffix" => "Bulan"
                         ]
                     ],
 
@@ -169,6 +169,11 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                     [
                         "id" => "feeding",
                         "text" => "Apakah ada masalah dalam feeding (misalnya: menelan, menghisap, drooling, mengunyah)?",
+                        "type" => "textarea"
+                    ],
+                    [
+                        "id" => "sound_response",
+                        "text" => "Jelaskan respon anak terhadap bunyi bicara dan bunyi di lingkungannya",
                         "type" => "textarea"
                     ],
                 ]

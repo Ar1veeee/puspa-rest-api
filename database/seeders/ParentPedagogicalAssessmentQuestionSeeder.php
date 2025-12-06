@@ -26,7 +26,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "skor_iq", "text" => "Jika Ya, berapa skor IQ", "type" => "text",
                         "extra" => [
                             "conditional_rules" => [[
-                                "when" => 461,
+                                "when" => 568,
                                 "operator" => "==",
                                 "value" => "Ya",
                                 "required" => true

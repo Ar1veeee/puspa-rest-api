@@ -48,7 +48,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 302,
+                                    "when" => 408,
                                     "operator" => "!=",
                                     "value" => "Normal",
                                     "required" => true
@@ -63,7 +63,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 306,
+                                    "when" => 412,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -76,7 +76,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 308,
+                                    "when" => 414,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -101,7 +101,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 315,
+                                    "when" => 421,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -113,7 +113,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 315,
+                                    "when" => 421,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -125,7 +125,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 318,
+                                    "when" => 424,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -138,7 +138,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 318,
+                                    "when" => 424,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -159,7 +159,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 323,
+                                    "when" => 429,
                                     "operator" => "==",
                                     "value" => "Tidak",
                                     "required" => true
@@ -170,10 +170,10 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                     ["id" => "asi_eksklusif", "text" => "Apakah anak mendapat ASI eksklusif?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
                     ["id" => "usia_asi", "text" => "Jika Ya, sampai usia berapa anak minum ASI", "type" => "number",
                         "extra" => [
-                            "suffix" => "Bulan",
+                            "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 325,
+                                    "when" => 431,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
