@@ -8,18 +8,11 @@ use App\Http\Requests\GuardianFamilyUpdateRequest;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\AssessmentsDetailResource;
 use App\Http\Resources\ChildrenAssessmentResource;
-use App\Http\Resources\GeneralDataAssessmentResource;
-use App\Http\Resources\OccupationalGuardianDataAssessmentResource;
-use App\Http\Resources\PedagogicalGuardianDataAssessmentResource;
-use App\Http\Resources\PhysioGuardianDataAssessmentResource;
-use App\Http\Resources\SpeechGuardianDataAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Http\Services\GuardianService;
 use App\Models\Assessment;
-use App\Models\AssessmentDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class AssessmentController extends Controller
 {
@@ -107,7 +100,7 @@ class AssessmentController extends Controller
     // Menampilkan jadwal asesmen semua anak yang dimiliki orang tua
     public function show(Assessment $assessment)
     {
-        $assessment->load(['child', 'assessmentDetails.therapist', 'assessmentDetails.admin']);
+        $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin']);
 
         return $this->successResponse(
             new AssessmentsDetailResource($assessment),
