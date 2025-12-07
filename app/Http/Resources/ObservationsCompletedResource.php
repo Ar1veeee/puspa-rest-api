@@ -43,6 +43,7 @@ class ObservationsCompletedResource extends JsonResource
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
             'child_name' => $this->child->child_name,
+            'child_age' => $this->child->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'guardian_name' => $primaryGuardian->guardian_name,
             'guardian_phone' => $primaryGuardian->guardian_phone,
             'observer' => $this->therapist->therapist_name,
