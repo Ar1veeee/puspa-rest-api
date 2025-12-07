@@ -94,7 +94,7 @@ class AssessmentDetailRepository
                     'administrator' => $first->admin?->admin_name,
 
                     'scheduled_date' => $scheduledDate?->format('d/m/Y'),
-                    'scheduled_time' => $scheduledDate?->format('H.i'), 
+                    'scheduled_time' => $scheduledDate?->format('H.i'),
                     'parent_completed_at' => $parentCompleteAt?->format('H.i'),
 
                     'parent_completed_status' => $first->parent_completed_status ?? null,
@@ -106,7 +106,67 @@ class AssessmentDetailRepository
         return $data;
     }
 
-    // mendapatkan data asesmen berdasarkan tipe dengan filter status, tanggal dan pencarian
+    // get assessment for admin with filter status, date, and search
+    public function getAssessmentWithFilter(array $filters = []): Collection
+    {
+        $query = $this->model->query();
+
+        $valid_status = ['scheduled', 'completed'];
+
+        if (empty($filters['status']) || !in_array($filters['status'], $valid_status)) {
+            return new Collection();
+        }
+
+        $query->where('status', $filters['status']);
+
+        if (isset($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        if (isset($filters['scheduled_date'])) {
+            $query->whereDate('scheduled_date', $filters['scheduled_date']);
+        }
+
+        if (isset($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $query->whereHas('assessment.child', function ($childQuery) use ($searchTerm) {
+                $childQuery->where('child_name', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        $results = $query
+            ->with([
+                'assessment.child' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'child_name',
+                        'child_birth_date',
+                        'child_gender'
+                    );
+                },
+                'assessment.child.family.guardians' => function ($query) {
+                    $query->select(
+                        'id',
+                        'family_id',
+                        'guardian_name',
+                        'guardian_phone'
+                    );
+                },
+                'therapist:id,therapist_name',
+                'admin:id,admin_name',
+            ])
+            ->orderBy('scheduled_date', 'asc')
+            ->get();
+
+        return $results->groupBy('assessment_id')->map(function ($group) {
+            $first = $group->first();
+            $first->grouped_details = $group;
+            return $first;
+        })->values();
+    }
+
+    // get assessment for assessor by status with filter status, type, date, and search
     public function getAssessmentByStatusWithFilter(array $filters = [])
     {
         $query = $this->model->query();

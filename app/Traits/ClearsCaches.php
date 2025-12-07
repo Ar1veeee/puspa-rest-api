@@ -11,9 +11,10 @@ trait ClearsCaches
      */
     protected function clearObservationCaches(): void
     {
-        Cache::forget('observations_pending');
-
-        Cache::forget("observations_scheduled");
+        Cache::forget('observations_pending_asc');
+        Cache::forget('observations_scheduled_asc');
+        Cache::forget('observations_completed_desc');
+        Cache::forget('observations_completed_asc');
     }
 
     /**

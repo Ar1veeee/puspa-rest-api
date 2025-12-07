@@ -52,6 +52,23 @@ class AssessmentService
         return $this->assessmentDetailRepository->getParentsAssessmentWithFilter($queryFilters);
     }
 
+    public function getAssessments(array $filters = [])
+    {
+        $queryFilters = [];
+
+        $queryFilters['status'] = $filters['status'];
+
+        if (isset($filters['date'])) {
+            $queryFilters['scheduled_date'] = $filters['date'];
+        }
+
+        if (isset($filters['search'])) {
+            $queryFilters['search'] = $filters['search'];
+        }
+
+        return $this->assessmentDetailRepository->getAssessmentWithFilter($queryFilters);
+    }
+    
     public function getAssessmentsByStatus(array $filters = [])
     {
         $queryFilters = [];

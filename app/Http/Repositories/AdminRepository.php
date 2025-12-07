@@ -22,6 +22,7 @@ class AdminRepository
                 $query->select('id', 'username', 'email', 'is_active')
                     ->where('is_active', 1);
             }])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 

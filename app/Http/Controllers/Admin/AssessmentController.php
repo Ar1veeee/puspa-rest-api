@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AssessmentUpdateRequest;
+use App\Http\Resources\AssessmentListAdminResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
 
 class AssessmentController extends Controller
 {
@@ -18,6 +21,36 @@ class AssessmentController extends Controller
     public function __construct(AssessmentService $assessmentService)
     {
         $this->assessmentService = $assessmentService;
+    }
+
+    // Menampilkan asesmen terdaftar berdasarkan status (terjadwal, selesai) dan tipe (fisio, wicara, dll)
+    public function indexAssessments(Request $request, string $status): JsonResponse
+    {
+        $valid_status = ['scheduled', 'completed'];
+        if (!in_array($status, $valid_status)) {
+            return $this->errorResponse('Validation Error', ['type' => ['Jenis status tidak valid']], 422);
+        }
+
+        $validated = $request->validate([
+            'date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $validated['status'] = $status;
+        $user = $request->user();
+
+        if ($user->isTherapist()) {
+            return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
+        }
+
+        $assessments = $this->assessmentService->getAssessments($validated);
+
+        $response = AssessmentListAdminResource::collection($assessments);
+        $message = 'Daftar Asesmen ' . ucfirst($status);
+        if (isset($validated['type'])) {
+            $message .= ' ' . ucfirst($validated['type']);
+        }
+        return $this->successResponse($response, $message);
     }
 
     public function updateAssessmentDate(AssessmentUpdateRequest $request, Assessment $assessment): JsonResponse

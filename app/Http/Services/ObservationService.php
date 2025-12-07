@@ -33,8 +33,7 @@ class ObservationService
         ObservationQuestionRepository $observationQuestionRepository,
         ObservationAnswerRepository   $observationAnswerRepository,
         AssessmentDetailRepository $assessmentRepository
-    )
-    {
+    ) {
         $this->observationRepository = $observationRepository;
         $this->observationQuestionRepository = $observationQuestionRepository;
         $this->observationAnswerRepository = $observationAnswerRepository;
@@ -43,32 +42,19 @@ class ObservationService
 
     public function getObservations(array $filters = [])
     {
-        $status = $filters['status'];
-        $date = $filters['date'] ?? null;
-        $search = $filters['search'] ?? null;
+        $status     = $filters['status'];
+        $direction  = ($status === 'completed') ? 'desc' : 'asc';
+        $cacheKey   = "observations_{$status}_{$direction}";
 
-        $queryFilters = [];
-        if ($status) {
-            $queryFilters['status'] = $status;
-        }
-        if ($date) {
-            $queryFilters['scheduled_date'] = $date;
-        }
-        if ($search) {
-            $queryFilters['search'] = $search;
-        }
+        $ttl = ($status === 'pending') ? self::CACHE_TTL_PENDING : self::CACHE_TTL_SCHEDULED;
 
-        if ($status === 'pending' || $status === 'scheduled') {
-            $cacheKey = "observations_{$status}";
-
-            $ttl = ($status === 'pending') ? self::CACHE_TTL_PENDING : self::CACHE_TTL_SCHEDULED;
-
-            return Cache::remember($cacheKey, $ttl, function () use ($queryFilters) {
-                return $this->observationRepository->getByFilters($queryFilters);
+        if (in_array($status, ['pending', 'scheduled'])) {
+            return Cache::remember($cacheKey, $ttl, function () use ($filters, $direction) {
+                return $this->observationRepository->getByFilters($filters, $direction);
             });
         }
 
-        return $this->observationRepository->getByFilters($queryFilters);
+        return $this->observationRepository->getByFilters($filters, 'desc');
     }
 
     public function getObservationQuestions(Observation $observation)
@@ -235,7 +221,7 @@ class ObservationService
             if ($questionAgeCategory !== $observationAgeCategory) {
                 throw new Exception(
                     "Pertanyaan ID {$question_id} untuk kategori usia '{$questionAgeCategory}' " .
-                    "tidak sesuai dengan observasi kategori usia '{$observationAgeCategory}'."
+                        "tidak sesuai dengan observasi kategori usia '{$observationAgeCategory}'."
                 );
             }
         }
@@ -336,7 +322,6 @@ class ObservationService
                     'status' => 'scheduled',
                 ]);
             }
-
         }
     }
 

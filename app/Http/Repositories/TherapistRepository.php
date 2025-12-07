@@ -20,7 +20,9 @@ class TherapistRepository
         })
             ->with(['user' => function ($query) {
                 $query->select('id', 'username', 'email', 'is_active');
-            }])->get();
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function getById($id)

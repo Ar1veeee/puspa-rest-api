@@ -152,6 +152,9 @@ Route::prefix('v1')->group(function () {
                 ->whereNumber('observation');
             Route::put('/observations/{observation}/agreement', [AdminObservationManagement::class, 'assessmentAgreement'])
                 ->whereNumber('observation');
+
+            Route::get('/assessments/{status}/admin', [AdminAssessmentManagement::class, 'indexAssessments'])
+                ->whereIn('status', ['scheduled', 'completed']); // using query filter: date, and search
         });
 
         // ================== ROLE ADMIN, THERAPIST, ASSESSOR ==================
@@ -179,9 +182,6 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ASSESSOR & ADMIN ==================
         Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
-                Route::get('/{status}', [AdminAssessorAssessmentManagement::class, 'indexAssessmentsByType'])
-                    ->whereIn('status', ['scheduled', 'completed'])
-                    ->whereIn('type', ['fisio', 'okupasi', 'wicara', 'paedagog']); // using query filter: date, and search
                 Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate'])
                     ->whereNumber('assessment');
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled'])
@@ -205,6 +205,8 @@ Route::prefix('v1')->group(function () {
         // ================== ROLE ASSESSOR ==================
         Route::middleware(['role:asesor', 'throttle:authenticated'])->group(function () {
             Route::prefix('assessments')->group(function () {
+                Route::get('/{status}', [AssessorAssessmentManagement::class, 'indexAssessmentsByType'])
+                    ->whereIn('status', ['scheduled', 'completed']); // using query filter: date, and search
                 Route::get('/{type}/question', [AssessorAssessmentManagement::class, 'indexAssessorQuestionsByType'])
                     ->whereIn('type', [
                         'paedagog',

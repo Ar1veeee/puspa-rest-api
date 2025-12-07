@@ -23,7 +23,7 @@ class ObservationRepository
         return $this->model->create($data);
     }
 
-    public function getByFilters(array $filters = [])
+    public function getByFilters(array $filters = [], string $orderDirection = 'asc')
     {
         $query = $this->model->query();
 
@@ -48,7 +48,9 @@ class ObservationRepository
             'therapist:id,therapist_name'
         ]);
 
-        return $query->orderBy('scheduled_date', 'asc')->get();
+        $query->orderBy('scheduled_date', $orderDirection);
+
+        return $query->get();
     }
 
     public function update(int $id, array $data): ?bool
