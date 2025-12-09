@@ -41,8 +41,7 @@ class PhysioAssessmentQuestionSeeder extends Seeder
                     "Muskuloskeletal",
                     "Nervorum",
                     "Sensoris",
-                    "Motorik Kasar",
-                    "Motorik Halus"
+                    "Motorik (Kasar, Halus)",
                 ]
             ],
 

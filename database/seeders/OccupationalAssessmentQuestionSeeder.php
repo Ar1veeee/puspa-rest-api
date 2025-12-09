@@ -10,7 +10,7 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
 {
     public function run(): void
     {
-        $scoreOptions = [1, 2, 3];
+        $scoreOptions = [0, 1, 2, 3];
 
         $groups = [
             'A' => [
@@ -52,13 +52,14 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
                         ['label' => 'Atas-bawah', 'key' => 'up_down'],
                         ['label' => 'Luar-dalam', 'key' => 'out_in'],
                         ['label' => 'Depan-belakang', 'key' => 'front_back'],
-                        ['label' => 'Tengah/Pinggir', 'key' => 'middle_side'],
+                        ['label' => 'Tengah', 'key' => 'middle_side'],
+                        ['label' => 'Pinggir', 'key' => 'edge_side'],
                     ]],
                     ['no' => 3, 'aspect' => 'Motorik Kasar', 'key' => 'gross_motor', 'subs' => [
                         ['label' => 'Berjalan ke depan', 'key' => 'walk_forward'],
                         ['label' => 'Berjalan ke belakang', 'key' => 'walk_backward'],
                         ['label' => 'Berjalan menyamping', 'key' => 'walk_sideways'],
-                        ['label' => 'Meriti (Jinjit)', 'key' => 'tiptoe'],
+                        ['label' => 'Meniti', 'key' => 'tiptoe'],
                         ['label' => 'Berlari', 'key' => 'running'],
                         ['label' => 'Berdiri satu kaki', 'key' => 'stand_one_foot'],
                         ['label' => 'Melompat satu kaki', 'key' => 'jump_one_foot'],
@@ -71,6 +72,7 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
                 'root'  => 'concentration_problem_solving',
                 'items' => [
                     ['no' => 1, 'aspect' => 'Konsentrasi & Atensi', 'key' => 'attention', 'subs' => [
+                        ['label' => 'Mengikuti perintah', 'key' => 'follow_commands'],
                         ['label' => '2 perintah', 'key' => 'two_commands'],
                         ['label' => '3 perintah', 'key' => 'three_commands'],
                         ['label' => '4 perintah', 'key' => 'four_commands'],
@@ -96,6 +98,33 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
             ],
 
             'D' => [
+                'title' => 'Konsep huruf, warna, anggota tubuh, orientasi waktu',
+                'root'  => 'concepts_orientation',
+                'items' => [
+                    ['no' => 1, 'aspect' => 'Pengenalan huruf', 'key' => 'letter_recognition', 'subs' => [
+                        ['label' => 'Menunjukan huruf', 'key' => 'show_letter'],
+                        ['label' => 'Membaca', 'key' => 'reading'],
+                        ['label' => 'Menulis', 'key' => 'writing'],
+                        ['label' => 'Menulis nama di blangko', 'key' => 'write_name_form'],
+                        ['label' => 'Menuli abjad dengan urut', 'key' => 'write_alphabet'],
+                    ]],
+                    ['no' => 2, 'aspect' => 'Pemahaman warna', 'key' => 'color_comprehension', 'subs' => [
+                        ['label' => 'Menunjuk', 'key' => 'pointing'],
+                        ['label' => 'Membedakan', 'key' => 'differentiating'],
+                    ]],
+                    ['no' => 3, 'aspect' => 'Body awareness', 'key' => 'body_awareness', 'subs' => [
+                        ['label' => 'Menyebutkan bagian wajah', 'key' => 'face_parts'],
+                        ['label' => 'Anggota tubuh', 'key' => 'body_parts'],
+                    ]],
+                    ['no' => 4, 'aspect' => 'Orientasi waktu', 'key' => 'time_orientation', 'subs' => [
+                        ['label' => 'Siang / malam', 'key' => 'day_night'],
+                        ['label' => 'Mengetahui hari', 'key' => 'know_day'],
+                        ['label' => 'Tanggal / bulan / tahun', 'key' => 'date_month_year'],
+                    ]],
+                ]
+            ],
+
+            'E' => [
                 'title' => 'Motoric Planning, Bilateral, Menggunting, Memori',
                 'root'  => 'motoric_planning',
                 'items' => [
@@ -139,7 +168,8 @@ class OccupationalAssessmentQuestionSeeder extends Seeder
                         'options' => [
                             'paedagog',
                             'okupasi',
-                            'wicara'
+                            'wicara',
+                            'fisio'
                         ]
                     ]
                 ]

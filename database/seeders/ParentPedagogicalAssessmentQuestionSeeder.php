@@ -44,8 +44,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "posisi_duduk", "text" => "Dimana posisi tempat duduk anak di dalam kelas", "type" => "text"],
                     ["id" => "hobi", "text" => "Apa hobi anak?", "type" => "text"],
 
-                    ["id" => "ikut_nonakademis", "text" => "Apakah anak mengikuti kegiatan non akademis guna mengembangkan bakatnya (beladiri, renang, sepak bola, dll)", "type" => "radio",
-                        "extra" => ["options" => ["Ya", "Tidak"]]
+                    ["id" => "ikut_nonakademis", "text" => "Apakah anak mengikuti kegiatan non akademis guna mengembangkan bakatnya (beladiri, renang, sepak bola, dll)", "type" => "text",
                     ],
 
                     ["id" => "lokasi_nonakademis", "text" => "Dimana kegiatan pengembangan diri tersebut dilakukan?", "type" => "text"],
@@ -55,7 +54,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "durasi_fokus", "text" => "Berapa lama ketahanan fokus anak?", "type" => "text"],
                     ["id" => "penarik_fokus", "text" => "Adakah ketertarikan anak terhadap benda-benda untuk menarik fokus kembali?", "type" => "text"],
 
-                    ["id" => "belajar_rumah", "text" => "Apakah anak rutin belajar dirumah setiap hari?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
+                    ["id" => "belajar_rumah", "text" => "Apakah anak rutin belajar dirumah setiap hari?", "type" => "text"],
                     ["id" => "waktu_belajar", "text" => "Kapan waktu belajar anak dirumah?", "type" => "text"],
                     ["id" => "pendamping_belajar", "text" => "Siapa pendamping anak ketika belajar dirumah?", "type" => "text"],
                     ["id" => "suasana_belajar", "text" => "Bagaimana pengkondisian tempat dan suasana anak ketika belajar?", "type" => "text"],
@@ -101,7 +100,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "m2", "text" => "Jika YA bagian yang mengalami gangguan?", "type" => "radio", "extra" => ["options" => ["Motorik Halus", "Motorik Kasar"]]],
                     ["id" => "m3", "text" => "Bentuk gangguan berupa?", "type" => "text"],
                     ["id" => "m4", "text" => "Apakah anak mengalami kesulitan dalam mobilisasi secara mandiri?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "m5", "text" => "Apakah anak mengalami kekakuan / kelyauan pada bagian tubuh tertentu?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
+                    ["id" => "m5", "text" => "Apakah anak mengalami kekakuan / kelayuan pada bagian tubuh tertentu?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
                 ]
             ],
 

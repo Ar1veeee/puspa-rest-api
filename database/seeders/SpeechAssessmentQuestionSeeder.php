@@ -30,14 +30,17 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                         "options" => ["none", "menyeringai", "kedutan"]
                     ],
                     [
-                        "label" => "Fleksasi Otot",
+                        "label" => "Pernapasan mulut",
                         "options" => ["ya", "tidak"]
+                    ],
+                    [
+                        "label" => "Lain-lain",
                     ]
                 ]
             ],
             [
                 "key" => "jaw_eval",
-                "title" => "Evaluasi Rahang",
+                "title" => "Evaluasi Rahang dan Gigi",
                 "questions" => [
                     [
                         "label" => "Range of motion",
@@ -54,6 +57,9 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     [
                         "label" => "TMJ noises",
                         "options" => ["absent", "kertak gigi", "bermunculan"]
+                    ],
+                    [
+                        "label" => "Lain-lain",
                     ]
                 ]
             ],
@@ -85,6 +91,9 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     [
                         "label" => "Kebersihan",
                         "options" => ["bersih", "kotor"]
+                    ],
+                    [
+                        "label" => "Lain-lain",
                     ]
                 ]
             ],
@@ -110,17 +119,25 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                         "options" => ["normal", "lemah"]
                     ],
                     [
-                        "label" => "Range of motion (tersenyum)",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien tersenyum
+                    [
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kesimetrisan (tersenyum)",
+                        "label" => "Kesimetrisan",
                         "options" => [
                             "normal",
                             "turun pada kedua sisi",
                             "turun pada sebelah kanan",
                             "turun pada sebelah kiri"
                         ]
+                    ],
+                    [
+                        "label" => "Lain-lain",
                     ]
                 ]
             ],
@@ -145,72 +162,110 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                         "options" => ["normal", "pendek"]
                     ],
                     [
-                        "label" => "Kesimetrisan mengeluarkan lidah",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien mengeluarkan lidah
+                    [
+                        "label" => "Kesimetrisan",
                         "options" => ["normal", "miring ke kanan", "miring ke kiri"]
                     ],
                     [
-                        "label" => "Range of motion (keluar)",
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kecepatan (keluar)",
+                        "label" => "Kecepatan",
                         "options" => ["normal", "lambat"]
                     ],
                     [
-                        "label" => "Kekuatan (keluar)",
+                        "label" => "Kekuatan (melawan tongue spatel)",
                         "options" => ["normal", "lemah"]
                     ],
                     [
-                        "label" => "Kesimetrisan menarik lidah kembali",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien menarik kembali lidahnya
+                    [
+                        "label" => "Kesimetrisan",
                         "options" => ["normal", "miring ke kanan", "miring ke kiri"]
                     ],
                     [
-                        "label" => "Range of motion (menarik lidah)",
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kecepatan (menarik lidah)",
+                        "label" => "Kecepatan",
                         "options" => ["normal", "lambat"]
                     ],
                     [
-                        "label" => "Gerakan lidah ke kanan (Range of motion)",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien menggerakkan lidah ke kanan
+                    [
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kekuatan ke kanan",
+                        "label" => "Kecepatan",
                         "options" => ["normal", "lemah"]
                     ],
                     [
-                        "label" => "Gerakan lidah ke kiri (Range of motion)",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien menggerakkan lidah ke kiri
+                    [
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kekuatan ke kiri",
+                        "label" => "Kecepatan",
                         "options" => ["normal", "lemah"]
                     ],
                     [
-                        "label" => "Gerakan lidah ke atas (Range of motion)",
-                        "options" => ["normal", "kurang"]
+                        "label" => "Lain-lain",
                     ],
+
+                    // Minta klien menggerakkan lidah ke bawah
                     [
-                        "label" => "Kecepatan ke atas",
+                        "label" => "Gerakan",
                         "options" => ["normal", "lambat"]
                     ],
                     [
-                        "label" => "Gerakan lidah ke bawah (Range of motion)",
+                        "label" => "Range of motion",
                         "options" => ["normal", "kurang"]
                     ],
                     [
-                        "label" => "Kecepatan ke bawah",
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien menggerakkan lidah ke atas
+                    [
+                        "label" => "Gerakan",
                         "options" => ["normal", "lambat"]
                     ],
                     [
-                        "label" => "Gerakan lidah ke kanan-kiri bergantian",
+                        "label" => "Range of motion",
+                        "options" => ["normal", "kurang"]
+                    ],
+                    [
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien menggerakkan lidah ke kanan-kiri bergantian
+                    [
+                        "label" => "Pergerakan",
                         "options" => ["normal", "lemah", "menurun bertahap"]
                     ],
                     [
-                        "label" => "Range of motion kanan–kiri",
+                        "label" => "Range of motion",
                         "options" => ["normal", "berkurang pada sisi kiri", "berkurang pada sisi kanan"]
+                    ],
+                    [
+                        "label" => "Lain-lain",
                     ]
                 ]
             ],
@@ -265,8 +320,13 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                         "options" => ["normal", "tidak ada", "hiperensitif", "hiposensitif"]
                     ],
                     [
-                        "label" => "Kesimetrisan gerakan fonasi",
-                        "options" => ["miring ke kanan", "miring ke kiri"]
+                        "label" => "Lain-lain",
+                    ],
+
+                    // Minta klien melakukan fonasi /a/
+                    [
+                        "label" => "Kesimetrisan gerakan",
+                        "options" => ["normal", "miring ke kanan", "miring ke kiri"]
                     ],
                     [
                         "label" => "Gerakan posterior",
@@ -295,21 +355,30 @@ class SpeechAssessmentQuestionSeeder extends Seeder
             ]);
 
             foreach ($g['questions'] as $qIndex => $q) {
+
+                $isLainLain = isset($q['label'])
+                    && trim(strtolower($q['label'])) === 'Lain-lain';
+
                 AssessmentQuestion::create([
                     'group_id'        => $group->id,
                     'assessment_type' => 'wicara_oral',
                     'section'         => $g['key'],
-                    'question_code'   => "WO_" . $g['key'] . "_" . ($qIndex + 1),
+                    'question_code'   => "WO_" . strtoupper($g['key']) . "_" . ($qIndex + 1),
                     'question_number' => $qIndex + 1,
                     'question_text'   => $q['label'],
-                    'answer_type'     => 'select_with_note',
-                    'answer_options'  => json_encode($q['options']),
-                    'extra_schema'    => json_encode([
-                        "columns" => [
-                            ["key" => "value", "label" => "Pilihan", "type" => "select"],
-                            ["key" => "note",  "label" => "Keterangan", "type" => "text"]
-                        ]
-                    ]),
+                    'answer_type'     => $isLainLain ? 'note' : 'select_with_note',
+                    'answer_options'  => $isLainLain
+                        ? null
+                        : json_encode($q['options'] ?? []),
+                    'extra_schema'    => $isLainLain
+                        ? null
+                        : json_encode([
+                            "columns" => [
+                                ["key" => "value", "label" => "Pilihan",  "type" => "select"],
+                                ["key" => "note",  "label" => "Keterangan", "type" => "text"]
+                            ]
+                        ]),
+                    'is_active'       => true,
                 ]);
             }
         }
@@ -414,8 +483,7 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     "Berbicara dengan suara yang keras",
                     "Nada suara mulai meninggi",
                     "Menunggu huruf hidup dengan baik",
-                    "Sering menghilangkan atau mengganti konsonan akhir",
-                    "Secara konsisten menggunakan konsonan awal (walaupunbeberapa masih tidak dapat diucapkan dengan baik)",
+                    "Secara konsisten menggunakan konsonan awal (walaupun beberapa masih tidak dapat diucapkan dengan baik)",
                     "Sering menghilangkan konsonan tengah",
                     "Sering menghilangkan atau mengganti konsonan akhir"
                 ]
@@ -434,6 +502,7 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     "Menggunakan 4-5 kata dalam kalimat",
                     "Mengulang kalimat 6-13 suku kata secara benar",
                     "Mengenali benda dengan nama",
+                    "Memanipulasi orang dewasa dan teman sebaya",
                     "Kadang-kadang echolalia masih digunakan",
                     "Lebih sering menggunakan kata benda dan kata kerja",
                     "Sadar akan waktu yang telah lalu dan yang akan datang",
@@ -495,9 +564,9 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     "Mengerti kanan dan kiri",
                     "Menggunakan makin banyak lagi kata-kata yang lebih kompleks untuk menjelaskan sesuatu dan mampu mengadakan percakapan",
                     "Memiliki pemahaman kosa kata kurang lebih 20.000 kata",
-                    "Menggunakan panjang kalimat konsep tentang waktu",
+                    "Menggunakan panjang kalimat sampai dengan 6 kata",
                     "Mengerti hampir keseluruhan konsep tentang waktu",
-                    "Dapat menghitung sampai dengan 100 secara role",
+                    "Dapat menghitung sampai dengan 100 secara rote",
                     "Menggunakan hampir seluruh aturan untuk perubahan kata dengan benar",
                     "Menggunakan kalimat pasif dengan benar"
                 ]

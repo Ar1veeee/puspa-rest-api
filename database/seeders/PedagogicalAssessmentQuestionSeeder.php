@@ -63,6 +63,7 @@ class PedagogicalAssessmentQuestionSeeder extends Seeder
                 "Anak mampu memahami besar kecil, berat ringan, luas sempit",
                 "Anak mampu memahami orientasi waktu (pagi, siang, malam, jam, hari, bulan, tahun)",
                 "Anak mampu mengekspresikan wajah (emosi)",
+                "Kesimpulan Assessment"
             ]],
         ];
 
@@ -80,23 +81,39 @@ class PedagogicalAssessmentQuestionSeeder extends Seeder
 
             foreach ($g['questions'] as $qIndex => $text) {
 
-                AssessmentQuestion::create([
+                $isKesimpulan = ($g['key'] === 'general'
+                    && str_contains(strtolower($text), 'kesimpulan'));
+
+                $data = [
                     'group_id'        => $group->id,
                     'assessment_type' => 'paedagog',
                     'section'         => $g['key'],
                     'question_code'   => 'PDG_' . strtoupper($g['key']) . '_' . ($qIndex + 1),
                     'question_number' => $qIndex + 1,
                     'question_text'   => $text,
-                    'answer_type'     => 'score_with_note',
-                    'answer_options'  => json_encode($defaultOptions),
-                    'extra_schema'    => json_encode([
-                        "columns" => [
-                            ["key" => "score", "label" => "Penilaian", "type" => "select"],
-                            ["key" => "note",  "label" => "Keterangan", "type" => "text"]
-                        ]
-                    ]),
                     'is_active'       => true,
-                ]);
+                ];
+
+                if ($isKesimpulan) {
+                    $data += [
+                        'answer_type'    => 'text',
+                        'answer_options' => null,
+                        'extra_schema'   => null,
+                    ];
+                } else {
+                    $data += [
+                        'answer_type'    => 'score_with_note',
+                        'answer_options' => json_encode($defaultOptions),
+                        'extra_schema'   => json_encode([
+                            "columns" => [
+                                ["key" => "score", "label" => "Penilaian", "type" => "select"],
+                                ["key" => "note",  "label" => "Keterangan", "type" => "text"]
+                            ]
+                        ]),
+                    ];
+                }
+
+                AssessmentQuestion::create($data);
             }
         }
     }

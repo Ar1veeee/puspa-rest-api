@@ -44,11 +44,14 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                 "questions" => [
                     ["id" => "metode_lahir", "text" => "Lahir persalinan normal / operasi caesar / vakum", "type" => "radio", "extra" => ["options" => ["Normal", "Operasi Caesar", "Vakum"]]],
                     ["id" => "posisi_lahir", "text" => "Jika lahir normal posisi lahir kepala dulu / kaki dulu / pantat dulu", "type" => "radio", "extra" => ["options" => ["Kepala dulu", "Kaki dulu", "Pantat dulu"]]],
-                    ["id" => "alasan_operasi", "text" => "Alasan lahir dengan persalinan operasi caesar / vakum", "type" => "textarea",
+                    [
+                        "id" => "alasan_operasi",
+                        "text" => "Alasan lahir dengan persalinan operasi caesar / vakum",
+                        "type" => "textarea",
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 408,
+                                    "when" => 436,
                                     "operator" => "!=",
                                     "value" => "Normal",
                                     "required" => true
@@ -58,12 +61,15 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                     ], // wajib diisi jika metode lahir bukan normal
                     ["id" => "lahir_menangis", "text" => "Lahir langsung menangis?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
                     ["id" => "riwayat_bayi", "text" => "Saat lahir ada riwayat bayi biru / kuning / kejang?", "type" => "checkbox", "extra" => ["options" => ["Biru", "Kuning", "Kejang"]]],
-                    ["id" => "durasi_riwayat_bayi", "text" => "Jika Ya, berikan informasi berapa lama anak mengalaminya", "type" => "number",
+                    [
+                        "id" => "durasi_riwayat_bayi",
+                        "text" => "Jika Ya, berikan informasi berapa lama anak mengalaminya",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 412,
+                                    "when" => 440,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -71,12 +77,15 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         ]
                     ], // wajib diisi jika pernah mengalami biru / kuning / kejang tidak kosong
                     ["id" => "inkubator", "text" => "Pernah masuk inkubator?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "lama_inkubator", "text" => "Jika Ya, berikan informasi berapa lama masuk inkubator", "type" => "number",
+                    [
+                        "id" => "lama_inkubator",
+                        "text" => "Jika Ya, berikan informasi berapa lama masuk inkubator",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 414,
+                                    "when" => 442,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -96,24 +105,30 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                 "title" => "Riwayat Setelah Kelahiran",
                 "questions" => [
                     ["id" => "riwayat_biru_kuning", "text" => "Anak mengalami biru / kuning / kejang?", "type" => "checkbox", "extra" => ["options" => ["Biru", "Kuning", "Kejang"]]],
-                    ["id" => "lama_biru_kuning", "text" => "Berapa lama mengalaminya?", "type" => "number",
+                    [
+                        "id" => "lama_biru_kuning",
+                        "text" => "Berapa lama mengalaminya?",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 421,
+                                    "when" => 449,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
                             ]
                         ]
                     ], // wajib di isi jika pernah mengalami biru / kuning / kejang tidak kosong
-                    ["id" => "usia_saat_mengalami", "text" => "Saat usia berapa?", "type" => "number",
+                    [
+                        "id" => "usia_saat_mengalami",
+                        "text" => "Saat usia berapa?",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 421,
+                                    "when" => 449,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -121,11 +136,14 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         ]
                     ], // wajib di isi jika pernah mengalami biru / kuning / kejang tidak kosong
                     ["id" => "anak_jatuh", "text" => "Anak pernah jatuh / tidak", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "bagian_terbentur", "text" => "Bagian tubuh yang terbentur?", "type" => "text",
+                    [
+                        "id" => "bagian_terbentur",
+                        "text" => "Bagian tubuh yang terbentur?",
+                        "type" => "text",
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 424,
+                                    "when" => 452,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -133,12 +151,15 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             ]
                         ]
                     ], // wajib di isi jika pernah mengalami jatuh
-                    ["id" => "usia_saat_jatuh", "text" => "Saat usia berapa?", "type" => "number",
+                    [
+                        "id" => "usia_saat_jatuh",
+                        "text" => "Saat usia berapa?",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 424,
+                                    "when" => 452,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -155,11 +176,14 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "suffix" => "Bulan"
                     ]],
                     ["id" => "riwayat_imunisasi", "text" => "Bagaimana riwayat imunisasi anak?", "type" => "radio_with_text", "extra" => ["options" => ["Lengkap", "Tidak"]]],
-                    ["id" => 'imunisasi_yang_kurang', "text" => "Jika tidak lengkap, sebutkan imunisasi apa yang kurang", "type" => "text",
+                    [
+                        "id" => 'imunisasi_yang_kurang',
+                        "text" => "Jika tidak lengkap, sebutkan imunisasi apa yang kurang",
+                        "type" => "text",
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 429,
+                                    "when" => 457,
                                     "operator" => "==",
                                     "value" => "Tidak",
                                     "required" => true
@@ -168,12 +192,15 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         ]
                     ], // wajib di isi jika imunisasi Tidak Lengkap
                     ["id" => "asi_eksklusif", "text" => "Apakah anak mendapat ASI eksklusif?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "usia_asi", "text" => "Jika Ya, sampai usia berapa anak minum ASI", "type" => "number",
+                    [
+                        "id" => "usia_asi",
+                        "text" => "Jika Ya, sampai usia berapa anak minum ASI",
+                        "type" => "number",
                         "extra" => [
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 431,
+                                    "when" => 459,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -192,14 +219,29 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                     ["id" => "riwayat_penyakit", "text" => "Berikan perkiraan usia anak pernah menderita penyakit berikut:", "type" => "table", "extra" => [
                         "columns" => ["penyakit", "tahun"],
                         "rows" => [
-                            "Alergi", "Asma", "Cacar Air", "Demam", "Kejang", "Pusing", "Infeksi Telinga", "Encephalitis",
-                            "Campak / Rubella", "Sakit Kepala", "Demam Tinggi", "Influensa", "Mastoiditis", "Meningitis",
-                            "Radang Paru", "Sinusitis", "Tonsilitis", "Dll."
+                            "Alergi",
+                            "Demam",
+                            "Infeksi Telinga",
+                            "Sakit Kepala",
+                            "Mastoiditis",
+                            "Sinusitis",
+                            "Asma",
+                            "Kejang",
+                            "Encephalitis",
+                            "Demam Tinggi",
+                            "Meningitis",
+                            "Tonsilitis",
+                            "Cacar Air",
+                            "Pusing",
+                            "Campak / Rubella",
+                            "Influensa",
+                            "Radang Paru",
+                            "Dll."
                         ]
                     ]],
                     ["id" => "family_similar_conditions_detail", "text" => "Apakah dalam anggota keluarga memiliki riwayat penyakit yang sama dengan anak? Mohon ceritakan detailnya.", "type" => "textarea"],
-                    ["id" => "family_mental_disorders", "text" => "Apakah dalam anggota keluarga memiliki riwayat gangguan tertentu (misalnya stres, depresi, skizofrenia, dll)?", "type" => "textarea"],
-                    ["id" => "child_surgeries_detail", "text" => "Pernahkah anak melakukan pembedahan? Jika iya, apa jenisnya dan kapan?", "type" => "textarea"],
+                    ["id" => "family_mental_disorders", "text" => "Apakah dalam anggota keluarga memiliki riwayat gangguan tertentu? seperti stress, depresi, skizofrenia, dll.", "type" => "textarea"],
+                    ["id" => "child_surgeries_detail", "text" => "Pernahkah anak melakukan pembedahan? Jika iya, apa jenisnya dan kapan (contohnya tonsillectomy, adenoidectomy, dll)", "type" => "textarea"],
                     ["id" => "special_medical_conditions", "text" => "Apakah anak memiliki riwayat penyakit khusus?", "type" => "textarea"],
                     ["id" => "other_medications_detail", "text" => "Apakah anak menjalani pengobatan lain? Jika iya, sebutkan.", "type" => "textarea"],
                     ["id" => "negative_reactions_detail", "text" => "Apakah ada reaksi negatif dari pengobatan tersebut? Jika iya, identifikasi.", "type" => "textarea"],
@@ -212,14 +254,70 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                 "title" => "Riwayat Pendidikan",
                 "questions" => [
                     ["id" => "sudah_sekolah", "text" => "Apakah anak anda bersekolah?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "nama_sekolah", "text" => "Dimana sekolahnya?", "type" => "text"],
-                    ["id" => "kelas_sekolah", "text" => "Kelas berapa?", "type" => "text"],
+                    [
+                        "id" => "nama_sekolah",
+                        "text" => "Dimana sekolahnya?",
+                        "type" => "text",
+                        "extra" => [
+                            "conditional_rules" => [
+                                [
+                                    "when" => 470,
+                                    "operator" => "==",
+                                    "value" => "Ya",
+                                    "required" => true
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "id" => "kelas_sekolah",
+                        "text" => "Kelas berapa?",
+                        "type" => "text",
+                        "extra" => [
+                            "conditional_rules" => [
+                                [
+                                    "when" => 470,
+                                    "operator" => "==",
+                                    "value" => "Ya",
+                                    "required" => true
+                                ]
+                            ]
+                        ]
+                    ],
                     ["id" => "long_absence", "text" => "Apakah anak anda pernah tidak bersekolah untuk jangka waktu tertentu?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "long_absence_reason", "text" => "Jika pernah tidak bersekolah, berapa lama dan apa alasan tidak bersekolah?", "type" => "textarea"],
+                    [
+                        "id" => "long_absence_reason",
+                        "text" => "Jika pernah tidak bersekolah, berapa lama dan apa alasan tidak bersekolah?",
+                        "type" => "textarea",
+                        "extra" => [
+                            "conditional_rules" => [
+                                [
+                                    "when" => 473,
+                                    "operator" => "==",
+                                    "value" => "Ya",
+                                    "required" => true
+                                ]
+                            ]
+                        ]
+                    ],
                     ["id" => "academic_and_socialization_detail", "text" => "Gambarkan mengenai pencapaian akademis dan performa sosialisasinya:", "type" => "textarea"],
                     ["id" => "special_treatment_detail", "text" => "Apakah anak menerima perlakuan khusus? Jika iya, jelaskan:", "type" => "textarea"],
                     ["id" => "learning_support_program", "text" => "Apakah anak anda mengikuti Program Pendukung Pembelajaran?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
-                    ["id" => "learning_support_detail", "text" => "Jika ya, berikan gambaran tentang tujuan, durasi, frekuensi, di kelas / luar kelas, individual / group, dilaksanakan oleh:", "type" => "textarea"],
+                    [
+                        "id" => "learning_support_detail",
+                        "text" => "Jika ya, berikan gambaran tentang tujuan, durasi, frekuensi, di kelas / luar kelas, individual / group, dilaksanakan oleh:",
+                        "type" => "textarea",
+                        "extra" => [
+                            "conditional_rules" => [
+                                [
+                                    "when" => 477,
+                                    "operator" => "==",
+                                    "value" => "Ya",
+                                    "required" => true
+                                ]
+                            ]
+                        ]
+                    ],
                 ],
             ],
         ];
