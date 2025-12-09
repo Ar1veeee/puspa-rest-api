@@ -16,6 +16,7 @@ class TherapistFactory extends Factory
             'therapist_name' => fake()->name(),
             'therapist_section' => fake()->randomElement(['okupasi', 'fisio', 'wicara', 'paedagog']),
             'therapist_phone' => fake()->phoneNumber(),
+            'therapist_birth_date' => fake()->numberBetween(22, 40),
             'created_at' => now(),
             'updated_at' => now(),
         ];

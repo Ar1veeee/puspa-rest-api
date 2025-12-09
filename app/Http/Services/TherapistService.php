@@ -219,6 +219,7 @@ class TherapistService
             'therapist_name' => $data['therapist_name'] ?? null,
             'therapist_section' => $data['therapist_section'] ?? null,
             'therapist_phone' => $data['therapist_phone'] ?? null,
+            'therapist_birth_date' => $data['therapist_birth_date'] ?? null,
             'profile_picture' => $data['profile_picture'] ?? null,
         ], fn($value) => $value !== null);
 

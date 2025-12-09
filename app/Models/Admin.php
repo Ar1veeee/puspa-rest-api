@@ -27,11 +27,13 @@ class Admin extends Model
         'user_id',
         'admin_name',
         'admin_phone',
+        'admin_birth_date',
         'profile_picture',
     ];
 
     protected $casts = [
         'admin_phone' => 'encrypted',
+        'admin_birth_date' => 'date',
     ];
 
     protected $touches = ['user'];

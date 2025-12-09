@@ -28,11 +28,13 @@ class Therapist extends Model
         'therapist_name',
         'therapist_section',
         'therapist_phone',
+        'therapist_birth_date',
         'profile_picture',
     ];
 
     protected $casts = [
         'therapist_phone' => 'encrypted',
+        'therapist_birth_date' => 'date',
     ];
 
     protected $touches = ['user'];

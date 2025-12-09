@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('therapist_name', 100)->nullable(false);
             $table->enum('therapist_section', ['okupasi', 'fisio', 'wicara', 'paedagog'])->nullable(false);
             $table->string('therapist_phone', 500)->nullable(false);
+            $table->date('therapist_birth_date');
             $table->string('profile_picture')->nullable();
             $table->timestamps();
 

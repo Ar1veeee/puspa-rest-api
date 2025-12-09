@@ -33,6 +33,7 @@ class UpdateAdminProfileRequest extends FormRequest
             ],
             'admin_name' => ['sometimes', 'required', 'string', 'max:100'],
             'admin_phone' => ['sometimes', 'required', 'string', 'max:20'],
+            'admin_birth_date' => ['sometimes', 'required', 'date_format:Y-m-d'],
         ];
     }
 
@@ -50,6 +51,8 @@ class UpdateAdminProfileRequest extends FormRequest
             'email.unique' => 'Email ini sudah terdaftar pada akun lain.',
 
             'admin_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',
+
+            'admin_birth_date.date_format' => 'Format tanggal lahir harus YYYY-MM-DD.',
 
             'file.mimes' => 'Foto harus berformat JPEG, PNG, atau JPG.',
             'file.max' => 'Ukuran foto tidak boleh lebih dari 2MB.',

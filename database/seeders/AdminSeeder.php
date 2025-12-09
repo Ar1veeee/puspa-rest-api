@@ -34,6 +34,7 @@ class AdminSeeder extends Seeder
                 'user_id' => $user->id,
                 'admin_name' => $admin['name'],
                 'admin_phone' => $admin['phone'],
+                'admin_birth_date' => Carbon::now()->subYears(30),
             ]);
         }
     }

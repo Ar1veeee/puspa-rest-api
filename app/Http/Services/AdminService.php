@@ -20,8 +20,7 @@ class AdminService
     public function __construct(
         UserRepository  $userRepository,
         AdminRepository $adminRepository
-    )
-    {
+    ) {
         $this->userRepository = $userRepository;
         $this->adminRepository = $adminRepository;
     }
@@ -110,10 +109,8 @@ class AdminService
     {
         $user = $this->findUserOrFail($admin->user_id);
 
-        if (isset($data['email']) && $data['email'] !== $user->email)
-        {
-            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id))
-            {
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            if ($this->userRepository->isEmailTakenByAnother($data['email'], $user->id)) {
                 throw ValidationException::withMessages([
                     'email' => ['Email sudah digunakan'],
                 ]);
@@ -291,6 +288,7 @@ class AdminService
         $adminData = array_filter([
             'admin_name' => $data['admin_name'] ?? null,
             'admin_phone' => $data['admin_phone'] ?? null,
+            'admin_birth_date' => $data['admin_birth_date'] ?? null,
             'profile_picture' => $data['profile_picture'] ?? null,
         ], fn($value) => $value !== null);
 

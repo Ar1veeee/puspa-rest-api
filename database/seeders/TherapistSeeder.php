@@ -42,6 +42,7 @@ class TherapistSeeder extends Seeder
                 'therapist_name' => $therapist['name'],
                 'therapist_section' => $therapist['section'],
                 'therapist_phone' => $therapist['phone'],
+                'therapist_birth_date' => Carbon::now()->subYears(fake()->numberBetween(22, 40)),
             ]);
         }
     }

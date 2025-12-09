@@ -15,6 +15,7 @@ class AdminFactory extends Factory
             'user_id' => User::factory()->admin()->create()->id,
             'admin_name' => fake()->name(),
             'admin_phone' => fake()->phoneNumber(),
+            'admin_birth_date' => fake()->numberBetween(22, 40),
             'created_at' => now(),
             'updated_at' => now(),
         ];

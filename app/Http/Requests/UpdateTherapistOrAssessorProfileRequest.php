@@ -37,6 +37,8 @@ class UpdateTherapistOrAssessorProfileRequest extends FormRequest
             ],
             'therapist_name' => ['sometimes', 'required', 'string', 'max:100'],
             'therapist_phone' => ['sometimes', 'required', 'string', 'max:20'],
+            'therapist_birth_date' => ['sometimes', 'required', 'date_format:Y-m-d'],
+
         ];
     }
 
@@ -54,6 +56,7 @@ class UpdateTherapistOrAssessorProfileRequest extends FormRequest
             'email.unique' => 'Email ini sudah terdaftar pada akun lain.',
 
             'therapist_phone.max' => 'Nomor telepon tidak boleh lebih dari :max karakter.',
+            'therapist_birth_date.date_format' => 'Format tanggal lahir harus YYYY-MM-DD.',
 
             'file.mimes' => 'Foto harus berformat JPEG, PNG, atau JPG.',
             'file.max' => 'Ukuran foto tidak boleh lebih dari 2MB.',
