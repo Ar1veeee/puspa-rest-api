@@ -13,6 +13,7 @@ use App\Http\Services\GuardianService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AssessmentController extends Controller
 {
@@ -25,8 +26,7 @@ class AssessmentController extends Controller
     public function __construct(
         AssessmentService $assessmentService,
         GuardianService   $guardianService
-    )
-    {
+    ) {
         $this->assessmentService = $assessmentService;
         $this->guardianService = $guardianService;
     }
@@ -97,7 +97,7 @@ class AssessmentController extends Controller
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
 
-    // Menampilkan jadwal asesmen semua anak yang dimiliki orang tua
+    // Menampilkan tipe asesmen yang dimiliki anak
     public function show(Assessment $assessment)
     {
         $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin']);
@@ -106,6 +106,30 @@ class AssessmentController extends Controller
             new AssessmentsDetailResource($assessment),
             'Detail Assessment Untuk Anak'
         );
+    }
+
+    public function downloadReportFile(Assessment $assessment)
+    {
+        if ($assessment->child->parent_id !== auth('parent')->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        if (!$assessment->report_file) {
+            abort(404, 'Laporan belum tersedia');
+        }
+
+        $filePath = storage_path('app/assessment/reports/' . $assessment->report_file);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan di server');
+        }
+
+        $childName = Str::slug($assessment->child->child_name ?? 'Anak');
+        $downloadName = "Laporan_Asesmen_{$childName}_" . now()->format('Y-m-d') . ".pdf";
+
+        return response()->download($filePath, $downloadName, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function updateFamilyData(GuardianFamilyUpdateRequest $request)

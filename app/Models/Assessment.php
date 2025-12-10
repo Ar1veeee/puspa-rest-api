@@ -25,6 +25,12 @@ class Assessment extends Model
     protected $fillable = [
         'observation_id',
         'child_id',
+        'report_file',
+        'report_uploaded_at',
+    ];
+
+    protected $casts = [
+        'report_uploaded_at' => 'datetime',
     ];
 
     public function assessmentDetails(): HasMany

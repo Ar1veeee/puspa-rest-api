@@ -186,6 +186,8 @@ Route::prefix('v1')->group(function () {
                     ->whereNumber('assessment');
                 Route::get('/{assessment}/detail', [AdminAssessorAssessmentManagement::class, 'showDetailScheduled'])
                     ->whereNumber('assessment');
+                Route::post('/{assessment}/report-upload', [AdminAssessorAssessmentManagement::class, 'uploadReportFile'])
+                    ->whereNumber('assessment');
                 Route::get('/{assessment}/answer/{type}', [AdminAssessorAssessmentManagement::class, 'indexAnswersAssessment'])
                     ->whereNumber('assessment')
                     ->whereIn('type', [
@@ -280,6 +282,9 @@ Route::prefix('v1')->group(function () {
                         'okupasi_parent',
                         'fisio_parent'
                     ]);
+                Route::get('/{assessment}/report-download', [ParentAssessmentManagement::class, 'downloadReportFile'])
+                    ->whereNumber('assessment')
+                    ->name('parent.assessment.report.download');
                 Route::get('/{assessment}', [ParentAssessmentManagement::class, 'show'])
                     ->whereNumber('assessment');
             });

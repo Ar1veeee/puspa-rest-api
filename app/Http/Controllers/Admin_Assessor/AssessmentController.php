@@ -8,8 +8,11 @@ use App\Http\Resources\AssessmentScheduledDetailResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
 use App\Models\AssessmentDetail;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Ramsey\Uuid\Uuid;
 
 class AssessmentController extends Controller
 {
@@ -19,8 +22,7 @@ class AssessmentController extends Controller
 
     public function __construct(
         AssessmentService $assessmentService
-    )
-    {
+    ) {
         $this->assessmentService = $assessmentService;
     }
 
@@ -55,5 +57,34 @@ class AssessmentController extends Controller
         $response = new AssessmentScheduledDetailResource($assessment);
 
         return $this->successResponse($response, 'Detail Asesment Terjadwal', 200);
+    }
+
+    public function uploadReportFile(Request $request, Assessment $assessment): JsonResponse
+    {
+        $this->validate($request, [
+            'report-file' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        if ($assessment->report_file) {
+            Storage::disk('local')->delete('assessment/reports/' . $assessment->report_file);
+        }
+
+        $file = $request->file('report-file');
+        $filename = Uuid::uuid4() . '.' . $file->getClientOriginalExtension();
+
+        $file->storeAs('assessment/reports', $filename, 'local');
+
+        $assessment->update([
+            'report_file' => $filename,
+            'report_uploaded_at' => Carbon::now(),
+        ]);
+
+        $assessment->refresh();
+
+        return $this->successResponse(
+            null,
+            'File laporan asesmen berhasil diunggah',
+            200
+        );
     }
 }

@@ -44,6 +44,20 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+        'parent' => [
+            'driver' => 'sanctum',
+            'provider' => 'parents',
+        ],
+
+        'asesor' => [
+            'driver' => 'sanctum',
+            'provider' => 'asesors',
+        ],
+
+        'admin' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
+        ],
     ],
 
     /*
@@ -67,6 +81,21 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'parents' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Guardian::class,
+        ],
+
+        'therapist' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Therapist::class,
+        ],
+
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [

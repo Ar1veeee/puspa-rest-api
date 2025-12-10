@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
             $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
+            $table->string('report_file')->nullable();
+            $table->datetime('report_uploaded_at')->nullable();
             $table->timestamps();
         });
     }

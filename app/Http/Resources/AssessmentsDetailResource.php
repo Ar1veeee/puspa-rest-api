@@ -34,6 +34,17 @@ class AssessmentsDetailResource extends JsonResource
                     'admin_id'                => $d->admin_id,
                 ];
             }),
+            'report' => $this->when($this->report_file, function () {
+                return [
+                    'available' => true,
+                    'uploaded_at' => $this->report_uploaded_at?->format('d/m/Y H:i'),
+                    'download_url' => route('parent.assessment.report.download', $this->id)
+                ];
+            }, [
+                'available' => false,
+                'uploaded_at' => null,
+                'download_url' => null
+            ]),
         ];
     }
 }
