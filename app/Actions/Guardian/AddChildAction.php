@@ -24,6 +24,8 @@ class AddChildAction
                 'age_category' => Child::calculateAgeAndCategory($data['child_birth_date'])['category'],
                 'status' => 'pending',
             ]);
+
+            return $child;
         });
     }
 
