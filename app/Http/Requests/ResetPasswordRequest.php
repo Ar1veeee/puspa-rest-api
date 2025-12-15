@@ -5,17 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-/**
- * @OA\Schema(
- * schema="ResetPasswordRequest",
- * type="object",
- * required={"token", "email", "password", "password_confirmation"},
- * @OA\Property(property="token", type="string", description="Token yang diterima dari email"),
- * @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
- * @OA\Property(property="password", type="string", format="password", example="NewPassword123!"),
- * @OA\Property(property="password_confirmation", type="string", format="password", example="NewPassword123!")
- * )
- */
 class ResetPasswordRequest extends FormRequest
 {
     /**
@@ -67,11 +56,11 @@ class ResetPasswordRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get data to be validated from the request.
-     */
-    public function validationData(): array
+    protected function prepareForValidation()
     {
-        return array_merge($this->query(), $this->all());
+        $this->merge([
+            'token' => $this->query('token'),
+            'email' => urldecode($this->query('email')),
+        ]);
     }
 }

@@ -3,37 +3,33 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 trait ClearsCaches
 {
-    /**
-     * Clear observation list caches
-     */
-    protected function clearObservationCaches(): void
+    public function clearObservationCaches(): void
     {
-        Cache::forget('observations_pending_asc');
-        Cache::forget('observations_scheduled_asc');
-        Cache::forget('observations_completed_desc');
-        Cache::forget('observations_completed_asc');
+        $statuses = ['pending', 'scheduled', 'completed'];
+        $directions = ['asc', 'desc'];
+
+        foreach ($statuses as $status) {
+            foreach ($directions as $direction) {
+                $key = "observations_{$status}_{$direction}";
+                Cache::forget($key);
+            }
+        }
     }
-
-    /**
-     * Clear question cache by age category
-     */
-    protected function clearQuestionCache(string $ageCategory): void
+    
+    public function clearAssessmentCaches(): void
     {
-        Cache::forget("observation_questions_{$ageCategory}");
-    }
+        $statuses = ['scheduled', 'completed', 'all'];
+        $types = ['fisio', 'okupasi', 'paedagog', 'wicara', 'all'];
 
-    /**
-     * Clear all question caches
-     */
-    protected function clearAllQuestionCaches(): void
-    {
-        $ageCategories = ['balita', 'anak-anak', 'remaja', 'lainya'];
-
-        foreach ($ageCategories as $category) {
-            Cache::forget("observation_questions_{$category}");
+        foreach ($statuses as $status) {
+            foreach ($types as $type) {
+                $key = "assessments_{$status}_{$type}";
+                Cache::forget($key);
+            }
         }
     }
 }

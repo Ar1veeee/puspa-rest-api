@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services;
 
 use Illuminate\Support\Facades\DB;
@@ -96,17 +97,17 @@ class OwnerDashboardService
 
     private function getUnansweredQuestions(Carbon $current, Carbon $previous): array
     {
-        // Pertanyaan yang belum dijawab = assessment_questions yang tidak ada di assessment_answers
-        // atau answer_value NULL untuk periode tertentu
         $currentCount = DB::table('assessment_answers as aa')
-            ->join('assessments as a', 'aa.assessment_id', '=', 'a.id')
+            ->join('assessment_details as ad', 'aa.assessment_detail_id', '=', 'ad.id')
+            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->whereYear('a.created_at', $current->year)
             ->whereMonth('a.created_at', $current->month)
             ->whereNull('aa.answer_value')
             ->count();
 
         $previousCount = DB::table('assessment_answers as aa')
-            ->join('assessments as a', 'aa.assessment_id', '=', 'a.id')
+            ->join('assessment_details as ad', 'aa.assessment_detail_id', '=', 'ad.id')
+            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->whereYear('a.created_at', $previous->year)
             ->whereMonth('a.created_at', $previous->month)
             ->whereNull('aa.answer_value')

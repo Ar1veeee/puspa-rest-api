@@ -12,7 +12,6 @@ use App\Http\Services\AssessmentService;
 use App\Http\Services\GuardianService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class AssessmentController extends Controller
@@ -34,18 +33,16 @@ class AssessmentController extends Controller
     public function indexChildrenAssessment(): JsonResponse
     {
         $userId = auth()->id();
-
         $childAssessment = $this->assessmentService->getChildrenAssessment($userId);
 
-        $filteredAssessments = $childAssessment->filter(function ($item) {
-            return $item !== null;
-        });
-
-        if ($filteredAssessments->isEmpty()) {
-            return $this->successResponse([], 'Tidak ada jadwal asesmen yang ditemukan');
+        if ($childAssessment->isEmpty()) {
+            return $this->successResponse([], 'Tidak ada jadwal asesmen terjadwal saat ini');
         }
 
-        return $this->successResponse(ChildrenAssessmentResource::collection($childAssessment), 'Daftar Assessment Semua Anak', 200);
+        return $this->successResponse(
+            ChildrenAssessmentResource::collection($childAssessment),
+            'Daftar Jadwal Asesmen Anak'
+        );
     }
 
     public function indexParentQuestionsByType(string $type): JsonResponse
@@ -71,6 +68,8 @@ class AssessmentController extends Controller
 
     public function indexAnswersAssessment(Assessment $assessment, string $type)
     {
+        $this->authorize('verifyAsParent', $assessment);
+
         $valid_types = ['umum_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
         if (!in_array($type, $valid_types)) {
             return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
@@ -85,6 +84,8 @@ class AssessmentController extends Controller
 
     public function storeParentAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse
     {
+        $this->authorize('verifyAsParent', $assessment);
+
         $valid_types = ['umum_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
         if (!in_array($type, $valid_types)) {
             return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
@@ -92,7 +93,7 @@ class AssessmentController extends Controller
 
         $data = $request->validated();
 
-        $this->assessmentService->storeOrUpdateParentAssessment($data, $assessment, $type);
+        $this->assessmentService->storeParentAssessment($assessment, $type, $data);
 
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
@@ -100,6 +101,8 @@ class AssessmentController extends Controller
     // Menampilkan tipe asesmen yang dimiliki anak
     public function show(Assessment $assessment)
     {
+        $this->authorize('verifyAsParent', $assessment);
+
         $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin']);
 
         return $this->successResponse(
@@ -110,6 +113,8 @@ class AssessmentController extends Controller
 
     public function downloadReportFile(Assessment $assessment)
     {
+        $this->authorize('downloadReport', $assessment);
+
         if ($assessment->child->parent_id !== auth('parent')->id()) {
             abort(403, 'Unauthorized');
         }
@@ -134,10 +139,11 @@ class AssessmentController extends Controller
 
     public function updateFamilyData(GuardianFamilyUpdateRequest $request)
     {
-        $userId = Auth::id();
+        $primaryGuardian = $request->user()->guardian;
+
         $data = $request->validated();
 
-        $this->guardianService->updateGuardians($data, $userId);
+        $this->guardianService->updateFamilyGuardians($primaryGuardian, $data);
 
         return $this->successResponse([], 'Data orang tua berhasil disimpan', 200);
     }

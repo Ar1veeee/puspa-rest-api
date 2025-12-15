@@ -258,7 +258,7 @@ class PhysioAssessmentQuestionSeeder extends Seeder
                         'questions' => [
                             ["Jenis Permainan", "fungsi_jenis_permainan"],
                             ["Mengikuti Objek", "fungsi_mengikuti_objek"],
-                            ["Menikuti Sumber Suara", "fungsi_menikuti_sumber_suara"],
+                            ["Mengikuti Sumber Suara", "fungsi_mengikuti_sumber_suara"],
                             ["Meraih Objek", "fungsi_meraih_objek"],
                             ["Menggenggam", "fungsi_menggenggam"],
                             ["Membedakan Warna", "fungsi_membedakan_warna"],

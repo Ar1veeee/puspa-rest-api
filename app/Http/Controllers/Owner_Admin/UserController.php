@@ -34,7 +34,7 @@ class UserController extends Controller
 
     public function indexAdmin(): JsonResponse
     {
-        $admins = $this->adminService->getAllAdmin();
+        $admins = $this->adminService->index();
         $response = AdminResource::collection($admins);
 
         return $this->successResponse($response, 'Daftar Semua Admin', 200);
@@ -42,7 +42,7 @@ class UserController extends Controller
 
     public function indexTherapist(): JsonResponse
     {
-        $therapists = $this->therapistService->getAllTherapist();
+        $therapists = $this->therapistService->index();
         $response = TherapistResource::collection($therapists);
 
         return $this->successResponse($response, 'Daftar Semua Terapis', 200);

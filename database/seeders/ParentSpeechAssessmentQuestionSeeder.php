@@ -32,7 +32,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 576,
+                                    "when" => 583,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -50,7 +50,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 578,
+                                    "when" => 585,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -63,7 +63,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 578,
+                                    "when" => 585,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -76,7 +76,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 578,
+                                    "when" => 585,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -94,7 +94,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 582,
+                                    "when" => 589,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -107,7 +107,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 582,
+                                    "when" => 589,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -120,7 +120,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 582,
+                                    "when" => 589,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -138,7 +138,7 @@ class ParentSpeechAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 586,
+                                    "when" => 593,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true

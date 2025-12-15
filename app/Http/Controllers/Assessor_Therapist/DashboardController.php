@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Assessor_Therapist;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\ResponseFormatter;
 use App\Http\Services\TherapistDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    use ResponseFormatter;
+
     public function __construct(
         private TherapistDashboardService $service
     ) {}
@@ -40,30 +43,31 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function upcomingObservations(Request $request): JsonResponse
+    public function upcomingSchedules(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:5|max:100',
+            'limit' => ['nullable', 'integer', 'min:5', 'max:100'],
         ]);
 
         $therapist = $request->user()->therapist;
 
         if (!$therapist) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Therapist profile not found'
-            ], 404);
+            return $this->errorResponse(
+                'Therapist profile not found',
+                ['message' => ['Therapist profile tidak ditemukan']],
+                404
+            );
         }
 
-        $data = $this->service->getUpcomingObservations(
+        $schedules = $this->service->getUpcomingSchedulesCollection(
             $therapist->id,
-            $validated['per_page'] ?? 15
+            $validated['limit'] ?? 50
         );
 
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+        return $this->successResponse(
+            $schedules,
+            'Upcoming schedules',
+            200
+        );
     }
 }

@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('assessment_answers', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('assessment_id')
-                ->constrained('assessments')
+            $table->foreignId('assessment_detail_id')
+                ->constrained('assessment_details')
                 ->onDelete('cascade');
 
             $table->foreignId('question_id')
@@ -38,7 +38,7 @@ return new class extends Migration {
 
             $table->timestamps();
 
-            $table->unique(['assessment_id', 'question_id', 'type'], 'assessment_answers_unique');
+            $table->unique(['assessment_detail_id', 'question_id', 'type'], 'assessment_answers_unique');
         });
     }
 

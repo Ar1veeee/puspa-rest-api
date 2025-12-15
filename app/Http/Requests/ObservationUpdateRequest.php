@@ -5,20 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * @OA\Schema(
- * schema="ObservationUpdateRequest",
- * type="object",
- * required={"scheduled_date"},
- * @OA\Property(
- * property="scheduled_date",
- * type="string",
- * format="date",
- * description="Tanggal baru untuk jadwal observasi",
- * example="2025-10-15"
- * )
- * )
- */
 class ObservationUpdateRequest extends FormRequest
 {
     /**

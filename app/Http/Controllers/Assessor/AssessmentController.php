@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\AssessmentListResource;
-use App\Http\Resources\ParentsAssessmentListResource;
+use App\Http\Resources\ParentAssessmentResource;
 use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
 use Illuminate\Http\JsonResponse;
@@ -21,8 +21,7 @@ class AssessmentController extends Controller
 
     public function __construct(
         AssessmentService $assessmentService
-    )
-    {
+    ) {
         $this->assessmentService = $assessmentService;
     }
 
@@ -52,7 +51,7 @@ class AssessmentController extends Controller
         return $this->successResponse($questions, $message, 200);
     }
 
-    // Menampilkan asesmen terdaftar berdasarkan status (terjadwal, selesai) dan tipe (fisio, wicara, dll)
+    // Show all assessment by status and type (fisio, wicara, dll)
     public function indexAssessmentsByType(Request $request, string $status): JsonResponse
     {
         $valid_status = ['scheduled', 'completed'];
@@ -73,14 +72,17 @@ class AssessmentController extends Controller
             return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 
-        $assessments = $this->assessmentService->getAssessmentsByStatus($validated);
+        $assessments = $this->assessmentService->getAssessmentsByType($validated);
 
-        $response = AssessmentListResource::collection($assessments);
         $message = 'Daftar Asesmen ' . ucfirst($status);
         if (isset($validated['type'])) {
             $message .= ' ' . ucfirst($validated['type']);
         }
-        return $this->successResponse($response, $message);
+        return $this->successResponse(
+            AssessmentListResource::collection($assessments),
+            $message,
+            200
+        );
     }
 
     public function indexParentsAssessment(Request $request, string $status)
@@ -98,14 +100,18 @@ class AssessmentController extends Controller
         $validated['status'] = $status;
         $user = $request->user();
 
-        if ($user->isTherapist()) {
+        if (!$user->isAssessor() && !$user->isAdmin()) {
             return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 
-        $assessments = $this->assessmentService->getParentsAssessment($validated);
+        $assessments = $this->assessmentService->getAssessments($validated);
 
         $message = 'Daftar Asesmen Orang Tua';
-        return $this->successResponse($assessments, $message, 200);
+        return $this->successResponse(
+            ParentAssessmentResource::collection($assessments),
+            $message,
+            200
+        );
     }
 
     public function storeAssessorAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse
@@ -116,13 +122,16 @@ class AssessmentController extends Controller
             'fisio_assessor',
             'okupasi_assessor',
         ];
+
         if (!in_array($type, $valid_types)) {
             return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
         }
 
+        $this->authorize('fillAssessor', [$assessment, $type]);
+
         $data = $request->validated();
 
-        $this->assessmentService->storeOrUpdateAssessorAssessment($data, $assessment, $type);
+        $this->assessmentService->storeAssessorAssessment($assessment, $type, $data);
 
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }

@@ -16,17 +16,17 @@ class ProfileController extends Controller
 {
     use ResponseFormatter;
 
-    protected $admin_service;
+    protected $adminService;
 
-    public function __construct(AdminService $admin_service)
+    public function __construct(AdminService $adminService)
     {
-        return $this->admin_service = $admin_service;
+        return $this->adminService = $adminService;
     }
 
     public function showProfile()
     {
-        $user_id = Auth::id();
-        $profile = $this->admin_service->getProfile($user_id);
+        $userId = Auth::id();
+        $profile = $this->adminService->getProfile($userId);
         $response = new AdminProfileResource($profile);
         return $this->successResponse($response, 'Profile Admin', 200);
     }
@@ -46,7 +46,7 @@ class ProfileController extends Controller
             $data['profile_picture'] = $path;
         }
 
-        $this->admin_service->updateProfile($data, $admin);
+        $this->adminService->updateProfile($data, $admin);
 
         return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
     }

@@ -12,7 +12,6 @@ use App\Http\Services\ChildService;
 use App\Http\Services\GuardianService;
 use App\Models\Child;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChildController extends Controller
@@ -32,8 +31,12 @@ class ChildController extends Controller
 
     public function indexChildren(): JsonResponse
     {
-        $userId = Auth::id();
-        $children = $this->guardianService->getChildren($userId);
+        $children = auth()->user()
+            ->guardian
+            ->family
+            ->children()
+            ->get();
+
         $response = ChildrenResource::collection($children);
 
         return $this->successResponse($response, 'Daftar Anak', 200);
@@ -49,9 +52,11 @@ class ChildController extends Controller
 
     public function storeChild(AddChildrenRequest $request): JsonResponse
     {
-        $userId = Auth::id();
+        $guardian = $request->user()->guardian;
+
         $data = $request->validated();
-        $this->guardianService->addChild($userId, $data);
+
+        $this->guardianService->addChild($guardian, $data);
 
         return $this->successResponse([], 'Tambah Anak Berhasil', 201);
     }

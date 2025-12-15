@@ -8,7 +8,6 @@ use App\Http\Requests\ObservationSubmitRequest;
 use App\Http\Services\ObservationService;
 use App\Models\Observation;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 
 class ObservationController extends Controller
 {
@@ -24,7 +23,7 @@ class ObservationController extends Controller
     public function submit(ObservationSubmitRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();
-        $this->observationService->submitObservation($data, $observation);
+        $this->observationService->submit($observation, $data);
 
         return $this->successResponse([], 'Observasi Berhasil Disimpan', 200);
     }

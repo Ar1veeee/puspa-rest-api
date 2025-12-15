@@ -33,8 +33,7 @@ class UserController extends Controller
         AdminService     $adminService,
         TherapistService $therapistService,
         ChildService     $childService,
-    )
-    {
+    ) {
         $this->adminService = $adminService;
         $this->therapistService = $therapistService;
         $this->childService = $childService;
@@ -43,15 +42,15 @@ class UserController extends Controller
     public function storeAdmin(AdminCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $admin = $this->adminService->createAdmin($data);
+        $this->adminService->store($data);
 
-        return $this->successResponse(new AdminResource($admin), 'Tambah Admin Berhasil', 201);
+        return $this->successResponse(null, 'Tambah Admin Berhasil', 201);
     }
 
     public function storeTherapist(TherapistCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $this->therapistService->createTherapist($data);
+        $this->therapistService->store($data);
 
         return $this->successResponse([], 'Tambah Terapis Berhasil', 201);
     }
@@ -83,7 +82,7 @@ class UserController extends Controller
     public function updateAdmin(AdminUpdateRequest $request, Admin $admin): JsonResponse
     {
         $data = $request->validated();
-        $this->adminService->updateAdmin($data, $admin);
+        $this->adminService->update($data, $admin);
 
         return $this->successResponse([], 'Update Admin Berhasil', 200);
     }
@@ -91,7 +90,7 @@ class UserController extends Controller
     public function updateTherapist(TherapistUpdateRequest $request, Therapist $therapist): JsonResponse
     {
         $data = $request->validated();
-        $this->therapistService->updateTherapist($data, $therapist);
+        $this->therapistService->update($data, $therapist);
 
         return $this->successResponse([], 'Update Terapis Berhasil', 200);
     }
@@ -105,14 +104,14 @@ class UserController extends Controller
 
     public function destroyTherapist(Therapist $therapist): JsonResponse
     {
-        $this->therapistService->deleteTherapist($therapist);
+        $this->therapistService->destroy($therapist);
 
         return $this->successResponse([], 'Data Terapis Berhasil Terhapus', 200);
     }
 
     public function destroyAdmin(Admin $admin): JsonResponse
     {
-        $this->adminService->deleteAdmin($admin);
+        $this->adminService->destroy($admin);
 
         return $this->successResponse([], 'Data Admin Berhasil Terhapus', 200);
     }

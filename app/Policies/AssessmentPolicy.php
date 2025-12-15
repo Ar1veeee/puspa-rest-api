@@ -3,45 +3,79 @@
 namespace App\Policies;
 
 use App\Models\Assessment;
-use App\Models\AssessmentDetail;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 class AssessmentPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     */
-    public function view(User $user, AssessmentDetail $assessmentDetail): bool
+    public function verifyAsParent(User $user, Assessment $assessment): bool
     {
-        $user->loadMissing('guardian');
-        $assessmentDetail->loadMissing('assessment.child');
+        $assessment->loadMissing('child.family.guardians.user');
 
-        $userFamilyId = $user->guardian?->family_id;
-        $childFamilyId = $assessmentDetail->assessment?->child?->family_id;
+        $isParent = $assessment->child
+            ->family
+            ->guardians
+            ->pluck('user_id')
+            ->contains($user->id);
 
-        Log::info('Policy markAsComplete check', [
-            'assessment_detail_id' => $assessmentDetail->id,
-            'assessment_id' => $assessmentDetail->assessment_id,
-            'assessment_exists' => $assessmentDetail->assessment ? 'yes' : 'no',
-            'child_id' => $assessmentDetail->assessment?->child_id,
-            'child_exists' => $assessmentDetail->assessment?->child ? 'yes' : 'no',
-        ]);
+        if (!$isParent) {
+            throw new AuthorizationException(
+                'Anda tidak memiliki akses ke asesmen ini karena bukan orang tua dari anak tersebut.'
+            );
+        }
 
-        return $userFamilyId && $childFamilyId && $userFamilyId === $childFamilyId;
+        return true;
     }
 
-    /**
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Assessment $assessment
-     * @return bool
-     */
-    public function storeHistory(User $user, Assessment $assessment): bool
+    public function downloadReport(User $user, Assessment $assessment): bool
     {
-        return $this->view($user, $assessment);
+        if (!$assessment->report_file) {
+            throw new AuthorizationException(
+                'Laporan asesmen belum tersedia atau belum diunggah.'
+            );
+        }
+
+        return $this->verifyAsParent($user, $assessment);
+    }
+
+    public function fillAssessor(User $user, Assessment $assessment, string $type): bool
+    {
+        if ($user->role !== 'asesor' || !$user->therapist) {
+            return false;
+        }
+
+        $typeToSection = [
+            'okupasi_assessor' => 'okupasi',
+            'fisio_assessor' => 'fisio',
+            'wicara_assessor' => 'wicara',
+            'paedagog_assessor' => 'paedagog',
+        ];
+
+        $requiredSection = $typeToSection[$type] ?? null;
+
+        if (!$requiredSection) {
+            return false;
+        }
+
+        if ($user->therapist->therapist_section !== $requiredSection) {
+            return false;
+        }
+
+        $assessmentDetail = $assessment->assessmentDetails()
+            ->where('type', $requiredSection)
+            ->where(function ($query) use ($user) {
+                $query->whereNull('therapist_id')
+                    ->orWhere('therapist_id', $user->therapist->id);
+            })
+            ->first();
+
+        if (!$assessmentDetail) {
+            return false;
+        }
+
+        return true;
     }
 }

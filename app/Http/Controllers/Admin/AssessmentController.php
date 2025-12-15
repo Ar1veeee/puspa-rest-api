@@ -43,7 +43,7 @@ class AssessmentController extends Controller
             return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 
-        $assessments = $this->assessmentService->getAssessments($validated);
+        $assessments = $this->assessmentService->getAssessmentsByType($validated);
 
         $response = AssessmentListAdminResource::collection($assessments);
         $message = 'Daftar Asesmen ' . ucfirst($status);
@@ -56,7 +56,7 @@ class AssessmentController extends Controller
     public function updateAssessmentDate(AssessmentUpdateRequest $request, Assessment $assessment): JsonResponse
     {
         $data = $request->validated();
-        $this->assessmentService->updateScheduledDate($data, $assessment);
+        $this->assessmentService->updateScheduledDate($assessment, $data);
 
         return $this->successResponse([], 'Jadwal Assessment Berhasil Diperbarui', 200);
     }

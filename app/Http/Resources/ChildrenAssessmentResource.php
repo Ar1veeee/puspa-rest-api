@@ -14,13 +14,27 @@ class ChildrenAssessmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $assessment = $this->assessment->assessmentDetails
+        $detail = $this->assessment?->assessmentDetails
             ->where('status', 'scheduled')
             ->sortBy('scheduled_date')
             ->first();
 
+        $reportData = [
+            'available' => false,
+            'uploaded_at' => null,
+            'download_url' => null
+        ];
+
+        if ($this->assessment && $this->assessment->report_file) {
+            $reportData = [
+                'available' => true,
+                'uploaded_at' => $this->assessment->report_uploaded_at?->format('d/m/Y H:i'),
+                'download_url' => route('parent.assessment.report.download', $this->assessment->id)
+            ];
+        }
+
         return [
-            'assessment_id' => $assessment->assessment_id,
+            'assessment_id' => $detail?->assessment_id,
             'child_id' => $this->id,
             'family_id' => $this->family_id,
             'child_name' => $this->child_name,
@@ -28,10 +42,11 @@ class ChildrenAssessmentResource extends JsonResource
             'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child_gender,
             'child_school' => $this->child_school,
-            'scheduled_date' => $assessment->scheduled_date->toDateString(),
-            'status' => $assessment->status,
-            'created_at' => $assessment->created_at->format('d F Y H:i:s'),
-            'updated_at' => $assessment->updated_at->format('d F Y H:i:s'),
+            'scheduled_date' => $detail?->scheduled_date?->toDateString(),
+            'status' => $detail?->status,
+            'created_at' => $detail?->created_at?->format('d F Y H:i:s'),
+            'updated_at' => $detail?->updated_at?->format('d F Y H:i:s'),
+            'report' => $reportData,
         ];
     }
 }

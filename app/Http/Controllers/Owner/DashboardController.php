@@ -20,7 +20,6 @@ class DashboardController extends Controller
             'year' => 'nullable|integer|min:2020|max:2099'
         ]);
 
-        // Default ke bulan dan tahun sekarang
         $month = $validated['month'] ?? now()->month;
         $year = $validated['year'] ?? now()->year;
 

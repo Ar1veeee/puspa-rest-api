@@ -60,7 +60,7 @@ class ObservationQuestionSeeder extends Seeder
             //====================
             // Perilaku & Emosi (APE)
             ['question_code' => 'APE-01', 'age_category' => 'anak-anak', 'question_number' => 1, 'question_text' => 'Hiperaktif atau bergerak tidak bertujuan', 'score' => 3],
-            ['question_code' => 'APE-02', 'age_category' => 'anak-anak', 'question_number' => 2, 'question_text' => 'Hipoaktif atau lamban gerak', 'score' => 3],
+            ['question_code' => 'APE-02', 'age_category' => 'anak-anak', 'question_number' => 2, 'question_text' => 'Hiperaktif atau lamban gerak', 'score' => 3],
             ['question_code' => 'APE-03', 'age_category' => 'anak-anak', 'question_number' => 3, 'question_text' => 'Tidak mampu mengikuti aturan', 'score' => 3],
             ['question_code' => 'APE-04', 'age_category' => 'anak-anak', 'question_number' => 4, 'question_text' => 'Menyakiti diri sendiri atau menyerang orang lain ketika marah', 'score' => 3],
             ['question_code' => 'APE-05', 'age_category' => 'anak-anak', 'question_number' => 5, 'question_text' => 'Perilaku Repetitif atau berulang-ulang', 'score' => 3],

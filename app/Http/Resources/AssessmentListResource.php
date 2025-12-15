@@ -39,7 +39,7 @@ class AssessmentListResource extends JsonResource
         };
 
         return [
-            'id'              => $this->id,
+            'assessment_detail_id' => $this->id,
             'assessment_id'   => $this->assessment->id,
             'child_id'        => $child?->id,
             'child_name'      => $child?->child_name,

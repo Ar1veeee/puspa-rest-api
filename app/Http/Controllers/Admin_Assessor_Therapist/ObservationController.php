@@ -15,7 +15,6 @@ use App\Http\Services\ObservationService;
 use App\Models\Observation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ObservationController extends Controller
 {
@@ -32,7 +31,11 @@ class ObservationController extends Controller
     {
         $validStatus = ['pending', 'scheduled', 'completed'];
         if (!in_array($status, $validStatus)) {
-            return $this->errorResponse('Validation Error', ['type' => ['Status observasi tidak valid']], 422);
+            return $this->errorResponse(
+                'Validation Error',
+                ['type' => ['Status observasi tidak valid']],
+                422
+            );
         }
 
         $validated = $request->validate([
@@ -80,7 +83,7 @@ class ObservationController extends Controller
             ],
             'question' => [
                 ObservationQuestionsResource::collection(
-                    $this->observationService->getObservationQuestions($observation)
+                    $this->observationService->getQuestions($observation)
                 ),
                 'Pertanyaan Observasi'
             ],

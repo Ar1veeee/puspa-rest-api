@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ParentAssessmentResource extends JsonResource
+{
+    public function toArray($request)
+    {
+        $details = $this->whenLoaded('assessmentDetails', function () {
+            return $this->assessmentDetails;
+        }, function () {
+            return collect();
+        });
+
+        $types = $details->pluck('type')->map(fn($type) => match ($type) {
+            'fisio'     => 'Assessment Fisio',
+            'okupasi'   => 'Assessment Okupasi',
+            'wicara'    => 'Assessment Wicara',
+            'paedagog'  => 'Assessment Paedagog',
+            'umum'      => 'Assessment Umum',
+            default     => ucfirst($type),
+        })->unique()->sort()->values();
+
+        $primaryGuardian = $this->child->family->guardians
+            ->sortByDesc(fn($g) => in_array($g->guardian_type, ['ayah', 'ibu']) ? 1 : 0)
+            ->first();
+
+        $earliestDate = $details->min('scheduled_date');
+        $formattedDate = $earliestDate ? Carbon::parse($earliestDate)->format('d/m/Y') : null;
+
+        return [
+            'assessment_id'    => $this->id,
+            'child_name'       => $this->child->child_name,
+            'guardian_name'    => $primaryGuardian?->guardian_name,
+            'guardian_phone'   => $primaryGuardian?->guardian_phone,
+            'types'            => $types,
+            'scheduled_date'   => $formattedDate,
+            'admin_name'       => $details->first()?->admin?->admin_name,
+        ];
+    }
+}

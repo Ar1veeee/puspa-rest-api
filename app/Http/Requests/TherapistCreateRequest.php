@@ -6,19 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-/**
- * @OA\Schema(
- * schema="TherapistCreateRequest",
- * type="object",
- * required={"username", "email", "password", "therapist_name", "therapist_section", "therapist_phone"},
- * @OA\Property(property="username", type="string", example="dr.johndoe"),
- * @OA\Property(property="email", type="string", format="email", example="dr.johndoe@example.com"),
- * @OA\Property(property="password", type="string", format="password", example="Password123!"),
- * @OA\Property(property="therapist_name", type="string", example="Dr. John Doe"),
- * @OA\Property(property="therapist_section", type="string", enum={"Okupasi", "Fisio", "Wicara", "Paedagog"}, example="Okupasi"),
- * @OA\Property(property="therapist_phone", type="string", example="081234567890")
- * )
- */
 class TherapistCreateRequest extends FormRequest
 {
     /**

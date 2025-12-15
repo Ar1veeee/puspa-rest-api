@@ -16,6 +16,7 @@ class RegistrationController extends Controller
     {
         $this->registrationService = $registrationService;
     }
+
     public function store(RegistrationRequest $request)
     {
         $data = $request->validated();

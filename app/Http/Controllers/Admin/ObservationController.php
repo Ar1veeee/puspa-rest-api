@@ -24,7 +24,7 @@ class ObservationController extends Controller
     public function updateObservationDate(ObservationUpdateRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();
-        $this->observationService->updateObservationDate($data, $observation);
+        $this->observationService->reschedule($observation, $data);
 
         return $this->successResponse([], 'Jadwal Observasi Berhasil Diperbarui', 200);
     }
@@ -35,7 +35,7 @@ class ObservationController extends Controller
     public function assessmentAgreement(AssessmentUpdateRequest $request, Observation $observation): JsonResponse
     {
         $data = $request->validated();
-        $this->observationService->assessmentAgreement($data, $observation);
+        $this->observationService->agreeToAssessment($observation, $data);
 
         return $this->successResponse([], 'Assessment Berhasil Diperbarui', 200);
     }

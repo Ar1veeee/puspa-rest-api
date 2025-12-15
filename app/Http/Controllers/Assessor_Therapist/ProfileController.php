@@ -16,17 +16,17 @@ class ProfileController extends Controller
 {
     use ResponseFormatter;
 
-    protected $therapist_service;
+    protected $therapistService;
 
-    public function __construct(TherapistService $therapist_service)
+    public function __construct(TherapistService $therapistService)
     {
-        return $this->therapist_service = $therapist_service;
+        return $this->therapistService = $therapistService;
     }
 
     public function showProfile()
     {
         $user_id = Auth::id();
-        $profile = $this->therapist_service->getProfile($user_id);
+        $profile = $this->therapistService->getProfile($user_id);
         $response = new TherapistOrAssessorProfileResource($profile);
         return $this->successResponse($response, 'Profile Admin', 200);
     }
@@ -46,7 +46,7 @@ class ProfileController extends Controller
             $data['profile_picture'] = $path;
         }
 
-        $this->therapist_service->updateProfile($data, $therapist);
+        $this->therapistService->updateProfile($data, $therapist);
 
         return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
     }

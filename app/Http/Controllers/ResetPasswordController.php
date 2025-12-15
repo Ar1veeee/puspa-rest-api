@@ -24,34 +24,22 @@ class ResetPasswordController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        try {
-            $validated = $request->validated();
+        $this->passwordResetService->sendResetLinkEmail($request->email);
 
-            $data = $this->passwordResetService->sendResetLinkEmail(
-                $validated['email'],
-            );
-
-            return $this->successResponse($data, 'Tautan reset password telah dikirim ke email Anda.');
-        } catch (ModelNotFoundException $e) {
-            return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), [], 400);
-        }
+        return $this->successResponse(
+            null,
+            'Tautan reset password telah dikirim ke email Anda.'
+        );
     }
 
     public function resendResetLink(ForgotPasswordRequest $request): JsonResponse
     {
-        try {
-            $validated = $request->validated();
+        $this->passwordResetService->resendResetLink($request->email);
 
-            $this->passwordResetService->resendResetLink(
-                $validated['email'],
-            );
-
-            return $this->successResponse(null, 'Link reset password baru telah dikirim. Cek email Anda.');
-        } catch (RateLimitExceededException|Exception $e) {
-            return $this->errorResponse($e->getMessage(), [], 429);
-        }
+        return $this->successResponse(
+            null,
+            'Link reset password baru telah dikirim.'
+        );
     }
 
     public function resetPassword(ResetPasswordRequest $request): JsonResponse

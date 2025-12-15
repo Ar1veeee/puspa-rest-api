@@ -46,7 +46,7 @@ class ProfileController extends Controller
             $data['profile_picture'] = $path;
         }
 
-        $this->guardianService->updateProfile($data, $guardian);
+        $this->guardianService->updateProfile($guardian, $data);
 
         return $this->successResponse([], 'Profile Berhasil Diperbarui', 200);
     }

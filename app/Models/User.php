@@ -15,10 +15,7 @@ use Symfony\Component\Uid\Ulid;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasUlids;
-    use Notifiable;
+    use HasApiTokens, HasFactory, HasUlids, Notifiable;
 
     protected $table = 'users';
 
@@ -77,6 +74,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function guardian(): HasOne
     {
         return $this->hasOne(Guardian::class, 'user_id', 'id');
+    }
+
+    public function scopeUnverifiedAdmins($query)
+    {
+        return $query->with(['admin' => fn($q) => $q->select('id', 'user_id', 'admin_name', 'admin_phone')])
+            ->where('is_active', 0)
+            ->where('role', 'admin');
+    }
+
+    public function scopeUnverifiedTherapists($query)
+    {
+        return $query->with(['therapist' => fn($q) => $q->select('id', 'user_id', 'therapist_name', 'therapist_phone')])
+            ->where('is_active', 0)
+            ->where('role', 'terapis');
     }
 
     public function sendPasswordResetNotification($token, $platform = 'web')

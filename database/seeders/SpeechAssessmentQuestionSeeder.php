@@ -280,7 +280,10 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     [
                         "label" => "Tonsil",
                         "options" => ["tidak ada", "normal", "membesar"]
-                    ]
+                    ],
+                    [
+                        "label" => "Lain-lain",
+                    ],
                 ]
             ],
             [
@@ -339,7 +342,10 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     [
                         "label" => "Nasalisasi",
                         "options" => ["tidak ada", "hipernasal"]
-                    ]
+                    ],
+                    [
+                        "label" => "Lain-lain",
+                    ],
                 ]
             ]
         ];
@@ -523,7 +529,12 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     "Mengerti konsep jumlah sampai dengan 3",
                     "Mengerti spatial konsep",
                     "Mengenali 1-3 warna",
-                    "Memiliki pemahaman (reseptif) kosa kata 900-2000 kata atau lebih",
+                    'Memiliki pemahaman (reseptif) kosa kata 2800 kata atau lebih',
+                    'Menghitung sampai 10 secara rote',
+                    'Mendengarkan cerita pendek',
+                    'Menjawab pertanyaan tentang fungsi',
+                    'Menggunakan tata bahasa dalam kalimat yang benar',
+                    "Memiliki pemahaman (ekspresif) kosa kata 900-2000 kata atau lebih",
                     "Menggunakan kalimat dengan 4-8 kata",
                     "Menjawab pertanyaan 2 bagian",
                     "Menanyakan arti kata",
@@ -540,7 +551,7 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                 "title" => "Usia 5-6 Tahun",
                 "questions" => [
                     "Menamakan 6 warna dasar dan 3 bentuk dasar",
-                    "Menikuti perintah yang diberikan dalam kelompok",
+                    "Mengikuti perintah yang diberikan dalam kelompok",
                     "Mengikuti perintah 3 bagian",
                     "Menanyakan pertanyaan 'bagaimana?'",
                     "Menjawab secara verbal pertanyaan 'hai' dan 'apa kabar'",
@@ -550,7 +561,7 @@ class SpeechAssessmentQuestionSeeder extends Seeder
                     "Menamakan lawan kata",
                     "Secara urut menamakan nama hari",
                     "Menghitung sampai 30 secara mengurutkan (rote)",
-                    "Kosa kata meningkat drastis",
+                    "Kosa kata meningkat terus",
                     "Panjang kata dalam kalimat menurun hingga 4-6 kata dalam kalimat",
                     "Terkadang mengembalikan suara-suara"
                 ]

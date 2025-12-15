@@ -9,7 +9,6 @@ use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\LoginResource;
 use App\Http\Services\AuthService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -25,10 +24,10 @@ class AuthController extends Controller
     public function register(UserRegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $userId = $this->authService->register($data);
+        $user = $this->authService->register($data);
 
         return $this->successResponse(
-            ['user_id' => $userId],
+            ['user_id' => $user->id],
             'Daftar akun berhasil. Silakan melakukan verifikasi!',
             201
         );
@@ -46,12 +45,14 @@ class AuthController extends Controller
     // Update Password
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
-        $user_id = Auth::id();
-        $currentToken = $request->user()->currentAccessToken();
+        $this->authService->changePassword(
+            $request->user(),
+            $request->input('current_password'),
+            $request->input('password'),
+            $request->bearerToken()
+        );
 
-        $this->authService->updatePassword($request->validated(), $user_id, $currentToken);
-
-        return $this->successResponse([], 'Update Password Berhasil', 200);
+        return $this->successResponse([], 'Password berhasil diubah');
     }
 
     public function logout(): JsonResponse

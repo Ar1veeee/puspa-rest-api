@@ -51,7 +51,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 436,
+                                    "when" => 443,
                                     "operator" => "!=",
                                     "value" => "Normal",
                                     "required" => true
@@ -69,7 +69,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 440,
+                                    "when" => 447,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -85,7 +85,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 442,
+                                    "when" => 449,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -113,7 +113,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Hari",
                             "conditional_rules" => [
                                 [
-                                    "when" => 449,
+                                    "when" => 456,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -128,7 +128,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 449,
+                                    "when" => 456,
                                     "operator" => "not_empty",
                                     "required" => true
                                 ]
@@ -143,7 +143,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 452,
+                                    "when" => 459,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -159,7 +159,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 452,
+                                    "when" => 459,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -183,7 +183,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 457,
+                                    "when" => 464,
                                     "operator" => "==",
                                     "value" => "Tidak",
                                     "required" => true
@@ -200,7 +200,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                             "suffix" => "Tahun",
                             "conditional_rules" => [
                                 [
-                                    "when" => 459,
+                                    "when" => 466,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -261,7 +261,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 470,
+                                    "when" => 477,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -276,7 +276,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 470,
+                                    "when" => 477,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true
@@ -292,7 +292,7 @@ class ParentGeneralAssessmentQuestionSeeder extends Seeder
                         "extra" => [
                             "conditional_rules" => [
                                 [
-                                    "when" => 473,
+                                    "when" => 480,
                                     "operator" => "==",
                                     "value" => "Ya",
                                     "required" => true

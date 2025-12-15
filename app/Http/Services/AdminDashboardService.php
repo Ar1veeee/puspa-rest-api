@@ -43,7 +43,6 @@ class AdminDashboardService
 
     private function getActivePatients(): int
     {
-        // Active patients = children yang punya observation atau assessment dalam 6 bulan terakhir
         $sixMonthsAgo = now()->subMonths(6);
 
         return DB::table('children as c')
@@ -67,7 +66,6 @@ class AdminDashboardService
 
     private function getPatientCategories(): array
     {
-        // Kategori berdasarkan tipe terapi yang pernah/sedang dijalani
         $categories = DB::table('assessment_details as ad')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->select(
@@ -122,7 +120,6 @@ class AdminDashboardService
             ->where('ad.status', 'scheduled')
             ->whereDate('ad.scheduled_date', $date);
 
-        // Filter by search (nama pasien atau nama terapis)
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('c.child_name', 'like', "%{$search}%")
@@ -130,7 +127,6 @@ class AdminDashboardService
             });
         }
 
-        // Filter by therapy type
         if ($type) {
             $query->where('ad.type', $type);
         }

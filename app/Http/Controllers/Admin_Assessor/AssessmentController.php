@@ -50,13 +50,19 @@ class AssessmentController extends Controller
         return $this->successResponse($response, $message, 200);
     }
 
-    public function showDetailScheduled(Request $request, AssessmentDetail $assessment): JsonResponse
+    public function showDetailScheduled(Assessment $assessment): JsonResponse
     {
-        $assessment->load(['assessment.child', 'assessment.child.family.guardians']);
+        $assessment->load([
+            'assessmentDetails' => fn($query) => $query->with('admin'),
+            'child',
+            'child.family.guardians'
+        ]);
 
-        $response = new AssessmentScheduledDetailResource($assessment);
-
-        return $this->successResponse($response, 'Detail Asesment Terjadwal', 200);
+        return $this->successResponse(
+            new AssessmentScheduledDetailResource($assessment),
+            'Detail Assessment Terjadwal',
+            200
+        );
     }
 
     public function uploadReportFile(Request $request, Assessment $assessment): JsonResponse

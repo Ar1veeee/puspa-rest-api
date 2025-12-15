@@ -2,295 +2,175 @@
 
 namespace App\Http\Services;
 
-use App\Http\Repositories\AssessmentDetailRepository;
-use App\Http\Repositories\AssessmentRepository;
-use App\Http\Repositories\GuardianRepository;
+use App\Actions\Assessment\StoreParentAssessmentAction;
+use App\Actions\Assessment\StoreAssessorAssessmentAction;
+use App\Actions\Assessment\UpdateScheduledDateAction;
 use App\Models\Assessment;
 use App\Models\AssessmentDetail;
-use App\Models\AssessmentQuestion;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use App\Models\AssessmentQuestionGroup;
+use App\Models\AssessmentAnswer;
+use App\Models\Guardian;
+use Illuminate\Support\Facades\Cache;
 
 class AssessmentService
 {
-    protected $assessmentRepository;
-    protected $assessmentDetailRepository;
-    protected $guardianRepository;
-
-    public function __construct(
-        AssessmentRepository       $assessmentRepository,
-        AssessmentDetailRepository $assessmentDetailRepository,
-        GuardianRepository         $guardianRepository
-    )
-    {
-        $this->assessmentRepository = $assessmentRepository;
-        $this->assessmentDetailRepository = $assessmentDetailRepository;
-        $this->guardianRepository = $guardianRepository;
-    }
-
-    public function getChildrenAssessment(string $userId)
-    {
-        return $this->guardianRepository->getAssessments($userId);
-    }
-
-    public function getParentsAssessment(array $filters = [])
-    {
-        $queryFilters = [];
-
-        $queryFilters['parent_completed_status'] = $filters['status'];
-
-        if (isset($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
-        }
-
-        if (isset($filters['search'])) {
-            $queryFilters['search'] = $filters['search'];
-        }
-
-        return $this->assessmentDetailRepository->getParentsAssessmentWithFilter($queryFilters);
-    }
+    private const CACHE_QUESTIONS   = 'assessment_questions_';
 
     public function getAssessments(array $filters = [])
     {
-        $queryFilters = [];
+        $date = $filters['date'] ?? null;
+        $search = $filters['search'] ?? null;
 
-        $queryFilters['status'] = $filters['status'];
-
-        if (isset($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
+        if ($date || $search) {
+            return $this->queryAssessments($filters);
         }
 
-        if (isset($filters['search'])) {
-            $queryFilters['search'] = $filters['search'];
-        }
-
-        return $this->assessmentDetailRepository->getAssessmentWithFilter($queryFilters);
+        return $this->queryAssessments($filters);
     }
-    
-    public function getAssessmentsByStatus(array $filters = [])
+
+    private function queryAssessments(array $filters)
     {
-        $queryFilters = [];
+        return Assessment::query()
+            ->with([
+                'child:id,family_id,child_name,child_birth_date,child_gender',
+                'child.family.guardians:id,family_id,guardian_name,guardian_phone,guardian_type',
+                'assessmentDetails' => function ($q) use ($filters) {
+                    $q->with(['therapist:id,therapist_name', 'admin:id,admin_name'])
+                        ->where('parent_completed_status', $filters['status'] ?? null)
+                        ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
+                        ->when($filters['type'] ?? null, fn($q, $type) => $q->where('type', $type));
+                },
+            ])
+            ->whereHas('assessmentDetails', function ($q) use ($filters) {
+                $q->where('parent_completed_status', $filters['status'] ?? null)
+                    ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
+                    ->when($filters['type'] ?? null, fn($q, $type) => $q->where('type', $type));
+            })
+            ->when(
+                $filters['search'] ?? null,
+                fn($q, $search) =>
+                $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
+            )
+            ->orderBy(
+                AssessmentDetail::select('scheduled_date')
+                    ->whereColumn('assessment_id', 'assessments.id')
+                    ->where('parent_completed_status', $filters['status'] ?? null)
+                    ->orderBy('scheduled_date', 'asc')
+                    ->limit(1),
+                'asc'
+            )
+            ->get();
+    }
 
-        $queryFilters['status'] = $filters['status'];
-
-        if (isset($filters['date'])) {
-            $queryFilters['scheduled_date'] = $filters['date'];
-        }
-
-        if (isset($filters['type'])) {
-            $queryFilters['type'] = $filters['type'];
-        }
-
-        if (isset($filters['search'])) {
-            $queryFilters['search'] = $filters['search'];
-        }
-
-        return $this->assessmentDetailRepository->getAssessmentByStatusWithFilter($queryFilters);
+    public function getAssessmentsByType(array $filters = [])
+    {
+        return AssessmentDetail::query()
+            ->with([
+                'assessment.child:id,family_id,child_name',
+                'assessment.child.family:id',
+                'assessment.child.family.guardians',
+                'therapist:id,therapist_name',
+                'admin:id,admin_name',
+            ])
+            ->where('status', $filters['status'])
+            ->when(isset($filters['type']), fn($q) => $q->where('type', $filters['type']))
+            ->when(isset($filters['date']), fn($q) => $q->whereDate('scheduled_date', $filters['date']))
+            ->when(isset($filters['search']), function ($q) use ($filters) {
+                $q->whereHas('assessment.child', fn($c) => $c->where('child_name', 'like', "%{$filters['search']}%"));
+            })
+            ->orderBy('scheduled_date', 'asc')
+            ->get()
+            ->groupBy('assessment_id')
+            ->map(function ($details) {
+                $first = $details->first();
+                $first->grouped_details = $details;
+                return $first;
+            })
+            ->values();
     }
 
     public function getQuestionsByType(string $type): array
     {
-        $groups = $this->assessmentRepository->getQuestionByType($type);
+        $groups = Cache::remember(self::CACHE_QUESTIONS . $type, 3600, function () use ($type) {
+            return AssessmentQuestionGroup::with('questions')
+                ->where('assessment_type', $type)
+                ->orderBy('sort_order')
+                ->get();
+        });
 
         return [
             'assessment_type' => $type,
-            'groups' => $groups->map(function ($group) {
-                return [
-                    'group_id' => $group->id,
-                    'group_key' => $group->group_key,
-                    'title' => $group->group_title,
-                    'filled_by' => $group->filled_by,
-                    'sort_order' => $group->sort_order,
-
-                    'questions' => $group->questions->map(function ($q) {
-                        return [
-                            'id' => $q->id,
-                            'question_code' => $q->question_code,
-                            'question_number' => $q->question_number,
-                            'question_text' => $q->question_text,
-                            'answer_type' => $q->answer_type,
-                            'answer_options' => $q->answer_options,
-                            'answer_format' => $q->answer_format,
-                            'extra_schema' => $q->extra_schema,
-                        ];
-                    }),
-                ];
-            }),
+            'groups' => $groups->map(fn($group) => [
+                'group_id'     => $group->id,
+                'group_key'    => $group->group_key,
+                'title'        => $group->group_title,
+                'filled_by'    => $group->filled_by,
+                'sort_order'   => $group->sort_order,
+                'questions'    => $group->questions->map(fn($q) => [
+                    'id'              => $q->id,
+                    'question_code'   => $q->question_code,
+                    'question_number' => $q->question_number,
+                    'question_text'   => $q->question_text,
+                    'answer_type'     => $q->answer_type,
+                    'answer_options'  => $q->answer_options,
+                    'answer_format'   => $q->answer_format,
+                    'extra_schema'    => $q->extra_schema,
+                ]),
+            ]),
         ];
     }
 
     public function getAnswers(Assessment $assessment, string $type)
     {
-        return $this->assessmentRepository->getHistoryByAssessmentId($assessment->id, $type);
-    }
+        $cacheKey = "answers_{$assessment->id}_{$type}";
 
-    public function storeOrUpdateParentAssessment(array $payload, Assessment $assessment, string $type)
-    {
-        $detail_type = str_replace('_parent', '', $type);
+        return Cache::remember($cacheKey, 1800, function () use ($assessment, $type) {
+            $detailType = str_replace(['_parent', '_assessor'], '', $type);
+            $detail = $assessment->assessmentDetails()->where('type', $detailType)->first();
 
-        $detail = $assessment->assessmentDetails()->where('type', $detail_type)->first();
+            if (!$detail) return [];
 
-        if (!$detail) {
-            throw new \Exception("Asesmen dengan ID: {$assessment->id} tidak memiliki tipe {$detail_type}");
-        }
-
-        $this->validateConditional($payload['answers']);
-
-        $this->assessmentRepository->saveParentAnswers($payload, $detail, $type);
-
-        return true;
-    }
-
-
-    public function storeOrUpdateAssessorAssessment(array $payload, Assessment $assessment, string $type)
-    {
-        $assessor = $this->getAuthenticatedAssessor();
-
-        $detail_type = str_replace('_assessor', '', $type);
-        $detail = $assessment->assessmentDetails()->where('type', $detail_type)->first();
-
-        if (!$detail) {
-            throw new \Exception("Asesmen dengan ID: {$assessment->id} tidak memiliki tipe {$detail_type}");
-        }
-
-        if (!$this->isTherapistAllowed($assessor->therapist_section, $type)) {
-            throw new \Exception("Terapis tidak memiliki izin untuk mengisi asesmen tipe: {$type}", 403);
-        }
-
-        $this->assessmentRepository->saveAssessorAnswers($payload, $detail, $type, $assessor);
-
-        return true;
-    }
-
-    public function updateScheduledDate(array $data, Assessment $assessment)
-    {
-        $admin = $this->getAuthenticatedAdmin();
-
-        if (!empty($data['scheduled_date']) && !empty($data['scheduled_time'])) {
-            $newDateTime = Carbon::createFromFormat(
-                'Y-m-d H:i',
-                $data['scheduled_date'] . ' ' . $data['scheduled_time']
-            );
-
-            $this->assessmentDetailRepository->updateScheduledDate($assessment->id, $newDateTime, $admin);
-        }
-    }
-
-    private function getAuthenticatedAdmin()
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        if (!$user) {
-            throw new \Exception('Tidak ada pengguna yang terautentikasi.');
-        }
-
-        $admin = $user->admin;
-
-        if (!$admin) {
-            throw new \Exception('Profil admin tidak ditemukan untuk pengguna ini.');
-        }
-
-        return $admin;
-    }
-
-    private function getAuthenticatedAssessor()
-    {
-        $user = Auth::user();
-
-        if (!$user) {
-            throw new \Exception('Tidak ada pengguna yang terautentikasi.');
-        }
-
-        if ($user->role !== 'asesor') {
-            throw new \Exception('Hanya akun dengan role asesor yang diizinkan mengisi asesmen.', 403);
-        }
-
-        $therapist = $user->therapist;
-
-        if (!$therapist) {
-            throw new \Exception('Profil terapis tidak ditemukan untuk pengguna ini.');
-        }
-
-        return $therapist;
-    }
-
-    private function isTherapistAllowed(string $section, string $assessmentType): bool
-    {
-        $map = [
-            'fisio' => ['fisio', 'fisio_assessor'],
-            'okupasi' => ['okupasi', 'okupasi_assessor'],
-            'paedagog' => ['paedagog', 'paedagog_assessor'],
-            'wicara' => ['wicara', 'wicara_assessor'],
-        ];
-
-        return in_array($assessmentType, $map[$section] ?? []);
-    }
-
-    private function validateAssessmentCompletion(Assessment $assessmentDetail)
-    {
-        $assessmentId = $assessmentDetail->assessment_id;
-
-        $details = AssessmentDetail::where('assessment_id', $assessmentId)->get();
-
-        $incomplete = $details->filter(function ($d) {
-            return $d->parent_completed_status === 'pending';
-        });
-
-        if ($incomplete->isNotEmpty()) {
-            throw new \Exception('Masih ada asesmen yang belum diselesaikan oleh terapis.');
-        }
-
-        return true;
-    }
-
-
-    private function validateConditional(array $answers)
-    {
-        $answer_collection = collect($answers);
-
-        $questions_ids = $answer_collection->pluck('question_id');
-        $questions = AssessmentQuestion::whereIn('id', $questions_ids)->get()->keyBy('id');
-
-        foreach ($answers as $answer) {
-            $question = $questions[$answer['question_id']] ?? null;
-
-            if (!$question || !$question->extra_schema) continue;
-
-            $extra = json_decode($question->extra_schema, true);
-            if (!isset($extra['conditional_rules'])) continue;
-
-            foreach ($extra['conditional_rules'] as $rule) {
-                $this->applyConditionalRule($rule, $answer_collection, $answer['question_id']);
-            }
-        }
-    }
-
-    private function applyConditionalRule(array $rule, $answers, int $current_question_id)
-    {
-        $target = $answers->firstWhere('question_id', $rule['when']);
-
-        if (!$target) return;
-
-        $value = $target['answer'] ?? null;
-
-        $passed = match ($rule['operator']) {
-            '==' => $value == ($rule['value'] ?? null),
-            '!=' => $value != ($rule['value'] ?? null),
-            'not_empty' => !empty($value),
-            default => true
-        };
-
-        if ($passed && ($rule['required'] ?? false)) {
-            $current = collect($answers)->firstWhere('question_id', $current_question_id);
-
-            if (!$current || empty($current['answer'])) {
-                throw ValidationException::withMessages([
-                    "answer" => ["Jawaban untuk question {$current_question_id} wajib diisi."]
+            return AssessmentAnswer::where('assessment_detail_id', $detail->id)
+                ->where('type', $type)
+                ->select('id', 'question_id', 'answer_value', 'note')
+                ->with('question:id,question_text')
+                ->get()
+                ->map(fn($answer) => [
+                    'question_id' => $answer->question_id,
+                    'question_text' => $answer->question->question_text ?? null,
+                    'answer' => $answer->answer_value,
+                    'note' => $answer->note,
                 ]);
-            }
-        }
+        });
+    }
+
+    public function storeParentAssessment(Assessment $assessment, string $type, array $data): void
+    {
+        (new StoreParentAssessmentAction)->execute($assessment, $type, $data);
+        Cache::forget("answers_{$assessment->id}_{$type}");
+    }
+
+    public function storeAssessorAssessment(Assessment $assessment, string $type, array $data): void
+    {
+        (new StoreAssessorAssessmentAction)->execute($assessment, $type, $data);
+        Cache::forget("answers_{$assessment->id}_{$type}");
+    }
+
+    public function updateScheduledDate(Assessment $assessment, array $data): void
+    {
+        (new UpdateScheduledDateAction)->execute($assessment, $data);
+    }
+
+    public function getChildrenAssessment(string $userId)
+    {
+        return Cache::remember("guardian_{$userId}_children_assessments", 300, function () use ($userId) {
+            return Guardian::where('user_id', $userId)
+                ->firstOrFail()
+                ->family
+                ->children()
+                ->whereHas('assessment.assessmentDetails', fn($q) => $q->where('status', 'scheduled'))
+                ->with(['assessment.assessmentDetails' => fn($q) => $q->where('status', 'scheduled')])
+                ->get();
+        });
     }
 }

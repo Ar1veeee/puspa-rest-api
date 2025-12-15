@@ -26,7 +26,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "skor_iq", "text" => "Jika Ya, berapa skor IQ", "type" => "text",
                         "extra" => [
                             "conditional_rules" => [[
-                                "when" => 568,
+                                "when" => 598,
                                 "operator" => "==",
                                 "value" => "Ya",
                                 "required" => true
@@ -50,7 +50,7 @@ class ParentPedagogicalAssessmentQuestionSeeder extends Seeder
                     ["id" => "lokasi_nonakademis", "text" => "Dimana kegiatan pengembangan diri tersebut dilakukan?", "type" => "text"],
                     ["id" => "jadwal_nonakademis", "text" => "Kapan pengembangan diri tersebut dilakukan?", "type" => "text"],
 
-                    ["id" => "fokus", "text" => "Apakah anak mampu fokus dalam pembelajaran?", "type" => "radio", "extra" => ["options" => ["Ya", "Tidak"]]],
+                    ["id" => "fokus", "text" => "Apakah anak mampu fokus dalam pembelajaran?", "type" => "text"],
                     ["id" => "durasi_fokus", "text" => "Berapa lama ketahanan fokus anak?", "type" => "text"],
                     ["id" => "penarik_fokus", "text" => "Adakah ketertarikan anak terhadap benda-benda untuk menarik fokus kembali?", "type" => "text"],
 

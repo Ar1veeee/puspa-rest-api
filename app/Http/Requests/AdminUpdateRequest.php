@@ -6,17 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-/**
- * @OA\Schema(
- * schema="AdminUpdateRequest",
- * type="object",
- * description="Semua field bersifat opsional. Hanya field yang dikirim yang akan diupdate.",
- * @OA\Property(property="username", type="string", example="superadmin_updated"),
- * @OA\Property(property="email", type="string", format="email", example="super.admin.new@example.com"),
- * @OA\Property(property="admin_name", type="string", example="Super Admin Name Updated"),
- * @OA\Property(property="admin_phone", type="string", example="081234567891")
- * )
- */
 class AdminUpdateRequest extends FormRequest
 {
     /**

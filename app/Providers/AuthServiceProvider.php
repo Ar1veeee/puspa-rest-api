@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Assessment;
-use App\Models\AssessmentDetail;
 use App\Policies\AssessmentPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -15,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        AssessmentDetail::class => AssessmentPolicy::class,
+        Assessment::class => AssessmentPolicy::class,
     ];
 
     /**

@@ -2,50 +2,45 @@
 
 namespace App\Http\Services;
 
-use App\Http\Repositories\AdminRepository;
-use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class OwnerService
 {
-    protected $userRepository;
-
-    public function __construct(
-        UserRepository $userRepository,
-    )
-    {
-        $this->userRepository = $userRepository;
-    }
-
     public function getAllAdminUnverified(): Collection
     {
-        return $this->userRepository->getAllAdminUnverified();
+        return User::unverifiedAdmins()->get();
     }
 
     public function getAllTherapistUnverified(): Collection
     {
-        return $this->userRepository->getAllTherapistUnverified();
+        return User::unverifiedTherapists()->get();
     }
 
-    public function promoteToAssessor(User $user)
+    public function promoteToAssessor(User $user): User
     {
-        return $this->userRepository->update([
-            'role' => 'asesor'
-        ], $user->id);
+        $user->update(['role' => 'asesor']);
+        return $user;
     }
 
     public function activateAccount(User $user)
     {
-        return $this->userRepository->update([
-            'is_active' => 1,
-            'email_verified_at' => Carbon::now()
-        ],$user->id);
+        return DB::transaction(function () use ($user) {
+            $user->update([
+                'is_active' => true,
+                'email_verified_at' => Carbon::now(),
+            ]);
+
+            return $user->fresh();
+        });
     }
-    
+
     public function deleteAccount(User $user)
     {
-        return $this->userRepository->delete($user->id);
+        DB::transaction(function () use ($user) {
+            $user->delete();
+        });
     }
 }

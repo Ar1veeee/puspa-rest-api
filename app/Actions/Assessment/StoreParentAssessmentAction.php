@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Actions\Assessment;
+
+use App\Models\Assessment;
+use App\Models\AssessmentAnswer;
+use App\Models\AssessmentQuestion;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+class StoreParentAssessmentAction
+{
+    public function execute(Assessment $assessment, string $type, array $payload): void
+    {
+        $detailType = str_replace('_parent', '', $type);
+
+        $detail = $assessment->assessmentDetails()->where('type', $detailType)->firstOrFail();
+
+        DB::transaction(function () use ($detail, $payload, $type) {
+            $this->validateConditional($payload['answers']);
+
+            AssessmentAnswer::where('assessment_detail_id', $detail->id)->delete();
+
+            $answers = collect($payload['answers'])->map(function ($a) use ($detail, $type) {
+                $answerValue = $a['answer'];
+
+                if (is_array($answerValue)) {
+                    $answerValue = json_encode($answerValue);
+                }
+
+                return [
+                    'assessment_detail_id' => $detail->id,
+                    'type' => $type,
+                    'question_id' => $a['question_id'],
+                    'answer_value' => $answerValue,
+                    'note' => $a['note'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            })->toArray();
+
+            AssessmentAnswer::insert($answers);
+
+            $detail->update([
+                'parent_completed_status' => 'completed',
+                'parent_completed_at'     => now(),
+            ]);
+        });
+    }
+
+    private function validateConditional(array $answers): void
+    {
+        $collection = collect($answers);
+        $questions = AssessmentQuestion::whereIn('id', $collection->pluck('question_id'))->get()->keyBy('id');
+
+        foreach ($answers as $answer) {
+            $question = $questions[$answer['question_id']] ?? null;
+            if (!$question || !$question->extra_schema) continue;
+
+            $extra = json_decode($question->extra_schema, true);
+            if (!isset($extra['conditional_rules'])) continue;
+
+            foreach ($extra['conditional_rules'] as $rule) {
+                $target = $collection->firstWhere('question_id', $rule['when']);
+                $value = $target['answer'] ?? null;
+
+                $passed = match ($rule['operator']) {
+                    '==' => $value == ($rule['value'] ?? null),
+                    '!=' => $value != ($rule['value'] ?? null),
+                    'not_empty' => !empty($value),
+                    default => true,
+                };
+
+                if ($passed && ($rule['required'] ?? false)) {
+                    $current = $collection->firstWhere('question_id', $answer['question_id']);
+                    if (!$current || empty($current['answer'])) {
+                        throw ValidationException::withMessages([
+                            "answer" => ["Jawaban untuk pertanyaan {$answer['question_id']} wajib diisi."]
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+}
