@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Resources\TodayAssessmentScheduleResource;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -28,9 +29,11 @@ class AdminDashboardService
     private function getAssessmentToday(Carbon $date): int
     {
         return DB::table('assessment_details')
-            ->where('status', 'scheduled')
-            ->whereDate('scheduled_date', $date)
-            ->count();
+            ->join('assessments', 'assessment_details.assessment_id', '=', 'assessments.id')
+            ->where('assessment_details.status', 'scheduled')
+            ->whereDate('assessment_details.scheduled_date', $date)
+            ->distinct()
+            ->count('assessments.id');
     }
 
     private function getObservationToday(Carbon $date): int
@@ -79,7 +82,7 @@ class AdminDashboardService
         $total = $categories->sum('count');
 
         $typeMapping = [
-            'fisio' => 'Fisioterapi',
+            'fisio' => 'Fisio',
             'okupasi' => 'Okupasi',
             'wicara' => 'Wicara',
             'paedagog' => 'Paedagog'
@@ -95,44 +98,27 @@ class AdminDashboardService
         })->sortByDesc('percentage')->values()->toArray();
     }
 
-    public function getTodayTherapySchedule(string $date, int $perPage, ?string $search, ?string $type)
+    public function getTodayTherapySchedule(string $date): TodayAssessmentScheduleResource
     {
-        $query = DB::table('assessment_details as ad')
-            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
+        $raw = DB::table('assessments as a')
             ->join('children as c', 'a.child_id', '=', 'c.id')
+            ->join('assessment_details as ad', 'ad.assessment_id', '=', 'a.id')
             ->leftJoin('therapists as t', 'ad.therapist_id', '=', 't.id')
             ->select(
-                'ad.id',
-                'c.child_name as nama_pasien',
-                DB::raw("CASE
-                    WHEN ad.type = 'fisio' THEN 'Fisioterapi'
-                    WHEN ad.type = 'okupasi' THEN 'Okupasi'
-                    WHEN ad.type = 'wicara' THEN 'Terapi Wicara'
-                    WHEN ad.type = 'paedagog' THEN 'Paedagog'
-                    ELSE UPPER(ad.type)
-                END as jenis_terapi"),
-                'ad.type as jenis_terapi_key',
-                't.therapist_name as nama_terapis',
-                'ad.status',
-                'ad.scheduled_date as tanggal',
+                'a.id as assessment_id',
+                'c.child_name',
+                'ad.type',
+                'ad.scheduled_date',
+                DB::raw("DATE(ad.scheduled_date) as schedule_date"),
                 DB::raw("TIME_FORMAT(TIME(ad.scheduled_date), '%H:%i') as waktu")
             )
             ->where('ad.status', 'scheduled')
-            ->whereDate('ad.scheduled_date', $date);
+            ->whereDate('ad.scheduled_date', $date)
+            ->orderBy('ad.scheduled_date')
+            ->get();
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('c.child_name', 'like', "%{$search}%")
-                    ->orWhere('t.therapist_name', 'like', "%{$search}%");
-            });
-        }
+        $grouped = $raw->groupBy('assessment_id');
 
-        if ($type) {
-            $query->where('ad.type', $type);
-        }
-
-        $query->orderBy('ad.scheduled_date', 'asc');
-
-        return $query->paginate($perPage);
+        return new TodayAssessmentScheduleResource($grouped);
     }
 }
