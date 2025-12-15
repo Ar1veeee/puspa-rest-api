@@ -22,7 +22,7 @@ class AdminProfileResource extends JsonResource
             'admin_id' => $this->id,
             'admin_name' => $this->admin_name,
             'admin_phone' => $this->admin_phone,
-            'admin_birth_date' => $this->admin_birth_date?->format('Y-m-d'),
+            'admin_birth_date' => $this->admin_birth_date->format('Y-m-d') ?? "Data Kelahiran Kosong",
             'email' => $this->user->email,
             'role' => $role,
             'profile_picture' => $this->profile_picture
