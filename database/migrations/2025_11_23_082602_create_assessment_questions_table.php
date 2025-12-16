@@ -14,12 +14,12 @@ return new class extends Migration {
             $table->foreign('group_id')->references('id')->on('assessment_question_groups')->onDelete('cascade');
 
             $table->string('assessment_type')->index();
-            $table->string('section')->index(); // will store group_key
+            $table->string('section')->index();
 
             $table->string('question_code')->nullable()->unique();
             $table->integer('question_number')->default(0);
-
             $table->text('question_text');
+            
             $table->string('answer_type');
             $table->json('answer_options')->nullable();
             $table->json('extra_schema')->nullable();
