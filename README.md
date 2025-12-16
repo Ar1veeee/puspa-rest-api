@@ -2,12 +2,18 @@
 
 A comprehensive REST API for managing therapy assessments and observations for children with special needs. Built with Laravel 10 and Laravel Sanctum for authentication.
 
+[![Laravel](https://img.shields.io/badge/Laravel-10-ff2d20?style=flat&logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.1-777bb4?style=flat&logo=php)](https://php.net)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Swagger Docs](https://img.shields.io/badge/Swagger-Docs-green)](http://localhost:8000/api/documentation)
+
 ## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
+- [Quick Start](#quick-start)
 - [API Documentation](#api-documentation)
 - [Authentication](#authentication)
 - [User Roles](#user-roles)
@@ -102,6 +108,20 @@ PUSPA REST API is a backend system designed to facilitate the management of ther
    ```
 
 The API will be available at `http://localhost:8000`
+
+## Quick Start
+
+```bash
+git clone https://github.com/Ar1veeee/puspa-rest-api.git
+cd puspa-rest-api
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+php artisan l5-swagger:generate
+php artisan serve
+```
 
 ## API Documentation
 
@@ -411,7 +431,7 @@ Development and debugging endpoints:
 
 ## License
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
