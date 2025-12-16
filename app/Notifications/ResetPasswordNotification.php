@@ -39,7 +39,6 @@ class ResetPasswordNotification extends Notification
         $token = $this->token;
         $email = urlencode($notifiable->email);
 
-        // URL untuk web
         return url(
             config('app.frontend_url') .
             "/auth/reset-password?token={$token}&email={$email}"

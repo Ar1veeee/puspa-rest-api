@@ -25,7 +25,6 @@ class AdminSeeder extends Seeder
                 'username' => $admin['username'],
                 'email' => $admin['email'],
                 'password' => $admin['password'],
-                'role' => 'admin',
                 'is_active' => true,
                 'email_verified_at' => Carbon::now(),
             ]);
@@ -36,6 +35,8 @@ class AdminSeeder extends Seeder
                 'admin_phone' => $admin['phone'],
                 'admin_birth_date' => Carbon::now()->subYears(30),
             ]);
+
+            $user->assignRole('admin');
         }
     }
 }

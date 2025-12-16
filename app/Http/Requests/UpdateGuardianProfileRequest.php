@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateGuardianProfileRequest extends FormRequest
@@ -13,7 +12,7 @@ class UpdateGuardianProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isParent();
+        return $this->user()?->hasRole(['user']);
     }
 
     /**
@@ -28,7 +27,11 @@ class UpdateGuardianProfileRequest extends FormRequest
         return [
             'file' => ['sometimes', 'required', 'file', 'max:2048', 'mimes:jpeg,png,jpg'],
             'email' => [
-                'sometimes', 'required', 'string', 'email', 'max:100',
+                'sometimes',
+                'required',
+                'string',
+                'email',
+                'max:100',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
             'guardian_name' => ['sometimes', 'required', 'string', 'max:100'],

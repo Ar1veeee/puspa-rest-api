@@ -25,6 +25,8 @@ class ObservationsCompletedResource extends JsonResource
 
         $primaryGuardian = $this->child->family->guardians->first();
 
+        $assessmentStatus =  $this->is_continued_to_assessment === true ? "Disetujui" : "Tidak Disetujui";
+
         $response = [
             "observation_id" => $this->id,
             'age_category' => $this->age_category,
@@ -36,6 +38,7 @@ class ObservationsCompletedResource extends JsonResource
             'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'),
             'time' => $scheduled_date_formatted->format('H.i') . ' - ' . $completed_at_formatted->format('H.i'),
             'status' => $this->status,
+            'assessment_status' => $assessmentStatus,
         ];
 
         return $response;

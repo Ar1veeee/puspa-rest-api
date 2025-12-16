@@ -16,9 +16,10 @@ class RegisterUserAction
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'role' => 'user',
                 'is_active' => false,
             ]);
+
+            $user->assignRole('user');
 
             Guardian::where('temp_email', $data['email'])
                 ->update(['user_id' => $user->id, 'temp_email' => null]);

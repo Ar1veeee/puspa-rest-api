@@ -15,9 +15,10 @@ class CreateAdminAction
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'role' => 'admin',
                 'is_active' => false,
             ]);
+
+            $user->assignRole('admin');
 
             $admin = Admin::create([
                 'user_id' => $user->id,

@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class ObservationSubmitRequest extends FormRequest
 {
@@ -12,7 +11,7 @@ class ObservationSubmitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isTherapist()|| Auth::user()->isAssessor();
+        return $this->user()?->can('submit_observation') ?? false;
     }
 
     /**

@@ -15,7 +15,7 @@ class GuardianProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = $this->user->role === 'user' ? 'Orangtua Pasien/Anak' : '';
+        $role = $this->user->getRoleNames()->first() === 'user' ? 'Orangtua Pasien/Anak' : '';
 
         return [
             'user_id' => $this->user_id,

@@ -21,7 +21,7 @@ class OwnerService
 
     public function promoteToAssessor(User $user): User
     {
-        $user->update(['role' => 'asesor']);
+        $user->syncRoles(['asesor']);
         return $user;
     }
 

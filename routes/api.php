@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ================== ROLE OWNER & ADMIN ==================
-    Route::middleware(['role:admin,owner', 'throttle:authenticated'])->group(function () {
+    Route::middleware(['role:admin|owner', 'throttle:authenticated'])->group(function () {
         Route::get('/admins', [OwnerAdminUserManagement::class, 'indexAdmin']);
         Route::get('/admins/{admin}', [AdminUserManagement::class, 'showAdminDetail'])
             ->whereUlid('admin', '[0-9A-HJ-NP-TV-Z]{26}');
@@ -156,7 +156,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ================== ROLE ADMIN, THERAPIST, ASSESSOR ==================
-    Route::middleware(['role:admin,terapis,asesor', 'throttle:authenticated'])->group(function () {
+    Route::middleware(['role:admin|terapis|asesor', 'throttle:authenticated'])->group(function () {
         // for status pending using query: search
         // for status scheduled & completed using query: date, search
         Route::get('/observations/{status}', [AdminAssessorTherapistObservationManagement::class, 'indexByStatus'])
@@ -167,7 +167,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ================== ROLE THERAPIST & ASSESSOR ==================
-    Route::middleware(['role:terapis,asesor', 'throttle:authenticated'])->group(function () {
+    Route::middleware(['role:terapis|asesor', 'throttle:authenticated'])->group(function () {
         Route::get('/asse-thera/dashboard', [AssessorTherapistDashboard::class, 'index']);
         Route::get('/asse-thera/profile', [AssessorTherapistProfileManagement::class, 'showProfile']);
         Route::post('/asse-thera/{therapist}/profile', [AssessorTherapistProfileManagement::class, 'updateProfile'])
@@ -178,7 +178,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ================== ROLE ASSESSOR & ADMIN ==================
-    Route::middleware(['role:admin,asesor', 'throttle:authenticated'])->group(function () {
+    Route::middleware(['role:admin|asesor', 'throttle:authenticated'])->group(function () {
         Route::prefix('assessments')->group(function () {
             Route::patch('/{assessment}', [AdminAssessmentManagement::class, 'updateAssessmentDate'])
                 ->whereNumber('assessment');

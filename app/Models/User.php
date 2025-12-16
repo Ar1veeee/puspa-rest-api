@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Symfony\Component\Uid\Ulid;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasUlids, Notifiable;
+    use HasApiTokens, HasFactory, HasUlids, Notifiable, HasRoles;
 
     protected $table = 'users';
 
@@ -31,35 +32,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'email',
         'password',
-        'role',
         'email_verified_at',
         'is_active',
     ];
-
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isTherapist(): bool
-    {
-        return $this->role === 'terapis';
-    }
-
-    public function isAssessor(): bool
-    {
-        return $this->role === 'asesor';
-    }
-
-    public function isOwner(): bool
-    {
-        return $this->role === 'owner';
-    }
-
-    public function isParent(): bool
-    {
-        return $this->role === 'user';
-    }
 
     public function admin(): HasOne
     {
@@ -76,23 +51,28 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Guardian::class, 'user_id', 'id');
     }
 
+    protected function getDefaultGuardName(): string
+    {
+        return 'api';
+    }
+
     public function scopeUnverifiedAdmins($query)
     {
         return $query->with(['admin' => fn($q) => $q->select('id', 'user_id', 'admin_name', 'admin_phone')])
             ->where('is_active', 0)
-            ->where('role', 'admin');
+            ->whereHas('roles', fn($q) => $q->where('name', 'admin'));
     }
 
     public function scopeUnverifiedTherapists($query)
     {
         return $query->with(['therapist' => fn($q) => $q->select('id', 'user_id', 'therapist_name', 'therapist_phone')])
             ->where('is_active', 0)
-            ->where('role', 'terapis');
+            ->whereHas('roles', fn($q) => $q->where('name', 'terapis'));
     }
 
-    public function sendPasswordResetNotification($token, $platform = 'web')
+    public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPasswordNotification($token, $platform));
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     public function sendEmailVerificationNotification()

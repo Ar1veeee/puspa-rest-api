@@ -13,7 +13,7 @@ class TherapistService
 {
     public function index(): Collection
     {
-        return Therapist::with('user:id,username,email,role,is_active')
+        return Therapist::with('user:id,username,email,is_active')
             ->whereHas('user', fn($q) => $q->where('is_active', true))
             ->latest()
             ->get();

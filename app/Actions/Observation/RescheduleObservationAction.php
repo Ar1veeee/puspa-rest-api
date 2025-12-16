@@ -10,20 +10,31 @@ class RescheduleObservationAction
 {
     public function execute(Observation $observation, array $data): void
     {
+        if (! in_array($observation->status, ['pending', 'scheduled'])) {
+            throw new \InvalidArgumentException(
+                'Observation hanya dapat di-reschedule jika statusnya pending atau scheduled.'
+            );
+        }
+
         if (empty($data['scheduled_date']) || empty($data['scheduled_time'])) {
             return;
         }
 
-        $newDate = Carbon::createFromFormat('Y-m-d H:i', $data['scheduled_date'] . ' ' . $data['scheduled_time']);
+        $newDateTime = $data['scheduled_date'] . ' ' . $data['scheduled_time'];
+        $newDate = Carbon::createFromFormat('Y-m-d H:i', $newDateTime);
 
-        if ($newDate && !$newDate->equalTo($observation->scheduled_date)) {
+        if (! $newDate) {
+            throw new \InvalidArgumentException('Format tanggal dan waktu tidak valid.');
+        }
+
+        if (! $newDate->equalTo($observation->scheduled_date)) {
             $observation->update([
                 'scheduled_date' => $newDate,
                 'status'         => 'scheduled',
-                'admin_id'       => auth()->user()->admin->id,
+                'admin_id'       => auth()->id() ? auth()->user()->admin->id : null,
             ]);
-        }
 
-        event(new ObservationUpdated());
+            event(new ObservationUpdated($observation));
+        }
     }
 }

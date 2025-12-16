@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateTherapistOrAssessorProfileRequest extends FormRequest
@@ -13,7 +12,13 @@ class UpdateTherapistOrAssessorProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isAssessor() || Auth::user()->isTherapist();
+        $user = $this->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasRole(['asesor', 'terapis']);
     }
 
     /**

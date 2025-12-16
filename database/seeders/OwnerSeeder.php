@@ -14,15 +14,14 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
-        $owner = [
+        $user = User::create([
             'username' => 'ownerPuspa',
             'email' => 'owner@puspa.com',
             'password' => Hash::make('Owner123.'),
             'email_verified_at' => Carbon::now(),
-            'role' => 'owner',
             'is_active' => true,
-        ];
+        ]);
 
-        User::create($owner);
+        $user->assignRole('owner');
     }
 }

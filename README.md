@@ -37,6 +37,7 @@ PUSPA REST API is a backend system designed to facilitate the management of ther
 - **Framework**: Laravel 10.x
 - **PHP Version**: ^8.1
 - **Authentication**: Laravel Sanctum
+- **Role Management**: Spatie Laravel Permission
 - **API Documentation**: L5-Swagger (Swagger/OpenAPI)
 - **HTTP Client**: Guzzle
 - **Testing**: PHPUnit, Mockery
@@ -85,12 +86,17 @@ PUSPA REST API is a backend system designed to facilitate the management of ther
    php artisan migrate
    ```
 
-6. **Create storage symlink**
+6. **Seed roles and permissions** (if seeders are configured)
+   ```bash
+   php artisan db:seed
+   ```
+
+7. **Create storage symlink**
    ```bash
    php artisan storage:link
    ```
 
-7. **Start development server**
+8. **Start development server**
    ```bash
    php artisan serve
    ```
@@ -156,6 +162,8 @@ Authorization: Bearer 1|abc123...
 
 ## User Roles
 
+The API uses **Spatie Laravel Permission** package for role and permission management, providing flexible and scalable access control.
+
 | Role | Description | Key Permissions |
 |------|-------------|-----------------|
 | **Owner** | System owner | Manage all staff, promote users to assessor, activate/deactivate accounts |
@@ -163,6 +171,39 @@ Authorization: Bearer 1|abc123...
 | **Therapist (Terapis)** | Therapy provider | Submit observations, view schedules, update profile |
 | **Assessor (Asesor)** | Assessment specialist | Conduct assessments, submit reports, manage assessment schedules |
 | **Parent (User)** | Child guardian | Register children, complete parent assessments, view reports |
+
+### Role Assignment
+
+Roles are assigned using Spatie's permission system:
+
+```php
+// Assign role to user
+$user->assignRole('admin');
+
+// Check if user has role
+if ($user->hasRole('admin')) {
+    // User is an admin
+}
+
+// Check multiple roles
+if ($user->hasAnyRole(['admin', 'owner'])) {
+    // User is either admin or owner
+}
+```
+
+### Middleware Protection
+
+Routes are protected using Spatie's role middleware:
+
+```php
+Route::middleware(['role:admin'])->group(function () {
+    // Admin only routes
+});
+
+Route::middleware(['role:admin,owner'])->group(function () {
+    // Admin or Owner routes
+});
+```
 
 ## Endpoints
 
@@ -359,7 +400,6 @@ Development and debugging endpoints:
 - `GET /clear-cache` - Clear application cache
 
 **Note:** These should be disabled in production.
-
 
 ## Contributing
 

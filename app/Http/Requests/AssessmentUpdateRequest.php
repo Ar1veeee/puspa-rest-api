@@ -12,7 +12,7 @@ class AssessmentUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isAdmin();
+        return $this->user()?->hasRole('admin');
 
     }
 

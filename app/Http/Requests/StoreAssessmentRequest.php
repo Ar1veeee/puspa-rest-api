@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class StoreAssessmentRequest extends FormRequest
 {
@@ -12,7 +11,10 @@ class StoreAssessmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isParent() || Auth::user()->isAssessor();
+        $user = $this->user();
+        if (!$user) return false;
+
+        return $user->can('submit_assessment') || $user->can('submit_parent_assessment');
     }
 
     /**

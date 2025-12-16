@@ -36,11 +36,12 @@ class FamilyChildGuardianSeeder extends Seeder
                 'email' => $guardianEmail,
                 'password' => Hash::make('Password123.'),
                 'email_verified_at' => $now,
-                'role' => 'User',
                 'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
+
+            $user->assignRole('user');
 
             Guardian::create([
                 'id' => Str::ulid(),
@@ -68,7 +69,7 @@ class FamilyChildGuardianSeeder extends Seeder
                 'child_complaint' => $faker->sentence(10),
                 'child_school' => 'TK ' . $faker->lastName,
                 'child_service_choice' => $faker->randomElement(['okupasi', 'fisio', 'wicara', 'paedagog']),
-                'child_religion' => $faker->randomElement(['islam','kristen','katolik','hindu','budha','konghucu','lainnya']),
+                'child_religion' => $faker->randomElement(['islam', 'kristen', 'katolik', 'hindu', 'budha', 'konghucu', 'lainnya']),
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

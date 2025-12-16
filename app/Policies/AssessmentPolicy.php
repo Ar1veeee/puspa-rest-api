@@ -43,7 +43,7 @@ class AssessmentPolicy
 
     public function fillAssessor(User $user, Assessment $assessment, string $type): bool
     {
-        if ($user->role !== 'asesor' || !$user->therapist) {
+        if (! $user->hasRole('asesor') || ! $user->therapist) {
             return false;
         }
 

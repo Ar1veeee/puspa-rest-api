@@ -13,7 +13,7 @@ class AddChildrenRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isParent();
+        return $this->user()?->hasRole(['user']) ?? false;
     }
 
     /**

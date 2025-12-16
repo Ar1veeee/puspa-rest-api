@@ -39,7 +39,7 @@ class AssessmentController extends Controller
         $validated['status'] = $status;
         $user = $request->user();
 
-        if ($user->isTherapist()) {
+        if (!$user->hasRole(['admin', 'asesor'])) {
             return $this->errorResponse('Forbidden', ['error' => 'Hanya asesor dan admin yang memiliki izin untuk melihat daftar asesmen'], 403);
         }
 

@@ -21,6 +21,7 @@ class UpdateTherapistAction
             $therapist->update(Arr::only($data, [
                 'therapist_name',
                 'therapist_phone',
+                'therapist_section',
             ]));
 
             return $therapist->fresh()->load('user');

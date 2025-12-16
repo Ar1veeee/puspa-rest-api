@@ -15,14 +15,16 @@ class CreateTherapistAction
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'role' => 'terapis',
                 'is_active' => false,
             ]);
+
+            $user->assignRole('terapis');
 
             $therapist = Therapist::create([
                 'user_id' => $user->id,
                 'therapist_name' => $data['therapist_name'],
                 'therapist_phone' => $data['therapist_phone'],
+                'therapist_section' => $data['therapist_section'],
             ]);
 
             return $therapist->load('user');

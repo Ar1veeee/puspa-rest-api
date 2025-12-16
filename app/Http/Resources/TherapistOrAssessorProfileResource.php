@@ -15,14 +15,14 @@ class TherapistOrAssessorProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = $this->user->role === 'terapis' ? 'Terapis' : 'Asesor';
+        $role = $this->user->getRoleNames()->first() === 'terapis' ? 'Terapis' : 'Asesor';
 
         return [
             'user_id' => $this->user_id,
             'therapist_id' => $this->id,
             'therapist_name' => $this->therapist_name,
             'therapist_phone' => $this->therapist_phone,
-            'therapist_birth_date' => $this->therapist_birth_date->format('Y-m-d'),
+            'therapist_birth_date' => $this->therapist_birth_date?->format('Y-m-d') ?? 'Belum Ditambahkan',
             'therapist_section' => $this->therapist_section,
             'email' => $this->user->email,
             'role' => $role,

@@ -22,7 +22,7 @@ class TherapistResource extends JsonResource
             'email' => $this->user->email,
             'username' => $this->user->username,
             'therapist_name' => $this->therapist_name,
-            'role' => $this->user->role,
+            'role' => $this->user->getRoleNames()->first(),
             'therapist_section' => $this->therapist_section,
             'therapist_phone' => $this->therapist_phone,
             'status' => $status,

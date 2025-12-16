@@ -15,7 +15,7 @@ class AdminProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = $this->user->role === 'admin' ? 'Admin' : '';
+        $role = $this->user->getRoleNames()->first() === 'admin' ? 'Admin' : '';
 
         return [
             'user_id' => $this->user_id,
@@ -26,7 +26,7 @@ class AdminProfileResource extends JsonResource
             'email' => $this->user->email,
             'role' => $role,
             'profile_picture' => $this->profile_picture
-            ? Storage::url($this->profile_picture)
+                ? Storage::url($this->profile_picture)
                 : null,
         ];
     }

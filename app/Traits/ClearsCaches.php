@@ -10,16 +10,13 @@ trait ClearsCaches
     public function clearObservationCaches(): void
     {
         $statuses = ['pending', 'scheduled', 'completed'];
-        $directions = ['asc', 'desc'];
 
         foreach ($statuses as $status) {
-            foreach ($directions as $direction) {
-                $key = "observations_{$status}_{$direction}";
-                Cache::forget($key);
-            }
+            $key = "observations_{$status}";
+            Cache::forget($key);
         }
     }
-    
+
     public function clearAssessmentCaches(): void
     {
         $statuses = ['scheduled', 'completed', 'all'];

@@ -18,15 +18,14 @@ class ObservationService
         $status = $filters['status'] ?? 'pending';
         $search = $filters['search'] ?? '';
         $date = $filters['date'] ?? '';
-        $direction = ($status === 'completed') ? 'desc' : 'asc';
 
         if (!empty($search) || !empty($date)) {
-            return $this->queryObservations($status, $search, $date, $direction);
+            return $this->queryObservations($status, $search, $date);
         }
 
-        $key = "observations_{$status}_{$direction}";
-        return Cache::remember($key, self::CACHE_TTL, function () use ($status, $direction) {
-            return $this->queryObservations($status, '', '', $direction);
+        $key = "observations_{$status}";
+        return Cache::remember($key, self::CACHE_TTL, function () use ($status) {
+            return $this->queryObservations($status, '', '');
         });
     }
 
@@ -54,7 +53,7 @@ class ObservationService
         (new AgreeToAssessmentAction)->execute($observation, $data);
     }
 
-    private function queryObservations(string $status, $search, $date,  $direction)
+    private function queryObservations(string $status, $search, $date)
     {
         return Observation::with([
             'child:id,family_id,child_name,child_school,child_gender,child_birth_date',
@@ -68,7 +67,7 @@ class ObservationService
                 fn($c) => $c->where('child_name', 'like', "%{$search}%")
             ))
             ->when(!empty($date), fn($q) => $q->whereDate('scheduled_date', $date))
-            ->orderBy('scheduled_date', $direction)
+            ->orderBy('scheduled_date', 'asc')
             ->get();
     }
 }

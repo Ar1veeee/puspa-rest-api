@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Rules\UniqueGuardianIdentityNumber;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class ChildFamilyUpdateRequest extends FormRequest
 {
@@ -13,7 +12,7 @@ class ChildFamilyUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && Auth::user()->isAdmin() || Auth::user()->isParent();
+        return $this->user()?->can('edit_child') ?? false;
     }
 
     /**

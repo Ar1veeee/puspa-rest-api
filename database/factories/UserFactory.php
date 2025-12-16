@@ -16,7 +16,6 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
-            'role' => 'user',
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -27,7 +26,6 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'owner',
                 'is_active' => true,
             ];
         });
@@ -37,7 +35,6 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'terapis',
                 'is_active' => true,
             ];
         });
@@ -47,7 +44,6 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'admin',
                 'is_active' => true,
             ];
         });
@@ -57,7 +53,6 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'role' => 'asesor',
                 'is_active' => true,
             ];
         });
