@@ -21,7 +21,7 @@ class TherapistDashboardService
             ],
             'metrics' => [
                 'total_observations' => $this->getTotalObservations($therapistId, $month, $year),
-                'total_assessments'  => $this->getTotalAssessments($therapistId, $month, $year), // ← BARU
+                'total_assessments'  => $this->getTotalAssessments($therapistId, $month, $year),
                 'total_therapists'   => $this->getTotalTherapists($month, $year),
                 'completion_rate'    => $this->getCompletionRate($therapistId, $month, $year),
                 'total_assessors'    => $this->getTotalAssessors($month, $year),

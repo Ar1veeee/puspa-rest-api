@@ -42,7 +42,6 @@ class AuthController extends Controller
         return $this->successResponse($response, 'Login berhasil', 200);
     }
 
-    // Update Password
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
         $this->authService->changePassword(

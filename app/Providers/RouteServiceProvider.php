@@ -108,7 +108,6 @@ class RouteServiceProvider extends ServiceProvider
             $token = $request->input('token');
 
             return [
-                // Max 3 attempts per token (mencegah brute force token)
                 Limit::perMinute(3)
                     ->by($token . '|' . $request->ip())
                     ->response(function () {
@@ -124,7 +123,6 @@ class RouteServiceProvider extends ServiceProvider
             $email = $request->input('email');
 
             return [
-                // Max 1 request per email per 2 menit
                 Limit::perMinutes(2, 1)
                     ->by($email)
                     ->response(function () {
@@ -134,13 +132,11 @@ class RouteServiceProvider extends ServiceProvider
                         ], 429);
                     }),
 
-                // Max 5 request per IP per jam
                 Limit::perHour(5)->by($request->ip()),
             ];
         });
 
         RateLimiter::for('verification', function (Request $request) {
-            // Max 10 attempts per IP per menit (mencegah automated clicking)
             return Limit::perMinute(10)
                 ->by($request->ip())
                 ->response(function () {

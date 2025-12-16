@@ -61,7 +61,6 @@ class OwnerDashboardService
 
     private function getCompletionRate(Carbon $current, Carbon $previous): array
     {
-        // Completion rate = (completed assessments / total assessments) * 100
         $currentTotal = DB::table('assessment_details')
             ->whereYear('created_at', $current->year)
             ->whereMonth('created_at', $current->month)
@@ -118,11 +117,9 @@ class OwnerDashboardService
 
     private function getHistoricalTrend(int $month, int $year): array
     {
-        // Data trend 4 bulan terakhir untuk setiap stage
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
         $startDate = $endDate->copy()->subMonths(3)->startOfMonth();
 
-        // Observasi
         $observations = DB::table('observations')
             ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -130,7 +127,6 @@ class OwnerDashboardService
             ->orderBy('period')
             ->pluck('count', 'period');
 
-        // Assessment
         $assessments = DB::table('assessments')
             ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -138,7 +134,6 @@ class OwnerDashboardService
             ->orderBy('period')
             ->pluck('count', 'period');
 
-        // Penyelesaian (completed assessments)
         $completions = DB::table('assessment_details')
             ->selectRaw('DATE_FORMAT(completed_at, "%Y-%m") as period, COUNT(*) as count')
             ->whereBetween('completed_at', [$startDate, $endDate])
@@ -147,7 +142,6 @@ class OwnerDashboardService
             ->orderBy('period')
             ->pluck('count', 'period');
 
-        // Asesor aktif
         $assessors = DB::table('assessment_details')
             ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, COUNT(DISTINCT therapist_id) as count')
             ->whereBetween('created_at', [$startDate, $endDate])

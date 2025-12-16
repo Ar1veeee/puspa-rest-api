@@ -23,7 +23,7 @@ class AssessmentController extends Controller
         $this->assessmentService = $assessmentService;
     }
 
-    // Menampilkan asesmen terdaftar berdasarkan status (terjadwal, selesai) dan tipe (fisio, wicara, dll)
+    // Display registered assessments based on status (scheduled, completed) and type (fisio, wicara, etc.)
     public function indexAssessments(Request $request, string $status): JsonResponse
     {
         $valid_status = ['scheduled', 'completed'];

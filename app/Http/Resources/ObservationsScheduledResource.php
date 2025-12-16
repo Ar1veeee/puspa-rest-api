@@ -29,8 +29,8 @@ class ObservationsScheduledResource extends JsonResource
             'guardian_name' => $primaryGuardian->guardian_name,
             'guardian_phone' => $primaryGuardian->guardian_phone,
             'administrator' => $this->admin?->admin_name,
-            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
-            'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Hanya jam:menit
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Only date
+            'scheduled_time' => $scheduled_date_formatted->format('H.i'), // Only hour:minute
             'status' => $this->status,
         ];
 

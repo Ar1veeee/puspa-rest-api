@@ -18,26 +18,22 @@ class ParentDashboardService
         $now = Carbon::now();
         $lastMonth = $now->copy()->subMonth();
 
-        // Get child IDs for this family
         $childIds = Child::where('family_id', $familyId)->pluck('id');
 
         if ($childIds->isEmpty()) {
             return $this->getEmptyStats();
         }
 
-        // Total children
         $totalChildren = $childIds->count();
         $totalChildrenLastMonth = Child::where('family_id', $familyId)
             ->where('created_at', '<=', $lastMonth)
             ->count();
 
-        // Total observations
         $totalObservations = Observation::whereIn('child_id', $childIds)->count();
         $totalObservationsLastMonth = Observation::whereIn('child_id', $childIds)
             ->where('created_at', '<=', $lastMonth)
             ->count();
 
-        // Total assessments (count assessment_details)
         $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
         $totalAssessments = AssessmentDetail::whereIn('assessment_id', $assessmentIds)->count();
         $totalAssessmentsLastMonth = AssessmentDetail::whereIn('assessment_id', $assessmentIds)
@@ -67,7 +63,6 @@ class ParentDashboardService
             return [];
         }
 
-        // Get data for last 12 months
         $months = collect(range(11, 0))->map(function ($monthsAgo) {
             return Carbon::now()->subMonths($monthsAgo);
         });
@@ -76,17 +71,14 @@ class ParentDashboardService
             $startOfMonth = $month->copy()->startOfMonth();
             $endOfMonth = $month->copy()->endOfMonth();
 
-            // Count children (cumulative)
             $totalChildren = Child::where('family_id', $familyId)
                 ->where('created_at', '<=', $endOfMonth)
                 ->count();
 
-            // Count observations in this month
             $totalObservations = Observation::whereIn('child_id', $childIds)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
                 ->count();
 
-            // Count assessments in this month
             $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
             $totalAssessments = AssessmentDetail::whereIn('assessment_id', $assessmentIds)
                 ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
@@ -117,7 +109,6 @@ class ParentDashboardService
 
         $schedules = collect();
 
-        // Get upcoming observations
         if ($type === 'all' || $type === 'observation') {
             $observations = Observation::with([
                 'child:id,child_name',
@@ -152,7 +143,6 @@ class ParentDashboardService
             $schedules = $schedules->merge($observations);
         }
 
-        // Get upcoming assessments
         if ($type === 'all' || $type === 'assessment') {
             $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
 
@@ -196,7 +186,6 @@ class ParentDashboardService
             $schedules = $schedules->merge($assessments);
         }
 
-        // Sort by scheduled_date
         return $schedules->sortBy('scheduled_date')->values();
     }
 

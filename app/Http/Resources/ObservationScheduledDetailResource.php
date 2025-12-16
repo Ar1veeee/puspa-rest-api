@@ -29,8 +29,8 @@ class ObservationScheduledDetailResource extends JsonResource
             'child_gender' => $this->child->child_gender,
             'child_school' => $this->child->child_school,
             'child_address' => $this->child->child_address,
-            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Hanya tanggal
-            'scheduled_time' => $scheduled_date_formatted->format('H:i'), // Hanya jam:menit
+            'scheduled_date' => $scheduled_date_formatted->format('d/m/Y'), // Only date
+            'scheduled_time' => $scheduled_date_formatted->format('H:i'), // Only hour:minute
             'parent_type' => $guardian->guardian_type,
             'parent_name' => $guardian->guardian_name,
             'relationship' => $guardian->relationship_with_child,

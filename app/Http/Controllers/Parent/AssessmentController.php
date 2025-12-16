@@ -98,7 +98,7 @@ class AssessmentController extends Controller
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
 
-    // Menampilkan tipe asesmen yang dimiliki anak
+    // Displaying the type of assessment the child has
     public function show(Assessment $assessment)
     {
         $this->authorize('verifyAsParent', $assessment);
