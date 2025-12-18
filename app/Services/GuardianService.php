@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Actions\Guardian\AddChildAction;
 use App\Actions\Guardian\UpdateFamilyGuardiansAction;

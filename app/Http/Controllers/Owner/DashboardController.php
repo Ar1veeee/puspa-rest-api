@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\OwnerDashboardService;
+use App\Services\OwnerDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

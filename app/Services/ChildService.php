@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Actions\Child\UpdateChildWithFamilyAction;
 use App\Models\Child;
@@ -16,5 +16,10 @@ class ChildService
     public function update(array $data, Child $child): Child
     {
         return app(UpdateChildWithFamilyAction::class)->execute($child, $data);
+    }
+
+    public function destroy(Child $child): bool
+    {
+        return $child->delete();
     }
 }

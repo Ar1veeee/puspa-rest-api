@@ -7,8 +7,8 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Resources\AssessmentListResource;
 use App\Http\Resources\ParentAssessmentResource;
-use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
+use App\Services\AssessmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

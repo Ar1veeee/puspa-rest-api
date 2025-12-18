@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Assessor_Therapist;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Services\TherapistDashboardService;
+use App\Services\TherapistDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

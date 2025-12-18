@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Resources\AdminsUnverifiedResource;
 use App\Http\Resources\TherapistUnverifiedResource;
-use App\Http\Services\OwnerService;
-use App\Http\Services\VerificationService;
 use App\Models\User;
+use App\Services\OwnerService;
+use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
 
 class EmployeeController extends Controller
@@ -57,7 +57,7 @@ class EmployeeController extends Controller
         $this->ownerService->activateAccount($user);
         return $this->successResponse([], 'Akun berhasil diaktifkan', 200);
     }
-    
+
     public function deleteAccount(User $user): JsonResponse
     {
         $this->ownerService->deleteAccount($user);

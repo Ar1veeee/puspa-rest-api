@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\RegistrationRequest;
-use App\Http\Services\RegistrationService;
+use App\Services\RegistrationService;
 
 class RegistrationController extends Controller
 {

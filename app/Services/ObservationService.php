@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Actions\Observation\AgreeToAssessmentAction;
 use App\Actions\Observation\RescheduleObservationAction;

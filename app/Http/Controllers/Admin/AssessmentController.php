@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AssessmentUpdateRequest;
 use App\Http\Resources\AssessmentListAdminResource;
-use App\Http\Services\AssessmentService;
 use App\Models\Assessment;
+use App\Services\AssessmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

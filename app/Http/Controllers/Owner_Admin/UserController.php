@@ -7,9 +7,9 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Http\Resources\AdminResource;
 use App\Http\Resources\ChildrenResource;
 use App\Http\Resources\TherapistResource;
-use App\Http\Services\AdminService;
-use App\Http\Services\ChildService;
-use App\Http\Services\TherapistService;
+use App\Services\AdminService;
+use App\Services\ChildService;
+use App\Services\TherapistService;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller

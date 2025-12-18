@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Exceptions\AlreadyVerifiedException;
 use App\Exceptions\RateLimitExceededException;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Services\VerificationService;
 use App\Models\User;
+use App\Services\VerificationService;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Exception;
 
 class VerificationController extends Controller
 {

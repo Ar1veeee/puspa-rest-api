@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Actions\Admin\CreateAdminAction;
 use App\Actions\Admin\DeleteAdminAction;

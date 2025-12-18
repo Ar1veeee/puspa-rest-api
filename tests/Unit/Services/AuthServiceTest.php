@@ -3,11 +3,11 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Repositories\GuardianRepository;
-use App\Notifications\EmailVerificationNotification;
 use App\Http\Repositories\UserRepository;
-use App\Http\Services\AuthService;
 use App\Models\Guardian;
 use App\Models\User;
+use App\Notifications\EmailVerificationNotification;
+use App\Services\AuthService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;

@@ -29,16 +29,24 @@ class ParentAssessmentResource extends JsonResource
             ->first();
 
         $earliestDate = $details->min('scheduled_date');
-        $formattedDate = $earliestDate ? Carbon::parse($earliestDate)->format('d/m/Y') : null;
+        $formattedScheduledDate = $earliestDate ? Carbon::parse($earliestDate)->format('d/m/Y') : null;
+        $formattedScheduledTime = $earliestDate ? Carbon::parse($earliestDate)->format('H:i') : null;
+
+        $parentCompleted = $details->first()?->parent_completed_at;
+        $formattedParentCompletedTime = $parentCompleted ? Carbon::parse($parentCompleted)->format('H:i') : null;
+
+        $adminName = $details->first()?->admin?->admin_name;
 
         return [
-            'assessment_id'    => $this->id,
-            'child_name'       => $this->child->child_name,
-            'guardian_name'    => $primaryGuardian?->guardian_name,
-            'guardian_phone'   => $primaryGuardian?->guardian_phone,
-            'types'            => $types,
-            'scheduled_date'   => $formattedDate,
-            'admin_name'       => $details->first()?->admin?->admin_name,
+            'assessment_id'       => $this->id,
+            'child_name'          => $this->child->child_name,
+            'guardian_name'       => $primaryGuardian?->guardian_name,
+            'guardian_phone'      => $primaryGuardian?->guardian_phone,
+            'types'               => $types,
+            'scheduled_date'      => $formattedScheduledDate,
+            'scheduled_time'      => $formattedScheduledTime,
+            'admin_name'          => $adminName,
+            'parent_completed_time' => $formattedParentCompletedTime,
         ];
     }
 }

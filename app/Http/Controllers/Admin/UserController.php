@@ -12,12 +12,12 @@ use App\Http\Requests\TherapistUpdateRequest;
 use App\Http\Resources\AdminResource;
 use App\Http\Resources\ChildDetailResource;
 use App\Http\Resources\TherapistResource;
-use App\Http\Services\AdminService;
-use App\Http\Services\ChildService;
-use App\Http\Services\TherapistService;
 use App\Models\Admin;
 use App\Models\Child;
 use App\Models\Therapist;
+use App\Services\AdminService;
+use App\Services\ChildService;
+use App\Services\TherapistService;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
@@ -95,11 +95,22 @@ class UserController extends Controller
         return $this->successResponse([], 'Update Terapis Berhasil', 200);
     }
 
-    public function updateChild(ChildFamilyUpdateRequest $request, Child $child)
+    public function updateChild(ChildFamilyUpdateRequest $request, Child $child): JsonResponse
     {
         $data = $request->validated();
         $this->childService->update($data, $child);
         return $this->successResponse([], 'Update Anak Berhasil', 200);
+    }
+
+    public function destroyChild(Child $child): JsonResponse
+    {
+        $this->childService->destroy($child);
+
+        return $this->successResponse(
+            [],
+            'Data Anak Berhasil Diarsipkan',
+            200
+        );
     }
 
     public function destroyTherapist(Therapist $therapist): JsonResponse

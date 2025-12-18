@@ -11,8 +11,8 @@ use App\Http\Resources\ObservationScheduledDetailResource;
 use App\Http\Resources\ObservationsCompletedResource;
 use App\Http\Resources\ObservationsPendingResource;
 use App\Http\Resources\ObservationsScheduledResource;
-use App\Http\Services\ObservationService;
 use App\Models\Observation;
+use App\Services\ObservationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

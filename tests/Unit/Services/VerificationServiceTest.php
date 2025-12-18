@@ -3,9 +3,9 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Repositories\UserRepository;
-use App\Http\Services\VerificationService;
 use App\Models\User;
 use App\Notifications\EmailVerificationNotification;
+use App\Services\VerificationService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;

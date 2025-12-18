@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use App\Http\Repositories\UserRepository;
-use App\Http\Services\ResetPasswordService;
 use App\Models\User;
+use App\Services\ResetPasswordService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;

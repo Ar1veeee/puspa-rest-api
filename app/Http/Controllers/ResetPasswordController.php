@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\RateLimitExceededException;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Services\ResetPasswordService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\JsonResponse;
+use App\Services\ResetPasswordService;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class ResetPasswordController extends Controller
 {

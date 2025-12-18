@@ -7,7 +7,7 @@ use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\LoginResource;
-use App\Http\Services\AuthService;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller

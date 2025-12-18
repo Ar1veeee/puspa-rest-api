@@ -4,9 +4,9 @@ namespace Tests\Unit\Services;
 
 use App\Http\Repositories\TherapistRepository;
 use App\Http\Repositories\UserRepository;
-use App\Http\Services\TherapistService;
 use App\Models\Therapist;
 use App\Models\User;
+use App\Services\TherapistService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -8,11 +8,10 @@ use App\Http\Requests\AddChildrenRequest;
 use App\Http\Requests\ChildFamilyUpdateRequest;
 use App\Http\Resources\ChildDetailResource;
 use App\Http\Resources\ChildrenResource;
-use App\Http\Services\ChildService;
-use App\Http\Services\GuardianService;
 use App\Models\Child;
+use App\Services\ChildService;
+use App\Services\GuardianService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class ChildController extends Controller
 {
@@ -61,10 +60,21 @@ class ChildController extends Controller
         return $this->successResponse([], 'Tambah Anak Berhasil', 201);
     }
 
-    public function updateChild(ChildFamilyUpdateRequest $request, Child $child)
+    public function updateChild(ChildFamilyUpdateRequest $request, Child $child): JsonResponse
     {
         $data = $request->validated();
         $this->childService->update($data, $child);
         return $this->successResponse([], 'Update Anak Berhasil', 200);
+    }
+
+    public function destroyChild(Child $child): JsonResponse
+    {
+        $this->childService->destroy($child);
+
+        return $this->successResponse(
+            [],
+            'Data Anak Berhasil Diarsipkan',
+            200
+        );
     }
 }

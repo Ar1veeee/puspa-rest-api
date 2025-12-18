@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
-use App\Http\Services\ParentDashboardService;
 use App\Http\Resources\ParentDashboardStatsResource;
 use App\Http\Resources\ParentUpcomingScheduleResource;
+use App\Services\ParentDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Exceptions\AlreadyVerifiedException;
 use App\Exceptions\RateLimitExceededException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\RateLimiter;

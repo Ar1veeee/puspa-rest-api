@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use App\Models\AssessmentDetail;
 use App\Models\Observation;
@@ -26,7 +26,7 @@ class TherapistDashboardService
                 'completion_rate'    => $this->getCompletionRate($therapistId, $month, $year),
                 'total_assessors'    => $this->getTotalAssessors($month, $year),
             ],
-            'patient_categories' => $this->getPatientCategories($therapistId, $month, $year),
+            'patient_categories' => $this->getPatientCategories($month, $year),
             'trend_chart'        => $this->getTrendChart($therapistId, $month, $year),
         ];
     }
@@ -183,12 +183,11 @@ class TherapistDashboardService
         return $this->calculateChange($currentRate, $previousRate, true);
     }
 
-    private function getPatientCategories(string $therapistId, int $month, int $year): array
+    private function getPatientCategories(int $month, int $year): array
     {
         $categories = DB::table('assessment_details as ad')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->select('ad.type', DB::raw('COUNT(DISTINCT a.child_id) as count'))
-            ->where('ad.therapist_id', $therapistId)
             ->whereYear('ad.created_at', $year)
             ->whereMonth('ad.created_at', $month)
             ->groupBy('ad.type')
@@ -197,10 +196,10 @@ class TherapistDashboardService
         $total = $categories->sum('count');
 
         $mapping = [
-            'fisio'     => 'Fisioterapi',
-            'okupasi'   => 'Terapi Okupasi',
-            'wicara'    => 'Terapi Wicara',
-            'paedagog'  => 'Paedagogik',
+            'fisio'     => 'Fisio',
+            'okupasi'   => 'Okupasi',
+            'wicara'    => 'Wicara',
+            'paedagog'  => 'Paedagog',
         ];
 
         if ($categories->isEmpty()) {
@@ -209,11 +208,14 @@ class TherapistDashboardService
 
         return $categories->map(function ($cat) use ($total, $mapping) {
             return [
-                'type'       => $mapping[$cat->type] ?? ucfirst($cat->type),
-                'count'       => $cat->count,
-                'percentage'  => $total > 0 ? round(($cat->count / $total) * 100, 1) : 0
+                'type'       => $mapping[$cat->type] ?? ucwords(str_replace('_', ' ', $cat->type)),
+                'count'      => (int) $cat->count,
+                'percentage' => $total > 0 ? round(($cat->count / $total) * 100, 1) : 0,
             ];
-        })->sortByDesc('percentage')->values()->toArray();
+        })
+            ->sortByDesc('percentage')
+            ->values()
+            ->toArray();
     }
 
     private function getTrendChart(string $therapistId, int $month, int $year): array
