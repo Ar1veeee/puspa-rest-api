@@ -6,10 +6,11 @@ use App\Models\AssessmentDetail;
 use App\Models\Observation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TherapistDashboardService
 {
-    public function getDashboardData(string $therapistId, int $month, int $year): array
+    public function getDashboardData(int $month, int $year): array
     {
         $currentPeriod = Carbon::create($year, $month, 1);
 
@@ -20,191 +21,109 @@ class TherapistDashboardService
                 'month_name' => $currentPeriod->translatedFormat('F Y'),
             ],
             'metrics' => [
-                'total_observations' => $this->getTotalObservations($therapistId, $month, $year),
-                'total_assessments'  => $this->getTotalAssessments($therapistId, $month, $year),
-                'total_therapists'   => $this->getTotalTherapists($month, $year),
-                'completion_rate'    => $this->getCompletionRate($therapistId, $month, $year),
-                'total_assessors'    => $this->getTotalAssessors($month, $year),
+                'total_observations' => $this->getTotalObservations($month, $year),
+                'total_assessments'  => $this->getTotalAssessments($month, $year),
+                'total_therapists'   => $this->getTotalTherapists(),
+                'completion_rate'    => $this->getCompletionRate($month, $year),
+                'total_assessors'    => $this->getTotalAssessors(),
             ],
-            'patient_categories' => $this->getPatientCategories($month, $year),
-            'trend_chart'        => $this->getTrendChart($therapistId, $month, $year),
+            'patient_categories' => $this->getPatientCategories(),
+            'trend_chart'        => $this->getTrendChart($month, $year),
         ];
     }
 
-    public function getUpcomingSchedulesCollection(string $therapistId, int $limit = 50)
+    private function getTotalObservations(int $month, int $year): array
     {
-        $observations = Observation::with('child:id,child_name')
-            ->where('therapist_id', $therapistId)
-            ->where('status', 'scheduled')
-            ->where('scheduled_date', '>=', now())
-            ->orderBy('scheduled_date', 'asc')
-            ->limit($limit)
-            ->get()
-            ->map(function ($obs) {
-                return [
-                    'id' => $obs->id,
-                    'nama_pasien' => $obs->child->child_name,
-                    'jenis_layanan' => 'Observasi',
-                    'status' => ucfirst($obs->status),
-                    'tanggal' => Carbon::parse($obs->scheduled_date)->format('d/m/Y'),
-                    'waktu' => Carbon::parse($obs->scheduled_date)->format('H:i'),
-                    'type' => 'observation',
-                ];
-            });
-
-        $assessments = AssessmentDetail::with('assessment.child:id,child_name')
-            ->where('therapist_id', $therapistId)
-            ->where('status', 'scheduled')
-            ->where('scheduled_date', '>=', now())
-            ->orderBy('scheduled_date', 'asc')
-            ->limit($limit)
-            ->get()
-            ->map(function ($detail) {
-                $typeLabels = [
-                    'fisio' => 'Assessment Fisio',
-                    'okupasi' => 'Assessment Okupasi',
-                    'wicara' => 'Assessment Wicara',
-                    'paedagog' => 'Assessment Paedagog',
-                ];
-
-                return [
-                    'id' => $detail->id,
-                    'nama_pasien' => $detail->assessment->child->child_name,
-                    'jenis_layanan' => $typeLabels[$detail->type] ?? 'Assessment',
-                    'status' => ucfirst($detail->status),
-                    'tanggal' => Carbon::parse($detail->scheduled_date)->format('d/m/Y'),
-                    'waktu' => Carbon::parse($detail->scheduled_date)->format('H:i'),
-                    'type' => 'assessment',
-                ];
-            });
-
-        return $observations->concat($assessments)
-            ->sortBy('tanggal')
-            ->values();
-    }
-
-    private function getTotalAssessments(string $therapistId, int $month, int $year): array
-    {
-        $current = DB::table('assessment_details')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $current = Observation::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
             ->count();
 
-        $previousMonth = $month === 1 ? 12 : $month - 1;
-        $previousYear = $month === 1 ? $year - 1 : $year;
+        [$prevMonth, $prevYear] = $this->getPreviousMonthYear($month, $year);
 
-        $previous = DB::table('assessment_details')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $previousYear)
-            ->whereMonth('created_at', $previousMonth)
+        $previous = Observation::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $prevYear)
+            ->whereMonth('scheduled_date', $prevMonth)
             ->count();
 
         return $this->calculateChange($current, $previous);
     }
 
-    private function getTotalObservations(string $therapistId, int $month, int $year): array
+    private function getTotalAssessments(int $month, int $year): array
     {
-        $current = DB::table('observations')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $current = AssessmentDetail::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
             ->count();
 
-        $previousMonth = $month === 1 ? 12 : $month - 1;
-        $previousYear = $month === 1 ? $year - 1 : $year;
+        [$prevMonth, $prevYear] = $this->getPreviousMonthYear($month, $year);
 
-        $previous = DB::table('observations')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $previousYear)
-            ->whereMonth('created_at', $previousMonth)
+        $previous = AssessmentDetail::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $prevYear)
+            ->whereMonth('scheduled_date', $prevMonth)
             ->count();
 
         return $this->calculateChange($current, $previous);
     }
 
-    private function getTotalTherapists(int $month, int $year): array
+    private function getTotalTherapists(): array
     {
-        $current = DB::table('observations')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->whereNotNull('therapist_id')
-            ->distinct('therapist_id')
-            ->count();
-        $previous = DB::table('observations')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month - 1 ?: 12)
-            ->whereNotNull('therapist_id')
-            ->distinct('therapist_id')
-            ->count();
+        $current = DB::table('therapists')->count();
+        $previous = $current;
         return $this->calculateChange($current, $previous);
     }
 
-    private function getTotalAssessors(int $month, int $year): array
+    private function getTotalAssessors(): array
     {
-        $current = DB::table('assessment_details')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->whereNotNull('therapist_id')
-            ->distinct('therapist_id')
-            ->count();
-        $previous = DB::table('assessment_details')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month - 1 ?: 12)
-            ->whereNotNull('therapist_id')
-            ->distinct('therapist_id')
-            ->count();
+        $current = DB::table('therapists')->count();
+        $previous = $current;
         return $this->calculateChange($current, $previous);
     }
 
-    private function getCompletionRate(string $therapistId, int $month, int $year): array
+    private function getCompletionRate(int $month, int $year): array
     {
-        $assessments = DB::table('assessment_details')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month);
+        $query = AssessmentDetail::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month);
 
-        $total = $assessments->count();
-        $completed = (clone $assessments)->where('status', 'completed')->count();
+        $total = (clone $query)->count();
+        $completed = (clone $query)->where('status', 'completed')->count();
         $currentRate = $total > 0 ? round(($completed / $total) * 100) : 0;
 
-        $prevMonth = $month === 1 ? 12 : $month - 1;
-        $prevYear = $month === 1 ? $year - 1 : $year;
+        [$prevMonth, $prevYear] = $this->getPreviousMonthYear($month, $year);
 
-        $prevAssessments = DB::table('assessment_details')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $prevYear)
-            ->whereMonth('created_at', $prevMonth);
+        $prevQuery = AssessmentDetail::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $prevYear)
+            ->whereMonth('scheduled_date', $prevMonth);
 
-        $prevTotal = $prevAssessments->count();
-        $prevCompleted = (clone $prevAssessments)->where('status', 'completed')->count();
+        $prevTotal = (clone $prevQuery)->count();
+        $prevCompleted = (clone $prevQuery)->where('status', 'completed')->count();
         $previousRate = $prevTotal > 0 ? round(($prevCompleted / $prevTotal) * 100) : 0;
 
         return $this->calculateChange($currentRate, $previousRate, true);
     }
 
-    private function getPatientCategories(int $month, int $year): array
+    private function getPatientCategories(): array
     {
         $categories = DB::table('assessment_details as ad')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->select('ad.type', DB::raw('COUNT(DISTINCT a.child_id) as count'))
-            ->whereYear('ad.created_at', $year)
-            ->whereMonth('ad.created_at', $month)
+            ->whereNotNull('ad.scheduled_date')
             ->groupBy('ad.type')
             ->get();
-
-        $total = $categories->sum('count');
-
-        $mapping = [
-            'fisio'     => 'Fisio',
-            'okupasi'   => 'Okupasi',
-            'wicara'    => 'Wicara',
-            'paedagog'  => 'Paedagog',
-        ];
 
         if ($categories->isEmpty()) {
             return [];
         }
+
+        $total = $categories->sum('count');
+
+        $mapping = [
+            'fisio'    => 'Fisioterapi',
+            'okupasi'  => 'Terapi Okupasi',
+            'wicara'   => 'Terapi Wicara',
+            'paedagog' => 'Paedagogik',
+        ];
 
         return $categories->map(function ($cat) use ($total, $mapping) {
             return [
@@ -213,38 +132,35 @@ class TherapistDashboardService
                 'percentage' => $total > 0 ? round(($cat->count / $total) * 100, 1) : 0,
             ];
         })
-            ->sortByDesc('percentage')
+            ->sortByDesc('count')
             ->values()
             ->toArray();
     }
 
-    private function getTrendChart(string $therapistId, int $month, int $year): array
+    private function getTrendChart(int $month, int $year): array
     {
-        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
 
-        $totalAnak = DB::table('observations')
-            ->where('therapist_id', $therapistId)
-            ->where('created_at', '<=', $endDate)
+        $totalAnak = Observation::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
             ->distinct('child_id')
             ->count('child_id');
 
-        $totalAssessment = DB::table('assessment_details')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $totalAssessment = AssessmentDetail::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
             ->count();
 
-        $totalObservasi = DB::table('observations')
-            ->where('therapist_id', $therapistId)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $totalObservasi = Observation::whereNotNull('scheduled_date')
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
             ->count();
 
         $kategoriAnak = DB::table('assessment_details as ad')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
-            ->where('ad.therapist_id', $therapistId)
-            ->whereYear('ad.created_at', $year)
-            ->whereMonth('ad.created_at', $month)
+            ->whereNotNull('ad.scheduled_date')
+            ->whereYear('ad.scheduled_date', $year)
+            ->whereMonth('ad.scheduled_date', $month)
             ->distinct('a.child_id')
             ->count('a.child_id');
 
@@ -256,20 +172,108 @@ class TherapistDashboardService
         ];
     }
 
+    private function getPreviousMonthYear(int $month, int $year): array
+    {
+        return $month === 1 ? [12, $year - 1] : [$month - 1, $year];
+    }
+
     private function calculateChange(int $current, int $previous, bool $isPercentage = false): array
     {
         if ($previous == 0) {
-            $change = $current > 0 ? 100 : 0;
+            $changePercent = $current > 0 ? 100 : 0;
         } else {
-            $change = round((($current - $previous) / $previous) * 100);
+            $changePercent = round((($current - $previous) / $previous) * 100);
         }
 
+        $change = $current - $previous;
+
         return [
-            'current' => $isPercentage ? $current . '%' : $current,
-            'previous' => $isPercentage ? $previous . '%' : $previous,
-            'change_percent' => abs($change),
+            'current'          => $isPercentage ? $current . '%' : $current,
+            'previous'         => $isPercentage ? $previous . '%' : $previous,
+            'change_percent'   => abs($changePercent),
             'change_direction' => $change >= 0 ? 'increase' : 'decrease',
-            'trend' => $change > 0 ? 'up' : ($change < 0 ? 'down' : 'stable'),
+            'trend'            => $change > 0 ? 'up' : ($change < 0 ? 'down' : 'stable'),
         ];
+    }
+
+    public function getUpcomingSchedulesCollection(int $limit = 50)
+    {
+        $observations = Observation::with('child:id,child_name')
+            ->where('status', 'scheduled')
+            ->where('scheduled_date', '>=', Carbon::now()->format('Y-m-d'))
+            ->orderBy('scheduled_date')
+            ->limit($limit)
+            ->get();
+
+        $assessments = AssessmentDetail::with('assessment.child:id,child_name')
+            ->where('status', 'scheduled')
+            ->where('scheduled_date', '>=', Carbon::now()->format('Y-m-d'))
+            ->orderBy('scheduled_date')
+            ->limit($limit)
+            ->get();
+
+        $allSchedules = collect();
+
+        foreach ($observations as $obs) {
+            $allSchedules->push([
+                'id' => $obs->id,
+                'child_id' => $obs->child?->id ?? 'unknown',
+                'child_name' => $obs->child?->child_name ?? 'No Child',
+                'type_label' => 'Observasi',
+                'status' => ucfirst($obs->status),
+                'scheduled_date' => $obs->scheduled_date,
+                'date' => Carbon::parse($obs->scheduled_date)->format('d/m/Y'),
+                'time' => Carbon::parse($obs->scheduled_date)->format('H:i'),
+                'original_type' => 'observation',
+            ]);
+        }
+
+        $typeLabels = [
+            'umum' => 'Assessment Umum',
+            'fisio' => 'Assessment Fisio',
+            'okupasi' => 'Assessment Okupasi',
+            'wicara' => 'Assessment Wicara',
+            'paedagog' => 'Assessment Paedagog',
+        ];
+
+        foreach ($assessments as $assessment) {
+            $allSchedules->push([
+                'id' => $assessment->id,
+                'child_id' => $assessment->assessment?->child?->id ?? 'unknown',
+                'child_name' => $assessment->assessment?->child?->child_name ?? 'No Child',
+                'type_label' => $typeLabels[$assessment->type] ?? 'Assessment',
+                'status' => ucfirst($assessment->status),
+                'scheduled_date' => $assessment->scheduled_date,
+                'date' => Carbon::parse($assessment->scheduled_date)->format('d/m/Y'),
+                'time' => Carbon::parse($assessment->scheduled_date)->format('H:i'),
+                'original_type' => 'assessment',
+            ]);
+        }
+
+        $grouped = $allSchedules->groupBy(function ($item) {
+            return $item['child_id'] . '|' . $item['date'] . '|' . $item['time'];
+        });
+
+        $result = $grouped->map(function ($group) {
+            $first = $group->first();
+
+            return [
+                'id' => $group->pluck('id')->implode(','),
+                'child_name' => $first['child_name'],
+                'types' => $group->pluck('type_label')->unique()->sort()->values()->toArray(),
+                'status' => $first['status'],
+                'date' => $first['date'],
+                'time' => $first['time'],
+                'scheduled_date' => $first['scheduled_date'],
+            ];
+        })
+            ->sortBy('scheduled_date')
+            ->values()
+            ->map(function ($item) {
+                unset($item['scheduled_date']);
+                return $item;
+            });
+
+        return $result;
     }
 }

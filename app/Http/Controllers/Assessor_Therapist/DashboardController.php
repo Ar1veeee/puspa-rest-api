@@ -7,6 +7,7 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Services\TherapistDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -29,18 +30,20 @@ class DashboardController extends Controller
         $therapist = $request->user()->therapist;
 
         if (!$therapist) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Therapist profile not found'
-            ], 404);
+            return $this->errorResponse(
+                'Therapist profile not found',
+                ['message' => ['Therapist profile tidak ditemukan']],
+                404
+            );
         }
 
-        $data = $this->service->getDashboardData($therapist->id, $month, $year);
+        $data = $this->service->getDashboardData($month, $year);
 
-        return response()->json([
-            'success' => true,
-            'data' => $data
-        ]);
+        return $this->successResponse(
+            $data,
+            'Stats',
+            200
+        );
     }
 
     public function upcomingSchedules(Request $request): JsonResponse
@@ -60,7 +63,6 @@ class DashboardController extends Controller
         }
 
         $schedules = $this->service->getUpcomingSchedulesCollection(
-            $therapist->id,
             $validated['limit'] ?? 50
         );
 
