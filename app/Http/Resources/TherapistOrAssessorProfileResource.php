@@ -22,7 +22,9 @@ class TherapistOrAssessorProfileResource extends JsonResource
             'therapist_id' => $this->id,
             'therapist_name' => $this->therapist_name,
             'therapist_phone' => $this->therapist_phone,
-            'therapist_birth_date' => $this->therapist_birth_date?->format('Y-m-d') ?? 'Belum Ditambahkan',
+            'therapist_birth_date' => $this->therapist_birth_date
+                ? $this->therapist_birth_date->format('Y-m-d')
+                : 'Tanggal Lahir Kosong',
             'therapist_section' => $this->therapist_section,
             'email' => $this->user->email,
             'role' => $role,
