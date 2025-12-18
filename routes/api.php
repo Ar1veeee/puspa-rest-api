@@ -145,6 +145,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild'])
             ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
+        Route::delete('/children/{child}', [AdminUserManagement::class, 'destroyChild'])
+            ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
 
         Route::put('/observations/{observation}', [AdminObservationManagement::class, 'updateObservationDate'])
             ->whereNumber('observation');
@@ -240,13 +242,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/chart', [ParentDashboard::class, 'chartData']);
             Route::get('/upcoming-schedules', [ParentDashboard::class, 'upcomingSchedules']);
         });
-        
+
         Route::get('/profile', [ParentProfileManagement::class, 'showProfile']);
         Route::post('/profile/{guardian}', [ParentProfileManagement::class, 'updateProfile'])
             ->whereUlid('guardian', '[0-9A-HJ-NP-TV-Z]{26}');
 
         Route::get('/children', [ParentChildManagement::class, 'indexChildren']);
         Route::get('/children/{child}', [ParentChildManagement::class, 'showChild'])
+            ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
+        Route::delete('/children/{child}', [ParentChildManagement::class, 'destroyChild'])
             ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
         Route::put('/children/{child}', [ParentChildManagement::class, 'updateChild'])
             ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');

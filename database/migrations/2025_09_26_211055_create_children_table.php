@@ -26,6 +26,7 @@ return new class extends Migration
                 'child_religion',
                 ['islam', 'kristen', 'katolik', 'hindu', 'budha', 'konghucu', 'lainnya']
             )->nullable();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
 
             $table->index(['family_id'], 'family_id_idx');

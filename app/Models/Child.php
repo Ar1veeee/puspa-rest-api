@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Child extends Model
 {
-    use HasFactory;
-    use HasUlids;
+    use HasFactory, HasUlids, SoftDeletes;
 
     protected $table = 'children';
 
@@ -40,6 +40,7 @@ class Child extends Model
     protected $casts = [
         'child_birth_date' => 'date',
         'child_address' => 'encrypted',
+        'deleted_at' => 'datetime'
     ];
 
     public function family(): BelongsTo
