@@ -22,8 +22,6 @@ return new class extends Migration
 
             $table->foreign('observation_id')->references('id')->on('observations')->onDelete('cascade');
             $table->foreign('question_id')->references('id')->on('observation_questions')->onDelete('cascade');
-
-            $table->unique(['observation_id', 'question_id']);
         });
     }
 

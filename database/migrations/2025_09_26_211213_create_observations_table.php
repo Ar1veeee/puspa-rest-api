@@ -22,8 +22,8 @@ return new class extends Migration
             $table->text('conclusion')->nullable();
             $table->text('recommendation')->nullable();
             $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
-            $table->time('completed_at');
-            $table->boolean('is_continued_to_assessment');
+            $table->time('completed_at')->nullable();
+            $table->boolean('is_continued_to_assessment')->default(false);
             $table->timestamps();
 
             $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');

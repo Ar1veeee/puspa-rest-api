@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('guardian_identity_number', 40)->unique()->nullable();
             $table->string('guardian_name', 100);
             $table->binary('guardian_phone', 100);
-            $table->date('guardian_birth_date');
+            $table->date('guardian_birth_date')->nullable();
             $table->string('guardian_occupation', 100)->nullable();
             $table->string('profile_picture')->nullable();
             $table->string('relationship_with_child', 100)->nullable();
