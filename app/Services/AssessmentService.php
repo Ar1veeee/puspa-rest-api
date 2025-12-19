@@ -51,14 +51,14 @@ class AssessmentService
                 fn($q, $search) =>
                 $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
             )
-            ->orderBy(
-                AssessmentDetail::select('scheduled_date')
+            ->addSelect([
+                'earliest_scheduled_date' => AssessmentDetail::select('scheduled_date')
                     ->whereColumn('assessment_id', 'assessments.id')
                     ->where('parent_completed_status', $filters['status'] ?? null)
                     ->orderBy('scheduled_date', 'asc')
-                    ->limit(1),
-                'asc'
-            )
+                    ->limit(1)
+            ])
+            ->orderBy('earliest_scheduled_date', 'asc')
             ->get();
     }
 

@@ -7,6 +7,7 @@ use App\Models\Observation;
 use App\Models\Assessment;
 use App\Models\AssessmentDetail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ParentDashboardService
 {
@@ -18,37 +19,42 @@ class ParentDashboardService
         $now = Carbon::now();
         $lastMonth = $now->copy()->subMonth();
 
-        $childIds = Child::where('family_id', $familyId)->pluck('id');
+        $children = Child::where('family_id', $familyId)->get();
 
-        if ($childIds->isEmpty()) {
+        if ($children->isEmpty()) {
             return $this->getEmptyStats();
         }
 
-        $totalChildren = $childIds->count();
-        $totalChildrenLastMonth = Child::where('family_id', $familyId)
-            ->where('created_at', '<=', $lastMonth)
-            ->count();
+        $childIds = $children->pluck('id');
 
-        $totalObservations = Observation::whereIn('child_id', $childIds)->count();
-        $totalObservationsLastMonth = Observation::whereIn('child_id', $childIds)
-            ->where('created_at', '<=', $lastMonth)
-            ->count();
+        $totalChildren = $children->count();
+        $totalChildrenLastMonth = $children->filter(fn($c) => $c->created_at <= $lastMonth)->count();
 
-        $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
-        $totalAssessments = AssessmentDetail::whereIn('assessment_id', $assessmentIds)->count();
-        $totalAssessmentsLastMonth = AssessmentDetail::whereIn('assessment_id', $assessmentIds)
-            ->where('created_at', '<=', $lastMonth)
-            ->count();
+        $obsStats = Observation::whereIn('child_id', $childIds)
+            ->selectRaw('
+            COUNT(*) as total,
+            COUNT(CASE WHEN created_at <= ? THEN 1 END) as last_month
+        ', [$lastMonth])
+            ->first();
+
+        $assStats = DB::table('assessment_details as ad')
+            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
+            ->whereIn('a.child_id', $childIds)
+            ->selectRaw('
+            COUNT(*) as total,
+            COUNT(CASE WHEN ad.created_at <= ? THEN 1 END) as last_month
+        ', [$lastMonth])
+            ->first();
 
         return [
             'total_children' => $totalChildren,
             'total_children_percentage' => $this->calculatePercentage($totalChildren, $totalChildrenLastMonth),
 
-            'total_observations' => $totalObservations,
-            'total_observations_percentage' => $this->calculatePercentage($totalObservations, $totalObservationsLastMonth),
+            'total_observations' => $obsStats->total,
+            'total_observations_percentage' => $this->calculatePercentage($obsStats->total, $obsStats->last_month),
 
-            'total_assessments' => $totalAssessments,
-            'total_assessments_percentage' => $this->calculatePercentage($totalAssessments, $totalAssessmentsLastMonth),
+            'total_assessments' => $assStats->total,
+            'total_assessments_percentage' => $this->calculatePercentage($assStats->total, $assStats->last_month),
         ];
     }
 
@@ -57,38 +63,43 @@ class ParentDashboardService
      */
     public function getChartData(string $familyId): array
     {
-        $childIds = Child::where('family_id', $familyId)->pluck('id');
+        $children = Child::where('family_id', $familyId)->select('id', 'created_at')->get();
 
-        if ($childIds->isEmpty()) {
+        if ($children->isEmpty()) {
             return [];
         }
 
-        $months = collect(range(11, 0))->map(function ($monthsAgo) {
-            return Carbon::now()->subMonths($monthsAgo);
-        });
+        $childIds = $children->pluck('id');
 
-        return $months->map(function ($month) use ($childIds, $familyId) {
-            $startOfMonth = $month->copy()->startOfMonth();
+        $start = Carbon::now()->subMonths(11)->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+
+        $observations = Observation::whereIn('child_id', $childIds)
+            ->whereBetween('created_at', [$start, $end])
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        $assessments = DB::table('assessment_details as ad')
+            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
+            ->whereIn('a.child_id', $childIds)
+            ->whereBetween('ad.created_at', [$start, $end])
+            ->selectRaw('DATE_FORMAT(ad.created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        return collect(range(11, 0))->map(function ($i) use ($children, $observations, $assessments) {
+            $month = Carbon::now()->subMonths($i);
             $endOfMonth = $month->copy()->endOfMonth();
 
-            $totalChildren = Child::where('family_id', $familyId)
-                ->where('created_at', '<=', $endOfMonth)
-                ->count();
-
-            $totalObservations = Observation::whereIn('child_id', $childIds)
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->count();
-
-            $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
-            $totalAssessments = AssessmentDetail::whereIn('assessment_id', $assessmentIds)
-                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                ->count();
+            $cumulativeChildren = $children->filter(fn($c) => $c->created_at <= $endOfMonth)->count();
+            $monthKey = $month->format('Y-m');
 
             return [
-                'month' => $month->format('M Y'),
-                'total_children' => $totalChildren,
-                'total_observations' => $totalObservations,
-                'total_assessments' => $totalAssessments,
+                'month' => $month->translatedFormat('M Y'),
+                'total_children' => $cumulativeChildren,
+                'total_observations' => $observations[$monthKey] ?? 0,
+                'total_assessments' => $assessments[$monthKey] ?? 0,
             ];
         })->toArray();
     }

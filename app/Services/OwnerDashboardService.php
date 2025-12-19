@@ -61,31 +61,32 @@ class OwnerDashboardService
 
     private function getCompletionRate(Carbon $current, Carbon $previous): array
     {
-        $currentTotal = DB::table('assessment_details')
+        $currentData = DB::table('assessment_details')
+            ->selectRaw('
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
+        ', ['completed'])
             ->whereYear('created_at', $current->year)
             ->whereMonth('created_at', $current->month)
-            ->count();
+            ->first();
 
-        $currentCompleted = DB::table('assessment_details')
-            ->whereYear('created_at', $current->year)
-            ->whereMonth('created_at', $current->month)
-            ->where('status', 'completed')
-            ->count();
+        $previousData = DB::table('assessment_details')
+            ->selectRaw('
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
+        ', ['completed'])
+            ->whereYear('created_at', $previous->year)
+            ->whereMonth('created_at', $previous->month)
+            ->first();
+
+        $currentTotal = $currentData->total;
+        $currentCompleted = $currentData->completed;
+        $previousTotal = $previousData->total;
+        $previousCompleted = $previousData->completed;
 
         $currentRate = $currentTotal > 0
             ? round(($currentCompleted / $currentTotal) * 100, 2)
             : 0;
-
-        $previousTotal = DB::table('assessment_details')
-            ->whereYear('created_at', $previous->year)
-            ->whereMonth('created_at', $previous->month)
-            ->count();
-
-        $previousCompleted = DB::table('assessment_details')
-            ->whereYear('created_at', $previous->year)
-            ->whereMonth('created_at', $previous->month)
-            ->where('status', 'completed')
-            ->count();
 
         $previousRate = $previousTotal > 0
             ? round(($previousCompleted / $previousTotal) * 100, 2)

@@ -139,24 +139,20 @@ class TherapistDashboardService
 
     private function getTrendChart(int $month, int $year): array
     {
+        $baseQuery = function ($table, $dateColumn = 'scheduled_date') use ($month, $year) {
+            return DB::table($table)
+                ->whereNotNull($dateColumn)
+                ->whereYear($dateColumn, $year)
+                ->whereMonth($dateColumn, $month);
+        };
 
-        $totalAnak = Observation::whereNotNull('scheduled_date')
-            ->whereYear('scheduled_date', $year)
-            ->whereMonth('scheduled_date', $month)
+        $totalObservations = $baseQuery('observations')->count();
+
+        $totalUniqueChildrenObs = $baseQuery('observations')
             ->distinct('child_id')
             ->count('child_id');
 
-        $totalAssessment = AssessmentDetail::whereNotNull('scheduled_date')
-            ->whereYear('scheduled_date', $year)
-            ->whereMonth('scheduled_date', $month)
-            ->count();
-
-        $totalObservasi = Observation::whereNotNull('scheduled_date')
-            ->whereYear('scheduled_date', $year)
-            ->whereMonth('scheduled_date', $month)
-            ->count();
-
-        $kategoriAnak = DB::table('assessment_details as ad')
+        $totalUniqueChildrenAss = DB::table('assessment_details as ad')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
             ->whereNotNull('ad.scheduled_date')
             ->whereYear('ad.scheduled_date', $year)
@@ -164,11 +160,13 @@ class TherapistDashboardService
             ->distinct('a.child_id')
             ->count('a.child_id');
 
+        $totalAssessments = $baseQuery('assessment_details')->count();
+
         return [
-            ['label' => 'Total Anak', 'value' => $totalAnak],
-            ['label' => 'Kategori Anak', 'value' => $kategoriAnak],
-            ['label' => 'Total Observasi', 'value' => $totalObservasi],
-            ['label' => 'Total Assessment', 'value' => $totalAssessment],
+            ['label' => 'Total Anak (Observasi)', 'value' => $totalUniqueChildrenObs],
+            ['label' => 'Kategori Anak (Assessment)', 'value' => $totalUniqueChildrenAss],
+            ['label' => 'Total Observasi', 'value' => $totalObservations],
+            ['label' => 'Total Assessment', 'value' => $totalAssessments],
         ];
     }
 
