@@ -127,8 +127,6 @@ class AssessmentController extends Controller
             return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
         }
 
-        $this->authorize('fillAssessor', [$assessment, $type]);
-
         $data = $request->validated();
 
         $this->assessmentService->storeAssessorAssessment($assessment, $type, $data);
