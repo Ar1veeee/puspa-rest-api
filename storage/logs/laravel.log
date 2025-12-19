@@ -1,0 +1,222 @@
+[2025-12-19 20:21:43] local.ERROR: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php:178)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(131): Illuminate\\Foundation\\PackageManifest->write()
+#1 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(107): Illuminate\\Foundation\\PackageManifest->build()
+#2 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(90): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(79): Illuminate\\Foundation\\PackageManifest->config()
+#4 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap()
+#6 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(447): Illuminate\\Foundation\\Application->bootstrapWith()
+#7 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(199): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#9 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-31b934f114eabc246b541addb8b458e3.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-31b934f114eabc246b541addb8b458e3.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-065d5712dfde8677e60908bcb0c782eb.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-065d5712dfde8677e60908bcb0c782eb.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6d96201ad95cad12367117063c707ebf.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6d96201ad95cad12367117063c707ebf.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-1e7ea3cf42a2f9b84f3de09530e2c135.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-1e7ea3cf42a2f9b84f3de09530e2c135.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f5442aeac73a6a9021bd7ce113d6a606.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f5442aeac73a6a9021bd7ce113d6a606.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6fd83ab5fb3f0a7e73c08ddae18f9934.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6fd83ab5fb3f0a7e73c08ddae18f9934.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f6c2bb05e77ee582c501379f6998f2c4.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f6c2bb05e77ee582c501379f6998f2c4.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-4002dc57353b79de338dc3d6087d978a.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-4002dc57353b79de338dc3d6087d978a.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:44] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-7563160ca998bde672640aa1e68dfd08.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-7563160ca998bde672640aa1e68dfd08.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:45] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6d96201ad95cad12367117063c707ebf.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-6d96201ad95cad12367117063c707ebf.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:45] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-1e7ea3cf42a2f9b84f3de09530e2c135.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-1e7ea3cf42a2f9b84f3de09530e2c135.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:45] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f5442aeac73a6a9021bd7ce113d6a606.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f5442aeac73a6a9021bd7ce113d6a606.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:45] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-4002dc57353b79de338dc3d6087d978a.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-4002dc57353b79de338dc3d6087d978a.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:21:45] local.ERROR: __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Error(code: 0): __VSCODE_LARAVEL_STARTUP_ERROR__: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f6c2bb05e77ee582c501379f6998f2c4.php:33)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/_laravel_ide/discover-f6c2bb05e77ee582c501379f6998f2c4.php(62): LaravelVsCode::startupError()
+#1 {main}
+"} 
+[2025-12-19 20:22:31] local.ERROR: The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The /home/ar1ve/Developments/laravel/puspa-api/bootstrap/cache directory must be present and writable. at /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php:178)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(131): Illuminate\\Foundation\\PackageManifest->write()
+#1 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(107): Illuminate\\Foundation\\PackageManifest->build()
+#2 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(90): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(79): Illuminate\\Foundation\\PackageManifest->config()
+#4 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(286): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap()
+#6 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(447): Illuminate\\Foundation\\Application->bootstrapWith()
+#7 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(199): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#9 {main}
+"} 
+[2025-12-19 20:49:39] local.ERROR: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ownerPuspa' for key 'users.users_username_unique' (Connection: mysql, SQL: insert into `users` (`username`, `email`, `password`, `email_verified_at`, `is_active`, `id`, `updated_at`, `created_at`) values (ownerPuspa, owner@puspa.com, $2y$10$.fj84JtwtImDrbRK0ifHKe3OxcpjRwIonCZJP5/tzgv2U.8JKIVra, 2025-12-19 20:49:39, 1, 01kcvdz3pp9afnzgf3mf13p4xj, 2025-12-19 20:49:39, 2025-12-19 20:49:39)) {"exception":"[object] (Illuminate\\Database\\UniqueConstraintViolationException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ownerPuspa' for key 'users.users_username_unique' (Connection: mysql, SQL: insert into `users` (`username`, `email`, `password`, `email_verified_at`, `is_active`, `id`, `updated_at`, `created_at`) values (ownerPuspa, owner@puspa.com, $2y$10$.fj84JtwtImDrbRK0ifHKe3OxcpjRwIonCZJP5/tzgv2U.8JKIVra, 2025-12-19 20:49:39, 1, 01kcvdz3pp9afnzgf3mf13p4xj, 2025-12-19 20:49:39, 2025-12-19 20:49:39)) at /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Connection.php:824)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#1 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php(34): Illuminate\\Database\\Connection->run()
+#2 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3498): Illuminate\\Database\\MySqlConnection->insert()
+#3 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1982): Illuminate\\Database\\Query\\Builder->insert()
+#4 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1310): Illuminate\\Database\\Eloquent\\Builder->__call()
+#5 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1138): Illuminate\\Database\\Eloquent\\Model->performInsert()
+#6 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1025): Illuminate\\Database\\Eloquent\\Model->save()
+#7 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Support/helpers.php(320): Illuminate\\Database\\Eloquent\\Builder->{closure:Illuminate\\Database\\Eloquent\\Builder::create():1024}()
+#8 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1024): tap()
+#9 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php(23): Illuminate\\Database\\Eloquent\\Builder->create()
+#10 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(2335): Illuminate\\Database\\Eloquent\\Model->forwardCallTo()
+#11 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(2347): Illuminate\\Database\\Eloquent\\Model->__call()
+#12 /home/ar1ve/Developments/laravel/puspa-api/database/seeders/OwnerSeeder.php(18): Illuminate\\Database\\Eloquent\\Model::__callStatic()
+#13 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Database\\Seeders\\OwnerSeeder->run()
+#14 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#15 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#16 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#17 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#18 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(184): Illuminate\\Container\\Container->call()
+#19 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(193): Illuminate\\Database\\Seeder->{closure:Illuminate\\Database\\Seeder::__invoke():183}()
+#20 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(61): Illuminate\\Database\\Seeder->__invoke()
+#21 /home/ar1ve/Developments/laravel/puspa-api/database/seeders/DatabaseSeeder.php(16): Illuminate\\Database\\Seeder->call()
+#22 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Database\\Seeders\\DatabaseSeeder->run()
+#23 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#24 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#25 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#26 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#27 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(184): Illuminate\\Container\\Container->call()
+#28 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(193): Illuminate\\Database\\Seeder->{closure:Illuminate\\Database\\Seeder::__invoke():183}()
+#29 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(70): Illuminate\\Database\\Seeder->__invoke()
+#30 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php(155): Illuminate\\Database\\Console\\Seeds\\SeedCommand->{closure:Illuminate\\Database\\Console\\Seeds\\SeedCommand::handle():69}()
+#31 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(69): Illuminate\\Database\\Eloquent\\Model::unguarded()
+#32 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Database\\Console\\Seeds\\SeedCommand->handle()
+#33 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#34 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#35 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#36 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#37 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#38 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#39 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#40 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Concerns/CallsCommands.php(67): Illuminate\\Console\\Command->run()
+#41 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Concerns/CallsCommands.php(28): Illuminate\\Console\\Command->runCommand()
+#42 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(99): Illuminate\\Console\\Command->call()
+#43 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(641): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->{closure:Illuminate\\Database\\Console\\Migrations\\MigrateCommand::handle():83}()
+#44 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(83): Illuminate\\Database\\Migrations\\Migrator->usingConnection()
+#45 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->handle()
+#46 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#47 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#48 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#49 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#50 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#51 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#52 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#53 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(1096): Illuminate\\Console\\Command->run()
+#54 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#55 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#56 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#57 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#58 {main}
+
+[previous exception] [object] (PDOException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'ownerPuspa' for key 'users.users_username_unique' at /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php:45)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php(45): PDOStatement->execute()
+#1 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Connection.php(816): Illuminate\\Database\\MySqlConnection->{closure:Illuminate\\Database\\MySqlConnection::insert():34}()
+#2 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#3 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/MySqlConnection.php(34): Illuminate\\Database\\Connection->run()
+#4 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3498): Illuminate\\Database\\MySqlConnection->insert()
+#5 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1982): Illuminate\\Database\\Query\\Builder->insert()
+#6 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1310): Illuminate\\Database\\Eloquent\\Builder->__call()
+#7 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1138): Illuminate\\Database\\Eloquent\\Model->performInsert()
+#8 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1025): Illuminate\\Database\\Eloquent\\Model->save()
+#9 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Support/helpers.php(320): Illuminate\\Database\\Eloquent\\Builder->{closure:Illuminate\\Database\\Eloquent\\Builder::create():1024}()
+#10 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1024): tap()
+#11 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php(23): Illuminate\\Database\\Eloquent\\Builder->create()
+#12 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(2335): Illuminate\\Database\\Eloquent\\Model->forwardCallTo()
+#13 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(2347): Illuminate\\Database\\Eloquent\\Model->__call()
+#14 /home/ar1ve/Developments/laravel/puspa-api/database/seeders/OwnerSeeder.php(18): Illuminate\\Database\\Eloquent\\Model::__callStatic()
+#15 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Database\\Seeders\\OwnerSeeder->run()
+#16 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#17 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#18 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#19 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#20 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(184): Illuminate\\Container\\Container->call()
+#21 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(193): Illuminate\\Database\\Seeder->{closure:Illuminate\\Database\\Seeder::__invoke():183}()
+#22 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(61): Illuminate\\Database\\Seeder->__invoke()
+#23 /home/ar1ve/Developments/laravel/puspa-api/database/seeders/DatabaseSeeder.php(16): Illuminate\\Database\\Seeder->call()
+#24 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Database\\Seeders\\DatabaseSeeder->run()
+#25 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#26 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#27 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#28 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#29 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(184): Illuminate\\Container\\Container->call()
+#30 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(193): Illuminate\\Database\\Seeder->{closure:Illuminate\\Database\\Seeder::__invoke():183}()
+#31 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(70): Illuminate\\Database\\Seeder->__invoke()
+#32 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php(155): Illuminate\\Database\\Console\\Seeds\\SeedCommand->{closure:Illuminate\\Database\\Console\\Seeds\\SeedCommand::handle():69}()
+#33 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(69): Illuminate\\Database\\Eloquent\\Model::unguarded()
+#34 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Database\\Console\\Seeds\\SeedCommand->handle()
+#35 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#36 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#37 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#38 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#39 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#40 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#41 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#42 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Concerns/CallsCommands.php(67): Illuminate\\Console\\Command->run()
+#43 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Concerns/CallsCommands.php(28): Illuminate\\Console\\Command->runCommand()
+#44 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(99): Illuminate\\Console\\Command->call()
+#45 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(641): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->{closure:Illuminate\\Database\\Console\\Migrations\\MigrateCommand::handle():83}()
+#46 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(83): Illuminate\\Database\\Migrations\\Migrator->usingConnection()
+#47 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Database\\Console\\Migrations\\MigrateCommand->handle()
+#48 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#49 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#50 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#51 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#52 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#53 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#54 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#55 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(1096): Illuminate\\Console\\Command->run()
+#56 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#57 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#58 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#59 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#60 {main}
+"} 

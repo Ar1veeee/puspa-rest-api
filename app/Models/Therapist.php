@@ -13,6 +13,8 @@ class Therapist extends Model
     use HasUlids;
     use HasFactory;
 
+    protected $guard_name = 'api';
+
     protected $table = 'therapists';
 
     protected $primaryKey = 'id';

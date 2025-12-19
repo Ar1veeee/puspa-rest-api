@@ -168,6 +168,8 @@ return [
 
     'enable_wildcard_permission' => false,
 
+    'guard_name' => 'api',
+
     /*
      * The class to use for interpreting wildcard permissions.
      * If you need to modify delimiters, override the class and specify its name here.

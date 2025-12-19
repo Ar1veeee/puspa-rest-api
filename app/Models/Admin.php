@@ -13,6 +13,8 @@ class Admin extends Model
     use HasUlids;
     use HasFactory;
 
+    protected $guard_name = 'api';
+    
     protected $table = 'admins';
 
     protected $primaryKey = 'id';

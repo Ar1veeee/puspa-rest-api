@@ -12,6 +12,8 @@ class Guardian extends Model
     use HasFactory;
     use HasUlids;
 
+    protected $guard_name = 'api';
+
     protected $table = 'guardians';
 
     protected $primaryKey = 'id';

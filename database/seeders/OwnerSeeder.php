@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class OwnerSeeder extends Seeder
 {
@@ -22,6 +23,7 @@ class OwnerSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $user->assignRole('owner');
+        $role = Role::findByName('owner', 'api');
+        $user->assignRole($role);
     }
 }

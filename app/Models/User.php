@@ -18,6 +18,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, HasUlids, Notifiable, HasRoles;
 
+    protected $guard_name = 'api';
+
     protected $table = 'users';
 
     protected $primaryKey = 'id';
