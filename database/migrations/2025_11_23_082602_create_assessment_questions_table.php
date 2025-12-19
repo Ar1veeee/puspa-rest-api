@@ -9,23 +9,23 @@ return new class extends Migration {
     {
         Schema::create('assessment_questions', function (Blueprint $table) {
             $table->id();
-
-            $table->unsignedBigInteger('group_id')->nullable()->index();
-            $table->foreign('group_id')->references('id')->on('assessment_question_groups')->onDelete('cascade');
-
-            $table->string('assessment_type')->index();
-            $table->string('section')->index();
-
-            $table->string('question_code')->nullable()->unique();
+            $table->unsignedBigInteger('group_id')->nullable();
+            $table->string('assessment_type', 255);
+            $table->string('section', 255);
+            $table->string('question_code', 255)->unique()->nullable();
             $table->integer('question_number')->default(0);
             $table->text('question_text');
-            
-            $table->string('answer_type');
+            $table->string('answer_type', 255);
             $table->json('answer_options')->nullable();
             $table->json('extra_schema')->nullable();
             $table->boolean('is_active')->default(true);
-
             $table->timestamps();
+
+            $table->foreign('group_id')->references('id')->on('assessment_question_groups')->onDelete('set null');
+
+            $table->index('group_id');
+            $table->index('assessment_type');
+            $table->index('section');
         });
     }
 

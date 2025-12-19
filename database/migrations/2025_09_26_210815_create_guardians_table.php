@@ -13,22 +13,24 @@ return new class extends Migration
     {
         Schema::create('guardians', function (Blueprint $table) {
             $table->char('id', 26)->primary();
-            $table->foreignUlid('family_id')->constrained('families')->cascadeOnDelete();
-            $table->foreignUlid('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('temp_email', 100)->nullable()->unique();
+            $table->char('family_id', 26);
+            $table->char('user_id', 26)->nullable();
+            $table->string('temp_email', 100)->unique();
             $table->enum('guardian_type', ['ayah', 'ibu', 'wali']);
             $table->string('guardian_identity_number', 40)->unique()->nullable();
             $table->string('guardian_name', 100);
-            $table->string('guardian_phone', 500);
-            $table->date('guardian_birth_date')->nullable();
+            $table->binary('guardian_phone', 100);
+            $table->date('guardian_birth_date');
             $table->string('guardian_occupation', 100)->nullable();
             $table->string('profile_picture')->nullable();
             $table->string('relationship_with_child', 100)->nullable();
             $table->timestamps();
 
-            $table->index(['family_id'], 'family_id_idx');
-            $table->index(['user_id'], 'user_id_idx');
-            $table->index(['temp_email'], 'temp_email_idx');
+            $table->foreign('family_id')->references('id')->on('families')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->index('family_id');
+            $table->index(['user_id']);
+            $table->index(['temp_email']);
         });
     }
 

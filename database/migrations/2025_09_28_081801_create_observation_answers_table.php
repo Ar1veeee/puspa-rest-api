@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('observation_answers', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
-            $table->foreignId('question_id')->constrained('observation_questions')->cascadeOnDelete();
+            $table->id();
+            $table->unsignedBigInteger('observation_id');
+            $table->unsignedBigInteger('question_id');
             $table->boolean('answer');
             $table->integer('score_earned')->default(0);
             $table->text('note')->nullable();
+            $table->timestamps();
+
+            $table->foreign('observation_id')->references('id')->on('observations')->onDelete('cascade');
+            $table->foreign('question_id')->references('id')->on('observation_questions')->onDelete('cascade');
 
             $table->unique(['observation_id', 'question_id']);
         });

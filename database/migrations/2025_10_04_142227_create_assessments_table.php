@@ -11,12 +11,19 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('assessments', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->foreignId('observation_id')->constrained('observations')->cascadeOnDelete();
-            $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
-            $table->string('report_file')->nullable();
-            $table->datetime('report_uploaded_at')->nullable();
+            $table->id();
+            $table->unsignedBigInteger('observation_id');
+            $table->char('child_id', 26);
+            $table->char('report_file', 255)->nullable();
+            $table->dateTime('report_uploaded_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('observation_id')->references('id')->on('observations')->onDelete('cascade');
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
+
+            $table->index('child_id');
+            $table->index('created_at');
+            $table->index('observation_id');
         });
     }
 

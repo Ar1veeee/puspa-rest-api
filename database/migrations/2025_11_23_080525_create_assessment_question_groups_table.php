@@ -12,12 +12,16 @@ return new class extends Migration {
     {
         Schema::create('assessment_question_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('assessment_type')->index();
-            $table->string('group_title');
-            $table->string('group_key')->index();
+            $table->string('assessment_type', 255);
+            $table->string('group_title', 255);
+            $table->string('group_key', 255);
             $table->enum('filled_by', ['parent', 'assessor'])->default('assessor');
             $table->integer('sort_order')->default(0);
             $table->timestamps();
+
+            $table->index('assessment_type');
+            $table->index('group_key');
+            $table->index('sort_order');
         });
 
     }

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('therapists', function (Blueprint $table) {
             $table->char('id', 26)->primary();
-            $table->char('user_id', 26)->nullable(false);
-            $table->string('therapist_name', 100)->nullable(false);
-            $table->enum('therapist_section', ['okupasi', 'fisio', 'wicara', 'paedagog'])->nullable(false);
-            $table->string('therapist_phone', 500)->nullable(false);
+            $table->char('user_id', 26);
+            $table->string('therapist_name', 100);
+            $table->enum('therapist_section', ['okupasi', 'fisio', 'wicara', 'paedagog']);
+            $table->string('therapist_phone', 500);
             $table->date('therapist_birth_date')->nullable();
             $table->string('profile_picture')->nullable();
             $table->timestamps();
@@ -25,7 +25,7 @@ return new class extends Migration
                 ->on('users')
                 ->references('id')
                 ->onDelete('cascade');
-            $table->index('user_id', 'user_id_idx');
+            $table->index('user_id');
         });
     }
 

@@ -12,21 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('observations', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->foreignUlid('child_id')->constrained('children')->cascadeOnDelete();
-            $table->foreignUlid('admin_id')->nullable()->constrained('admins')->nullOnDelete();
-            $table->foreignUlid('therapist_id')->nullable()->constrained('therapists')->nullOnDelete();
+            $table->id();
+            $table->char('child_id', 26);
+            $table->char('admin_id', 26)->nullable();
+            $table->char('therapist_id', 26)->nullable();
             $table->dateTime('scheduled_date')->nullable();
             $table->enum('age_category', ['balita', 'anak-anak', 'remaja', 'lainya']);
             $table->integer('total_score')->nullable();
             $table->text('conclusion')->nullable();
             $table->text('recommendation')->nullable();
             $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
-            $table->time('completed_at')->nullable();
-            $table->boolean('is_continued_to_assessment')->nullable()->default(false);
+            $table->time('completed_at');
+            $table->boolean('is_continued_to_assessment');
             $table->timestamps();
 
-            $table->index(['status'], 'status_idx');
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
+            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('set null');
+            $table->foreign('therapist_id')->references('id')->on('therapists')->onDelete('set null');
+
+            $table->index(['child_id', 'status']);
+            $table->index(['status', 'scheduled_date']);
+            $table->index('scheduled_date');
+            $table->index('created_at');
+            $table->index('therapist_id');
         });
     }
 
