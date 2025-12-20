@@ -115,14 +115,6 @@ class AssessmentController extends Controller
     {
         $this->authorize('downloadReport', $assessment);
 
-        if ($assessment->child->parent_id !== auth('parent')->id()) {
-            abort(403, 'Unauthorized');
-        }
-
-        if (!$assessment->report_file) {
-            abort(404, 'Laporan belum tersedia');
-        }
-
         $filePath = storage_path('app/assessment/reports/' . $assessment->report_file);
 
         if (!file_exists($filePath)) {

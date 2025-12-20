@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Assessment;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AssessmentPolicy
@@ -15,30 +14,16 @@ class AssessmentPolicy
     {
         $assessment->loadMissing('child.family.guardians.user');
 
-        $isParent = $assessment->child
+        return $assessment->child
             ->family
             ->guardians
             ->pluck('user_id')
             ->contains($user->id);
-
-        if (!$isParent) {
-            throw new AuthorizationException(
-                'Anda tidak memiliki akses ke asesmen ini karena bukan orang tua dari anak tersebut.'
-            );
-        }
-
-        return true;
     }
 
     public function downloadReport(User $user, Assessment $assessment): bool
     {
-        if (!$assessment->report_file) {
-            throw new AuthorizationException(
-                'Laporan asesmen belum tersedia atau belum diunggah.'
-            );
-        }
-
-        return $this->verifyAsParent($user, $assessment);
+        return $assessment->report_file !== null && $this->verifyAsParent($user, $assessment);
     }
 
     public function fillAssessor(User $user, Assessment $assessment, string $type): bool
@@ -66,10 +51,6 @@ class AssessmentPolicy
 
         $assessmentDetail = $assessment->assessmentDetails()
             ->where('type', $requiredSection)
-            ->where(function ($query) use ($user) {
-                $query->whereNull('therapist_id')
-                    ->orWhere('therapist_id', $user->therapist->id);
-            })
             ->first();
 
         if (!$assessmentDetail) {

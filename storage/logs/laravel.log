@@ -220,3 +220,18 @@
 #59 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
 #60 {main}
 "} 
+[2025-12-19 23:45:24] local.ERROR: The "--ed" option does not exist. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\RuntimeException(code: 0): The \"--ed\" option does not exist. at /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Input/ArgvInput.php:223)
+[stacktrace]
+#0 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Input/ArgvInput.php(152): Symfony\\Component\\Console\\Input\\ArgvInput->addLongOption()
+#1 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Input/ArgvInput.php(85): Symfony\\Component\\Console\\Input\\ArgvInput->parseLongOption()
+#2 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Input/ArgvInput.php(74): Symfony\\Component\\Console\\Input\\ArgvInput->parseToken()
+#3 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Input/Input.php(56): Symfony\\Component\\Console\\Input\\ArgvInput->parse()
+#4 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Command/Command.php(285): Symfony\\Component\\Console\\Input\\Input->bind()
+#5 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#6 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(1096): Illuminate\\Console\\Command->run()
+#7 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#8 /home/ar1ve/Developments/laravel/puspa-api/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#9 /home/ar1ve/Developments/laravel/puspa-api/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#10 /home/ar1ve/Developments/laravel/puspa-api/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#11 {main}
+"} 

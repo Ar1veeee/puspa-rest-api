@@ -14,6 +14,7 @@ class StoreAssessmentRequest extends FormRequest
         $user = $this->user();
         if (!$user) return false;
 
+        // Asesor diperbolehkan submit assessment bagian mereka
         return $user->can('submit_assessment') || $user->can('submit_parent_assessment');
     }
 
@@ -22,13 +23,23 @@ class StoreAssessmentRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'answers' => 'required| array|min:1',
+            'answers' => 'required|array|min:1',
             'answers.*.question_id' => 'required|integer|exists:assessment_questions,id',
             'answers.*.answer' => 'nullable',
-            'answers.*.note' => 'nullable'
+            'answers.*.note' => 'nullable|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'answers.required' => 'Jawaban tidak boleh kosong.',
+            'answers.min' => 'Minimal harus ada satu jawaban.',
+            'answers.*.question_id.required' => 'ID pertanyaan wajib diisi.',
+            'answers.*.question_id.exists' => 'Pertanyaan yang dipilih tidak valid.',
         ];
     }
 }

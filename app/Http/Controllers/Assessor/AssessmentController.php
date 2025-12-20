@@ -18,6 +18,12 @@ class AssessmentController extends Controller
 
     protected $assessmentService;
 
+    private const VALID_ASSESSOR_TYPES = [
+        'paedagog_assessor',
+        'wicara_assessor',
+        'fisio_assessor',
+        'okupasi_assessor',
+    ];
 
     public function __construct(
         AssessmentService $assessmentService
@@ -89,7 +95,7 @@ class AssessmentController extends Controller
     {
         $valid_status = ['completed', 'pending'];
         if (!in_array($status, $valid_status)) {
-            return $this->errorResponse('Validation Error', ['type' => ['Status observasi tidak valid']], 422);
+            return $this->errorResponse('Validation Error', ['status' => ['Status observasi tidak valid']], 422);
         }
 
         $validated = $request->validate([
@@ -116,20 +122,17 @@ class AssessmentController extends Controller
 
     public function storeAssessorAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse
     {
-        $valid_types = [
-            'paedagog_assessor',
-            'wicara_assessor',
-            'fisio_assessor',
-            'okupasi_assessor',
-        ];
-
-        if (!in_array($type, $valid_types)) {
-            return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
+        if (!in_array($type, self::VALID_ASSESSOR_TYPES)) {
+            return $this->errorResponse(
+                'Validation Error',
+                ['type' => ['Tipe asesmen tidak valid. Harus salah satu dari: ' . implode(', ', self::VALID_ASSESSOR_TYPES)]],
+                422
+            );
         }
 
-        $data = $request->validated();
+        $this->authorize('fillAssessor', [$assessment, $type]);
 
-        $this->assessmentService->storeAssessorAssessment($assessment, $type, $data);
+        $this->assessmentService->storeAssessorAssessment($assessment, $type, $request->validated());
 
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
