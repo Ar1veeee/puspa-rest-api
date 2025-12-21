@@ -30,7 +30,6 @@ return new class extends Migration {
             $table->foreign('assessment_detail_id')->references('id')->on('assessment_details')->onDelete('cascade');
             $table->foreign('question_id')->references('id')->on('assessment_questions')->onDelete('cascade');
 
-            $table->unique(['assessment_detail_id', 'question_id']);
             $table->index('assessment_detail_id');
         });
     }
