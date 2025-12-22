@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Assessment extends Model
 {
@@ -30,6 +29,8 @@ class Assessment extends Model
     ];
 
     protected $casts = [
+        'observation_id' => 'integer',
+        'child_id' => 'integer',
         'report_uploaded_at' => 'datetime',
     ];
 

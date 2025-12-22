@@ -28,6 +28,11 @@ class ObservationAnswer extends Model
         'note',
     ];
 
+    protected $casts = [
+        'observation_id' => 'integer',
+        'question_id' => 'integer',
+    ];
+
     public function observation(): BelongsTo
     {
         return $this->belongsTo(Observation::class, 'observation_id', 'id');

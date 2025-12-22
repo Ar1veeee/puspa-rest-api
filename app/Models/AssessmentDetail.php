@@ -31,6 +31,7 @@ class AssessmentDetail extends Model
     ];
 
     protected $casts = [
+        'assessment_id' => 'integer',
         'scheduled_date' => 'datetime',
     ];
 

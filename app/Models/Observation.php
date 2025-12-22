@@ -37,6 +37,9 @@ class Observation extends Model
     ];
 
     protected $casts = [
+        'child_id' => 'integer',
+        'admin_id' => 'integer',
+        'therapist_id' => 'integer',
         'scheduled_date' => 'datetime',
         'is_continued_to_assessment' => 'boolean',
     ];

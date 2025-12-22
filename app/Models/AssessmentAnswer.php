@@ -15,6 +15,8 @@ class AssessmentAnswer extends Model
     ];
 
     protected $casts = [
+        'assessment_id' => 'integer',
+        'question_id' => 'integer',
         'answer_value' => 'json',
     ];
 
