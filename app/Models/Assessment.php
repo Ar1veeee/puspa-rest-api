@@ -30,7 +30,6 @@ class Assessment extends Model
 
     protected $casts = [
         'observation_id' => 'integer',
-        'child_id' => 'integer',
         'report_uploaded_at' => 'datetime',
     ];
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->char('id', 26)->primary();
             $table->char('family_id', 26);
             $table->char('user_id', 26)->nullable();
-            $table->string('temp_email', 100)->unique();
+            $table->string('temp_email', 100)->unique()->nullable();
             $table->enum('guardian_type', ['ayah', 'ibu', 'wali']);
             $table->string('guardian_identity_number', 40)->unique()->nullable();
             $table->string('guardian_name', 100);
