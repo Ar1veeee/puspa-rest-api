@@ -29,6 +29,24 @@ class ObservationService
         });
     }
 
+    private function queryObservations(string $status, $search, $date)
+    {
+        return Observation::with([
+            'child:id,family_id,child_name,child_school,child_gender,child_birth_date',
+            'child.family:id',
+            'child.family.guardians:id,family_id,guardian_name,guardian_phone,guardian_type',
+            'therapist:id,therapist_name'
+        ])
+            ->where('status', $status)
+            ->when(!empty($search), fn($q) => $q->whereHas(
+                'child',
+                fn($c) => $c->where('child_name', 'like', "%{$search}%")
+            ))
+            ->when(!empty($date), fn($q) => $q->whereDate('scheduled_date', $date))
+            ->orderBy('scheduled_date', 'asc')
+            ->get();
+    }
+
     public function getQuestions(Observation $observation)
     {
         $key = "questions_{$observation->age_category}";
@@ -51,23 +69,5 @@ class ObservationService
     public function agreeToAssessment(Observation $observation, array $data): void
     {
         (new AgreeToAssessmentAction)->execute($observation, $data);
-    }
-
-    private function queryObservations(string $status, $search, $date)
-    {
-        return Observation::with([
-            'child:id,family_id,child_name,child_school,child_gender,child_birth_date',
-            'child.family:id',
-            'child.family.guardians:id,family_id,guardian_name,guardian_phone,guardian_type',
-            'therapist:id,therapist_name'
-        ])
-            ->where('status', $status)
-            ->when(!empty($search), fn($q) => $q->whereHas(
-                'child',
-                fn($c) => $c->where('child_name', 'like', "%{$search}%")
-            ))
-            ->when(!empty($date), fn($q) => $q->whereDate('scheduled_date', $date))
-            ->orderBy('scheduled_date', 'asc')
-            ->get();
     }
 }
