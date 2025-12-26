@@ -28,6 +28,7 @@ class ChildDetailResource extends JsonResource
             'father_identity_number' => '-',
             'father_name' => '-',
             'father_phone' => '-',
+            'father_birth_date' => '-',
             'father_age' => '-',
             'father_occupation' => '-',
             'father_relationship' => '-',
@@ -35,6 +36,7 @@ class ChildDetailResource extends JsonResource
             'mother_identity_number' => '-',
             'mother_name' => '-',
             'mother_phone' => '-',
+            'mother_birth_date' => '-',
             'mother_age' => '-',
             'mother_occupation' => '-',
             'mother_relationship' => '-',
@@ -42,6 +44,7 @@ class ChildDetailResource extends JsonResource
             'guardian_identity_number' => '-',
             'guardian_name' => '-',
             'guardian_phone' => '-',
+            'guardian_birth_date' => '-',
             'guardian_age' => '-',
             'guardian_occupation' => '-',
             'guardian_relationship' => '-',
@@ -60,6 +63,7 @@ class ChildDetailResource extends JsonResource
                     $response['father_identity_number'] = $guardian->guardian_identity_number ?? '-';
                     $response['father_name'] = $guardian->guardian_name;
                     $response['father_phone'] = $guardian->guardian_phone;
+                    $response['father_birth_date'] = $guardian->guardian_birth_date ? $guardian->guardian_birth_date->translatedFormat('d F Y') : '-';
                     $response['father_age'] = $age;
                     $response['father_occupation'] = $guardian->guardian_occupation ?? '-';
                     $response['father_relationship'] = $guardian->relationship_with_child ?? '-';
@@ -68,6 +72,7 @@ class ChildDetailResource extends JsonResource
                     $response['mother_identity_number'] = $guardian->guardian_identity_number ?? '-';
                     $response['mother_name'] = $guardian->guardian_name;
                     $response['mother_phone'] = $guardian->guardian_phone;
+                    $response['mother_birth_date'] = $guardian->guardian_birth_date ? $guardian->guardian_birth_date->translatedFormat('d F Y') : '-';
                     $response['mother_age'] = $age;
                     $response['mother_occupation'] = $guardian->guardian_occupation ?? '-';
                     $response['mother_relationship'] = $guardian->relationship_with_child ?? '-';
@@ -76,6 +81,7 @@ class ChildDetailResource extends JsonResource
                     $response['guardian_identity_number'] = $guardian->guardian_identity_number ?? '-';
                     $response['guardian_name'] = $guardian->guardian_name;
                     $response['guardian_phone'] = $guardian->guardian_phone;
+                    $response['mother_birth_date'] = $guardian->guardian_birth_date ? $guardian->guardian_birth_date->translatedFormat('d F Y') : '-';
                     $response['guardian_age'] = $age;
                     $response['guardian_occupation'] = $guardian->guardian_occupation ?? '-';
                     $response['guardian_relationship'] = $guardian->relationship_with_child ?? '-';
