@@ -19,6 +19,7 @@ class UpdateChildWithFamilyAction
             $child->update(Arr::whereNotNull(Arr::only($data, [
                 'child_name',
                 'child_gender',
+                'child_religion',
                 'child_birth_place',
                 'child_birth_date',
                 'child_school',
