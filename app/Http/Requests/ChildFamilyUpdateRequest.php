@@ -29,6 +29,7 @@ class ChildFamilyUpdateRequest extends FormRequest
             'child_gender' => ['nullable', 'string', 'in:laki-laki,perempuan'],
             'child_birth_place' => ['nullable', 'string', 'max:100'],
             'child_birth_date' => ['nullable', 'date'],
+            'child_religion' => ['nullable', 'string', 'in:islam,kristen,katolik,hindu,budha,konghucu,lainnya'],
             'child_school' => ['string', 'max:100'],
             'child_address' => ['nullable', 'string', 'max:150'],
             'child_complaint' => ['nullable', 'string'],
