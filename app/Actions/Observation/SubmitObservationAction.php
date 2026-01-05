@@ -41,24 +41,28 @@ class SubmitObservationAction
 
                 $answersToInsert[] = [
                     'observation_id' => $observation->id,
-                    'question_id'    => $answer['question_id'],
-                    'answer'         => $answer['answer'],
-                    'score_earned'   => $score,
-                    'note'           => $answer['note'] ?? null,
+                    'question_id' => $answer['question_id'],
+                    'answer' => $answer['answer'],
+                    'score_earned' => $score,
+                    'note' => $answer['note'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
+
+            ObservationAnswer::where('observation_id', $observation->id)->delete();
 
             if ($answersToInsert) {
                 ObservationAnswer::insert($answersToInsert);
             }
 
             $observation->update([
-                'therapist_id'   => $therapist->id,
-                'completed_at'   => now(),
-                'total_score'    => $totalScore,
-                'conclusion'     => $data['conclusion'],
+                'therapist_id' => $therapist->id,
+                'completed_at' => now(),
+                'total_score' => $totalScore,
+                'conclusion' => $data['conclusion'],
                 'recommendation' => $data['recommendation'],
-                'status'         => 'completed',
+                'status' => 'completed',
             ]);
 
             $this->createAssessment($observation, $data);
@@ -73,7 +77,7 @@ class SubmitObservationAction
     {
         $assessment = Assessment::create([
             'observation_id' => $observation->id,
-            'child_id'       => $observation->child_id,
+            'child_id' => $observation->child_id,
         ]);
 
         $types = ['umum'];
@@ -84,10 +88,10 @@ class SubmitObservationAction
 
         $details = collect($types)->map(fn($type) => [
             'assessment_id' => $assessment->id,
-            'type'          => $type,
-            'status'        => 'pending',
-            'created_at'    => now(),
-            'updated_at'    => now(),
+            'type' => $type,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
         ])->toArray();
 
         AssessmentDetail::insert($details);
