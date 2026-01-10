@@ -57,8 +57,8 @@ class VerificationService
         $key = $this->rateLimiterKey($user);
 
         return [
-            'is_verified'       => $user->hasVerifiedEmail(),
-            'can_resend'        => !RateLimiter::tooManyAttempts($key, self::MAX_RESEND_ATTEMPTS_PER_HOUR),
+            'is_verified' => $user->hasVerifiedEmail(),
+            'can_resend' => !RateLimiter::tooManyAttempts($key, self::MAX_RESEND_ATTEMPTS_PER_HOUR),
             'remaining_seconds' => RateLimiter::availableIn($key),
         ];
     }

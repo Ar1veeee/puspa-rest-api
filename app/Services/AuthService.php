@@ -11,14 +11,21 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
+    public function __construct(
+        private RegisterUserAction $registerAction,
+        private LoginUserAction $loginAction,
+        private ChangePasswordAction $changePasswordAction,
+        private LogoutUserAction $logoutAction
+    ) {}
+
     public function register(array $data): User
     {
-        return (new RegisterUserAction)->execute($data);
+        return $this->registerAction->execute($data);
     }
 
     public function login(array $data): array
     {
-        return (new LoginUserAction)->execute($data);
+        return $this->loginAction->execute($data);
     }
 
     public function changePassword(
@@ -31,11 +38,11 @@ class AuthService
             ? PersonalAccessToken::findToken($bearerToken)
             : $user->currentAccessToken();
 
-        (new ChangePasswordAction)->execute($user, $currentPassword, $newPassword, $currentToken);
+        $this->changePasswordAction->execute($user, $currentPassword, $newPassword, $currentToken);
     }
 
     public function logout(): void
     {
-        (new LogoutUserAction)->execute();
+        $this->logoutAction->execute();
     }
 }

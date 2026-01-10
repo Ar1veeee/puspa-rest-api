@@ -36,4 +36,45 @@ class RegistrationRequest extends FormRequest
             'guardian_type' => ['required', 'string', 'in:ayah,ibu,wali'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'child_name.required' => 'Nama anak wajib diisi.',
+            'child_name.string' => 'Nama anak harus berupa teks.',
+            'child_name.max' => 'Nama anak maksimal 100 karakter.',
+
+            'child_gender.required' => 'Jenis kelamin anak wajib dipilih.',
+            'child_gender.in' => 'Jenis kelamin anak harus laki-laki atau perempuan.',
+
+            'child_birth_place.required' => 'Tempat lahir anak wajib diisi.',
+            'child_birth_place.max' => 'Tempat lahir anak maksimal 100 karakter.',
+
+            'child_birth_date.required' => 'Tanggal lahir anak wajib diisi.',
+            'child_birth_date.date' => 'Tanggal lahir anak tidak valid.',
+
+            'child_school.string' => 'Nama sekolah harus berupa teks.',
+            'child_school.max' => 'Nama sekolah maksimal 100 karakter.',
+
+            'child_address.required' => 'Alamat anak wajib diisi.',
+            'child_address.max' => 'Alamat anak maksimal 150 karakter.',
+
+            'child_complaint.required' => 'Keluhan anak wajib diisi.',
+
+            'child_service_choice.required' => 'Pilihan layanan wajib diisi.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email maksimal 100 karakter.',
+
+            'guardian_name.required' => 'Nama wali wajib diisi.',
+            'guardian_name.max' => 'Nama wali maksimal 100 karakter.',
+
+            'guardian_phone.required' => 'Nomor telepon wali wajib diisi.',
+            'guardian_phone.max' => 'Nomor telepon wali maksimal 100 karakter.',
+
+            'guardian_type.required' => 'Jenis wali wajib dipilih.',
+            'guardian_type.in' => 'Jenis wali harus ayah, ibu, atau wali.',
+        ];
+    }
 }

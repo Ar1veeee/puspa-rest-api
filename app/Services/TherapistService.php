@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 class TherapistService
 {
+    public function __construct(
+        private CreateTherapistAction $createTherapistAction,
+        private UpdateTherapistAction $updateTherapistAction,
+        private UpdateProfileTherapistAction $updateProfileTherapistAction,
+        private DeleteTherapistAction $deleteTherapistAction,
+    ) {}
+
     public function index(): Collection
     {
         return Therapist::with('user:id,username,email,is_active')
@@ -26,22 +33,22 @@ class TherapistService
 
     public function store(array $data): Therapist
     {
-        return (new CreateTherapistAction)->execute($data);
+        return $this->createTherapistAction->execute($data);
     }
 
     public function update(array $data, Therapist $therapist): Therapist
     {
-        return (new UpdateTherapistAction)->execute($therapist, $data);
+        return $this->updateTherapistAction->execute($therapist, $data);
     }
 
     public function updateProfile(array $data, Therapist $therapist): Therapist
     {
-        return (new UpdateProfileTherapistAction)->execute($therapist, $data);
+        return $this->updateProfileTherapistAction->execute($therapist, $data);
     }
 
     public function destroy(Therapist $therapist): void
     {
-        (new DeleteTherapistAction)->execute($therapist);
+        $this->deleteTherapistAction->execute($therapist);
     }
 
     public function getProfile(string $userId): Therapist

@@ -14,7 +14,7 @@ class ChangePasswordAction
         User $user,
         string $currentPassword,
         $newPassword,
-        PersonalAccessToken $currentToken
+        ?PersonalAccessToken $currentToken
     ): void {
         if (!Hash::check($currentPassword, $user->password)) {
             throw ValidationException::withMessages([

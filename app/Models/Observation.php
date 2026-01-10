@@ -53,7 +53,7 @@ class Observation extends Model
 
     public function child(): BelongsTo
     {
-        return $this->belongsTo(Child::class, 'child_id', 'id');
+        return $this->belongsTo(Child::class, 'child_id', 'id')->withTrashed();
     }
 
     public function admin(): BelongsTo

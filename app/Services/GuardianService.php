@@ -10,6 +10,11 @@ use Illuminate\Support\Arr;
 
 class GuardianService
 {
+    public function __construct(
+        private AddChildAction $addChildAction,
+        private UpdateFamilyGuardiansAction $updateFamilyGuardiansAction,
+    ) {}
+
     public function getProfile(string $userId): Guardian
     {
         return Guardian::with('user')->where('user_id', $userId)->firstOrFail();
@@ -17,19 +22,19 @@ class GuardianService
 
     public function addChild(Guardian $guardian, array $data): Child
     {
-        return (new AddChildAction)->execute($guardian, $data);
+        return $this->addChildAction->execute($guardian, $data);
     }
 
     public function updateFamilyGuardians(Guardian $primaryGuardian, array $data): void
     {
-        (new UpdateFamilyGuardiansAction)->execute($primaryGuardian, $data);
+        $this->updateFamilyGuardiansAction->execute($primaryGuardian, $data);
     }
 
-
-    public function updateProfile(Guardian $guardian, array $data)
+    public function updateProfile(Guardian $guardian, array $data): Guardian
     {
         $guardian->user->update(Arr::only($data, ['email']));
         $guardian->update(Arr::except($data, ['email']));
+
         return $guardian->fresh()->load('user');
     }
 }

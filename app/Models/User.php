@@ -38,6 +38,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
+    ];
+
     public function admin(): HasOne
     {
         return $this->hasOne(Admin::class, 'user_id', 'id');

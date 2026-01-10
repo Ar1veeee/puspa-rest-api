@@ -1,0 +1,266 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Auth API",
+        "description": "Authentication API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "Local Development"
+        },
+        {
+            "url": "https://puspa.sinus.ac.id/api/v1",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/registration": {
+            "post": {
+                "description": "Registration Family And Child",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "examples": {
+                                "Andi Saputra": {
+                                    "description": "Registration Child Andi Saputra",
+                                    "value": {
+                                        "child_name": "Andi Saputra",
+                                        "child_gender": "laki-laki",
+                                        "child_birth_place": "Surakarta",
+                                        "child_birth_date": "2018-05-12",
+                                        "child_school": "TK Melati",
+                                        "child_address": "Jl. Merdeka No. 10",
+                                        "child_complaint": "Kesulitan berbicara",
+                                        "child_service_choice": "Terapi Wicara, Asesmen Tumbuh Kembang",
+                                        "email": "orangtua@mail.com",
+                                        "guardian_name": "Budi Santoso",
+                                        "guardian_phone": "081234567890",
+                                        "guardian_type": "ayah"
+                                    }
+                                }
+                            },
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "child_name",
+                                    "child_gender",
+                                    "child_birth_place",
+                                    "child_birth_date",
+                                    "child_address",
+                                    "child_complaint",
+                                    "child_service_choice",
+                                    "email",
+                                    "guardian_name",
+                                    "guardian_phone",
+                                    "guardian_type"
+                                ],
+                                "properties": {
+                                    "child_name": {
+                                        "type": "string"
+                                    },
+                                    "child_gender": {
+                                        "type": "string"
+                                    },
+                                    "child_birth_place": {
+                                        "type": "string"
+                                    },
+                                    "child_birth_date": {
+                                        "type": "string"
+                                    },
+                                    "child_school": {
+                                        "type": "string"
+                                    },
+                                    "child_address": {
+                                        "type": "string"
+                                    },
+                                    "child_complaint": {
+                                        "type": "string"
+                                    },
+                                    "child_service_choice": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "guardian_name": {
+                                        "type": "string"
+                                    },
+                                    "guardian_phone": {
+                                        "type": "string"
+                                    },
+                                    "guardian_type": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success Registration",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "Success Registration",
+                                        "value": {
+                                            "success": true,
+                                            "message": "Pendaftaran Berhasil",
+                                            "data": []
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "validation_error": {
+                                        "description": "Validation error on request body",
+                                        "value": {
+                                            "message": "The given data was invalid.",
+                                            "errors": {
+                                                "child_name": [
+                                                    "Nama anak wajib diisi."
+                                                ],
+                                                "email": [
+                                                    "Format email tidak valid."
+                                                ],
+                                                "guardian_type": [
+                                                    "Jenis wali harus ayah, ibu, atau wali."
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "message",
+                                        "errors"
+                                    ],
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "example": {
+                                                "child_name": [
+                                                    "Nama anak wajib diisi."
+                                                ],
+                                                "email": [
+                                                    "Format email tidak valid."
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "internal server error": {
+                                        "description": "Internal Server Error",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Pendaftaran Gagal",
+                                            "errors": {
+                                                "error" : "internal server error"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register User"
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Login User"
+            }
+        },
+        "/auth/email-verify/{id}/{hash}": {
+            "get": {
+                "description": "Email Verification"
+            }
+        },
+        "/auth/resend-verification/{user}": {
+            "post": {
+                "description": "Resend Email Verification"
+            }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "description": "Send Email Reset Password"
+            }
+        },
+        "/auth/resend-reset/{email}": {
+            "post": {
+                "description": "Resend Email Reset Password"
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "description": "Reset Current Password"
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "description": "Logout Current User"
+            }
+        }
+    }
+}

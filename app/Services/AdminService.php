@@ -11,12 +11,19 @@ use Illuminate\Database\Eloquent\Collection;
 
 class AdminService
 {
+    public function __construct(
+        private CreateAdminAction $createAdminAction,
+        private UpdateAdminAction $updateAdminAction,
+        private UpdateProfileAdminAction $updateProfileAdminAction,
+        private DeleteAdminAction $deleteAdminAction,
+    ) {}
+
     public function index(): Collection
     {
         return Admin::with('user:id,username,email,is_active')
-        ->whereHas('user', fn($q) => $q->where('is_active', true))
-        ->latest()
-        ->get();
+            ->whereHas('user', fn($q) => $q->where('is_active', true)) // dihapus kalau ga error
+            ->latest()
+            ->get();
     }
 
     public function show(Admin $admin): Admin
@@ -26,22 +33,22 @@ class AdminService
 
     public function store(array $data): Admin
     {
-        return (new CreateAdminAction)->execute($data);
+        return $this->createAdminAction->execute($data);
     }
 
     public function update(array $data, Admin $admin): Admin
     {
-        return (new UpdateAdminAction)->execute($admin, $data);
+        return $this->updateAdminAction->execute($admin, $data);
     }
 
     public function updateProfile(array $data, Admin $admin): Admin
     {
-        return (new UpdateProfileAdminAction)->execute($admin, $data);
+        return $this->updateProfileAdminAction->execute($admin, $data);
     }
 
-    public function destroy(Admin $admin):void
+    public function destroy(Admin $admin): void
     {
-        (new DeleteAdminAction)->execute($admin);
+        $this->deleteAdminAction->execute($admin);
     }
 
     public function getProfile(string $userId): Admin

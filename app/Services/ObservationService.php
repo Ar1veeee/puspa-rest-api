@@ -13,6 +13,12 @@ class ObservationService
 {
     public const CACHE_TTL = 600;
 
+    public function __construct(
+        private SubmitObservationAction $submitObservationAction,
+        private RescheduleObservationAction $rescheduleObservationAction,
+        private AgreeToAssessmentAction $agreeToAssessmentAction,
+    ) {}
+
     public function getObservations(array $filters = [])
     {
         $status = $filters['status'] ?? 'pending';
@@ -58,16 +64,16 @@ class ObservationService
 
     public function submit(Observation $observation, array $data): Observation
     {
-        return (new SubmitObservationAction)->execute($observation, $data);
+        return $this->submitObservationAction->execute($observation, $data);
     }
 
     public function reschedule(Observation $observation, array $data): void
     {
-        (new RescheduleObservationAction)->execute($observation, $data);
+        $this->rescheduleObservationAction->execute($observation, $data);
     }
 
     public function agreeToAssessment(Observation $observation, array $data): void
     {
-        (new AgreeToAssessmentAction)->execute($observation, $data);
+        $this->agreeToAssessmentAction->execute($observation, $data);
     }
 }

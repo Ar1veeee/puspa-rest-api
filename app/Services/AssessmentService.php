@@ -14,7 +14,13 @@ use Illuminate\Support\Facades\Cache;
 
 class AssessmentService
 {
-    private const CACHE_QUESTIONS   = 'assessment_questions_';
+    private const CACHE_QUESTIONS = 'assessment_questions_';
+
+    public function __construct(
+        private StoreParentAssessmentAction $storeParentAssessmentAction,
+        private StoreAssessorAssessmentAction $storeAssessorAssessmentAction,
+        private UpdateScheduledDateAction $updateScheduledDateAction,
+    ) {}
 
     public function getAssessments(array $filters = [])
     {
@@ -136,29 +142,29 @@ class AssessmentService
                 ->with('question:id,question_text')
                 ->get()
                 ->map(fn($answer) => [
-                    'question_id' => $answer->question_id,
+                    'question_id'   => $answer->question_id,
                     'question_text' => $answer->question->question_text ?? null,
-                    'answer' => $answer->answer_value,
-                    'note' => $answer->note,
+                    'answer'        => $answer->answer_value,
+                    'note'          => $answer->note,
                 ]);
         });
     }
 
     public function storeParentAssessment(Assessment $assessment, string $type, array $data): void
     {
-        (new StoreParentAssessmentAction)->execute($assessment, $type, $data);
+        $this->storeParentAssessmentAction->execute($assessment, $type, $data);
         Cache::forget("answers_{$assessment->id}_{$type}");
     }
 
     public function storeAssessorAssessment(Assessment $assessment, string $type, array $data): void
     {
-        (new StoreAssessorAssessmentAction)->execute($assessment, $type, $data);
+        $this->storeAssessorAssessmentAction->execute($assessment, $type, $data);
         Cache::forget("answers_{$assessment->id}_{$type}");
     }
 
     public function updateScheduledDate(Assessment $assessment, array $data): void
     {
-        (new UpdateScheduledDateAction)->execute($assessment, $data);
+        $this->updateScheduledDateAction->execute($assessment, $data);
     }
 
     public function getChildrenAssessment(string $userId)

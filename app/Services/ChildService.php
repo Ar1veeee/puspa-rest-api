@@ -8,6 +8,10 @@ use Illuminate\Support\Collection;
 
 class ChildService
 {
+    public function __construct(
+        private UpdateChildWithFamilyAction $updateChildWithFamilyAction,
+    ) {}
+
     public function getAllChild(): Collection
     {
         return Child::with('family.guardians')->get();
@@ -15,7 +19,7 @@ class ChildService
 
     public function update(array $data, Child $child): Child
     {
-        return app(UpdateChildWithFamilyAction::class)->execute($child, $data);
+        return $this->updateChildWithFamilyAction->execute($child, $data);
     }
 
     public function destroy(Child $child): bool
