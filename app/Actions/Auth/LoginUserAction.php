@@ -18,7 +18,15 @@ class LoginUserAction
             ->orWhere('username', $identifier)
             ->first();
 
-        if (!$user || !Hash::check($password, $user->password)) {
+        $targetUser = $user;
+        if (!$targetUser) {
+            $targetUser = new User();
+            $targetUser->password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
+        }
+
+        $isValidPassword = Hash::check($password, $targetUser->password);
+
+        if (!$user || !$isValidPassword) {
             throw new AuthenticationException('Username atau email dan password tidak cocok.');
         }
 
@@ -29,7 +37,7 @@ class LoginUserAction
         $token = $user->createToken(
             'api-token',
             ['*'],
-            Carbon::now()->addDays(2)
+            Carbon::now()->addMinutes(120)
         );
 
         return [

@@ -67,6 +67,8 @@ Route::prefix('auth')->group(function () {
         ->middleware('throttle:register');;
     Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:login');
+    Route::post('/auth/refresh', [AuthController::class, 'refresh'])
+        ->middleware('throttle:api');
 
     Route::get('/email-verify/{id}/{hash}', [VerificationController::class, 'verify'])
         ->middleware(['signed', 'throttle:verification'])

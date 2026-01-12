@@ -8,7 +8,9 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\LoginResource;
 use App\Services\AuthService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -40,6 +42,23 @@ class AuthController extends Controller
         $response = new LoginResource($loginData);
 
         return $this->successResponse($response, 'Login berhasil', 200);
+    }
+
+    public function  refresh(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        $newToken = $request->user()->createToken(
+            'api-token-refresh',
+            ['*'],
+            Carbon::now()->addDay()
+        );
+
+        return $this->successResponse(
+            ['token' => $newToken->plainTextToken],
+            'Token berhasil di refresh',
+            200
+        );
     }
 
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
