@@ -19,7 +19,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://project-puspa-4euz.vercel.app',
+        'https://puspa-web-app.vercel.app',
         'http://localhost:3000',
     ],
 
