@@ -21,7 +21,6 @@ class AdminService
     public function index(): Collection
     {
         return Admin::with('user:id,username,email,is_active')
-            ->whereHas('user', fn($q) => $q->where('is_active', true)) // dihapus kalau ga error
             ->latest()
             ->get();
     }
