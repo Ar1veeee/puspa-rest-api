@@ -197,7 +197,7 @@
                                             "success": false,
                                             "message": "Pendaftaran Gagal",
                                             "errors": {
-                                                "error" : "internal server error"
+                                                "error": "internal server error"
                                             }
                                         }
                                     }
@@ -224,7 +224,179 @@
         },
         "/auth/register": {
             "post": {
-                "description": "Register User"
+                "description": "Register User Account After Family & Child Registration",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "examples": {
+                                "register_user": {
+                                    "description": "Register user using registered guardian email",
+                                    "value": {
+                                        "username": "andi123",
+                                        "email": "orangtua@mail.com",
+                                        "password": "Password@123"
+                                    }
+                                }
+                            },
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "minLength": 3,
+                                        "maxLength": 100,
+                                        "example": "andi123"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "orangtua@mail.com",
+                                        "description": "Email harus sudah terdaftar sebagai guardian dan belum digunakan sebagai user"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "Password@123",
+                                        "description": "Minimal 8 karakter, mengandung huruf besar, kecil, angka, dan simbol"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success Register User",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "description": "Register user success",
+                                        "value": {
+                                            "success": true,
+                                            "message": "Daftar akun berhasil. Silakan melakukan verifikasi!",
+                                            "data": {
+                                                "user_id": 10
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Daftar akun berhasil. Silakan melakukan verifikasi!"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "validation_error": {
+                                        "description": "Validation error on request body",
+                                        "value": {
+                                            "message": "The given data was invalid.",
+                                            "errors": {
+                                                "username": [
+                                                    "Nama pengguna tidak boleh kosong."
+                                                ],
+                                                "email": [
+                                                    "Email tidak ditemukan. Silakan lakukan pendaftaran terlebih dahulu."
+                                                ],
+                                                "password": [
+                                                    "Kata sandi baru minimal harus 8 karakter."
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "message",
+                                        "errors"
+                                    ],
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "internal_server_error": {
+                                        "description": "Internal Server Error",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Registrasi akun gagal",
+                                            "errors": {
+                                                "error": "internal server error"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registrasi akun gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/auth/login": {

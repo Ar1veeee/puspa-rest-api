@@ -29,7 +29,7 @@ class LoginUserAction
         $token = $user->createToken(
             'api-token',
             ['*'],
-            Carbon::now()->addDays(30)
+            Carbon::now()->addDays(2)
         );
 
         return [
