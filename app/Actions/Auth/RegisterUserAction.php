@@ -16,8 +16,11 @@ class RegisterUserAction
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'is_active' => false,
             ]);
+
+            $user->forceFill([
+                'is_active' => false,
+            ])->save();
 
             $user->assignRole('user');
 

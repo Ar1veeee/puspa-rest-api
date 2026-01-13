@@ -27,20 +27,16 @@ class OwnerService
 
     public function activateAccount(User $user)
     {
-        return DB::transaction(function () use ($user) {
-            $user->update([
-                'is_active' => true,
-                'email_verified_at' => Carbon::now(),
-            ]);
+        $user->forceFill([
+            'is_active' => true,
+            'email_verified_at' => Carbon::now(),
+        ])->save();
 
-            return $user->fresh();
-        });
+        return $user->fresh();
     }
 
     public function deleteAccount(User $user)
     {
-        DB::transaction(function () use ($user) {
-            $user->delete();
-        });
+        $user->delete();
     }
 }

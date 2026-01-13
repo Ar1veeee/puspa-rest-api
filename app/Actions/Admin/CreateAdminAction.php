@@ -8,15 +8,18 @@ use Illuminate\Support\Facades\DB;
 
 class CreateAdminAction
 {
-    public function execute(array $data): Admin 
+    public function execute(array $data): Admin
     {
         return DB::transaction(function () use ($data) {
             $user = User::create([
                 'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'is_active' => false,
             ]);
+
+            $user->forceFill([
+                'is_active' => false,
+            ])->save();
 
             $user->assignRole('admin');
 
