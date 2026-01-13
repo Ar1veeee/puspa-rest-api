@@ -21,7 +21,8 @@ class AssessmentController extends Controller
 
     public function __construct(
         AssessmentService $assessmentService
-    ) {
+    )
+    {
         $this->assessmentService = $assessmentService;
     }
 
@@ -70,14 +71,21 @@ class AssessmentController extends Controller
             'report-file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        if ($assessment->report_file) {
-            Storage::disk('local')->delete('assessment/reports/' . $assessment->report_file);
+        $file = $request->file('report-file');
+
+        $filename = Uuid::uuid4() . '.pdf';
+
+        $path = $file->storeAs('assessment/reports', $filename, 'local');
+
+        if (!$path) {
+            return $this->errorResponse('File Upload Error', ['file' => ['Gagal mengunggah file laporan']], 500);
         }
 
-        $file = $request->file('report-file');
-        $filename = Uuid::uuid4() . '.' . $file->getClientOriginalExtension();
-
-        $file->storeAs('assessment/reports', $filename, 'local');
+        if ($assessment->report_file) {
+            if (Storage::disk('local')->exists('assessment/reports/' . $assessment->report_file)) {
+                Storage::disk('local')->delete('assessment/reports/' . $assessment->report_file);
+            }
+        }
 
         $assessment->update([
             'report_file' => $filename,
