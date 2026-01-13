@@ -112,92 +112,93 @@ class ParentDashboardService
         $search = $filters['search'] ?? null;
         $type = $filters['type'] ?? 'all';
 
-        $childIds = Child::where('family_id', $familyId)->pluck('id');
-
-        if ($childIds->isEmpty()) {
-            return collect();
-        }
-
-        $schedules = collect();
-
-        if ($type === 'all' || $type === 'observation') {
-            $observations = Observation::with([
-                'child:id,child_name',
-                'therapist:id,therapist_name'
+        $obsQuery = DB::table('observations as o')
+            ->join('children as c', 'o.child_id', '=', 'c.id')
+            ->leftJoin('therapists as t', 'o.therapist_id', '=', 't.id')
+            ->select([
+                'o.id as id',
+                DB::raw("'observation' as source_type"),
+                DB::raw("'observation' as sub_type"),
+                'o.scheduled_date',
+                'o.status',
+                'c.child_name',
+                't.therapist_name',
             ])
-                ->whereIn('child_id', $childIds)
-                ->where('status', 'scheduled')
-                ->where('scheduled_date', '>=', now())
-                ->when($search, fn($q) => $q->whereHas(
-                    'child',
-                    fn($c) =>
-                    $c->where('child_name', 'like', "%{$search}%")
-                ))
-                ->orderBy('scheduled_date', 'asc')
-                ->get()
-                ->map(function ($obs) {
-                    return [
-                        'id' => $obs->id,
-                        'type' => 'observation',
-                        'type_label' => 'Observasi',
-                        'child_name' => $obs->child->child_name,
-                        'service' => 'Observasi',
-                        'status' => $obs->status,
-                        'status_label' => 'Terjadwal',
-                        'scheduled_date' => $obs->scheduled_date,
-                        'date' => Carbon::parse($obs->scheduled_date)->format('d/m/Y'),
-                        'time' => Carbon::parse($obs->scheduled_date)->format('H:i'),
-                        'therapist' => $obs->therapist?->therapist_name ?? '-',
-                    ];
-                });
+            ->where('c.family_id', $familyId)
+            ->where('o.status', 'scheduled')
+            ->where('o.scheduled_date', '>=', now());
 
-            $schedules = $schedules->merge($observations);
+        if ($search) {
+            $obsQuery->where('c.child_name', 'like', "%{$search}%");
         }
 
-        if ($type === 'all' || $type === 'assessment') {
-            $assessmentIds = Assessment::whereIn('child_id', $childIds)->pluck('id');
-
-            $assessments = AssessmentDetail::with([
-                'assessment.child:id,child_name',
-                'therapist:id,therapist_name'
+        $assQuery = DB::table('assessment_details as ad')
+            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
+            ->join('children as c', 'a.child_id', '=', 'c.id')
+            ->leftJoin('therapists as t', 'ad.therapist_id', '=', 't.id')
+            ->select([
+                'ad.id as id',
+                DB::raw("'assessment' as source_type"),
+                'ad.type as sub_type',
+                'ad.scheduled_date',
+                'ad.status',
+                'c.child_name',
+                't.therapist_name',
             ])
-                ->whereIn('assessment_id', $assessmentIds)
-                ->where('status', 'scheduled')
-                ->where('scheduled_date', '>=', now())
-                ->when($search, fn($q) => $q->whereHas(
-                    'assessment.child',
-                    fn($c) =>
-                    $c->where('child_name', 'like', "%{$search}%")
-                ))
-                ->orderBy('scheduled_date', 'asc')
-                ->get()
-                ->map(function ($detail) {
-                    $typeLabels = [
-                        'fisio' => 'Assessment Fisio',
-                        'okupasi' => 'Assessment Okupasi',
-                        'wicara' => 'Assessment Wicara',
-                        'paedagog' => 'Assessment Paedagog',
-                    ];
+            ->where('c.family_id', $familyId)
+            ->where('ad.status', 'scheduled')
+            ->where('ad.scheduled_date', '>=', now());
 
-                    return [
-                        'id' => $detail->id,
-                        'type' => 'assessment',
-                        'type_label' => $typeLabels[$detail->type] ?? 'Assessment',
-                        'child_name' => $detail->assessment->child->child_name,
-                        'service' => $typeLabels[$detail->type] ?? 'Assessment',
-                        'status' => $detail->status,
-                        'status_label' => 'Terjadwal',
-                        'scheduled_date' => $detail->scheduled_date,
-                        'date' => Carbon::parse($detail->scheduled_date)->format('d/m/Y'),
-                        'time' => Carbon::parse($detail->scheduled_date)->format('H:i'),
-                        'therapist' => $detail->therapist?->therapist_name ?? '-',
-                    ];
-                });
-
-            $schedules = $schedules->merge($assessments);
+        if ($search) {
+            $assQuery->where('c.child_name', 'like', "%{$search}%");
         }
 
-        return $schedules->sortBy('scheduled_date')->values();
+        $finalQuery = null;
+
+        if ($type === 'observation') {
+            $finalQuery = $obsQuery;
+        } elseif ($type === 'assessment') {
+            $finalQuery = $assQuery;
+        } else {
+            $finalQuery = $obsQuery->union($assQuery);
+        }
+
+        $schedules = $finalQuery
+            ->orderBy('scheduled_date', 'asc')
+            ->get();
+
+        return $schedules->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'type' => $item->source_type,
+                'type_label' => $this->getLabel($item->source_type, $item->sub_type),
+                'child_name' => $item->child_name,
+                'service' => $this->getLabel($item->source_type, $item->sub_type),
+                'status' => $item->status,
+                'status_label' => 'Terjadwal',
+                'scheduled_date' => $item->scheduled_date,
+                'date' => Carbon::parse($item->scheduled_date)->format('d/m/Y'),
+                'time' => Carbon::parse($item->scheduled_date)->format('H:i'),
+                'therapist' => $item->therapist_name ?? '-',
+            ];
+        });
+    }
+
+    private function getLabel(string $sourceType, string $subType): string
+    {
+        if ($sourceType === 'observation') {
+            return 'Observasi';
+        }
+
+        $labels = [
+            'umum' => 'Assessment Umum',
+            'fisio' => 'Assessment Fisio',
+            'okupasi' => 'Assessment Okupasi',
+            'wicara' => 'Assessment Wicara',
+            'paedagog' => 'Assessment Paedagog',
+        ];
+
+        return $labels[$subType] ?? 'Assessment';
     }
 
     /**
