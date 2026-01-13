@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin_Assessor;
 
+use App\Enums\AssessmentType;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ResponseFormatter;
 use App\Http\Resources\AssessmentScheduledDetailResource;
@@ -12,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
+use function Symfony\Component\String\s;
 
 class AssessmentController extends Controller
 {
@@ -28,24 +30,15 @@ class AssessmentController extends Controller
 
     public function indexAnswersAssessment(Assessment $assessment, string $type)
     {
-        $valid_types = [
-            'paedagog_assessor',
-            'wicara_assessor',
-            'fisio_assessor',
-            'okupasi_assessor',
-            'umum_parent',
-            'wicara_parent',
-            'paedagog_parent',
-            'okupasi_parent',
-            'fisio_parent'
-        ];
-        if (!in_array($type, $valid_types)) {
+        $assessmentType = AssessmentType::tryFrom($type);
+        if (!$assessmentType) {
             return $this->errorResponse('Validation Error', ['type' => ['Type tidak valid']], 422);
         }
 
-        $response = $this->assessmentService->getAnswers($assessment, $type);
+        $response = $this->assessmentService->getAnswers($assessment, $assessmentType->value);
 
-        $message = 'Riwayat Jawaban Asesmen ' . ucfirst($type);
+        $formattedType = str_replace('_', ' ', $assessmentType->value);
+        $message = 'Riwayat Jawaban Asesmen ' . ucfirst($formattedType);
 
         return $this->successResponse($response, $message, 200);
     }
