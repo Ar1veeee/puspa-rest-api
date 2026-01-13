@@ -29,9 +29,12 @@ class VerificationService
         $user->markEmailAsVerified();
 
         $user->update([
-            'is_active' => true,
             'updated_at' => Carbon::now(),
         ]);
+
+        $user->forceFill([
+            'is_active' => true,
+        ])->save();
     }
 
     public function resendVerificationNotification(User $user): void

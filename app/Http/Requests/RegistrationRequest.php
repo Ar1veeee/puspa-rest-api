@@ -30,7 +30,7 @@ class RegistrationRequest extends FormRequest
             'child_address' => ['required', 'string', 'max:150'],
             'child_complaint' => ['required', 'string'],
             'child_service_choice' => ['required', 'string'],
-            'email' => ['required', 'string', 'email', 'max:100'],
+            'email' => ['required', 'string', 'email', 'max:100', 'unique:users,email'],
             'guardian_name' => ['required', 'string', 'max:100'],
             'guardian_phone' => ['required', 'string', 'max:100'],
             'guardian_type' => ['required', 'string', 'in:ayah,ibu,wali'],
