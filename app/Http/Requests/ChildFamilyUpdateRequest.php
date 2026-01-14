@@ -22,7 +22,7 @@ class ChildFamilyUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $familyId = $this->route('child')?->family_id;
+        $familyId = $this->route('child')?->family_id ?? null;
 
         return [
             'child_name' => ['nullable', 'string', 'max:100'],
