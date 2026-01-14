@@ -68,7 +68,7 @@ class AssessmentController extends Controller
 
     public function indexAnswersAssessment(Assessment $assessment, string $type)
     {
-        $this->authorize('verifyAsParent', $assessment);
+        $this->authorize('viewAssessment', $assessment);
 
         $valid_types = ['umum_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
         if (!in_array($type, $valid_types)) {
@@ -84,7 +84,7 @@ class AssessmentController extends Controller
 
     public function storeParentAssessment(StoreAssessmentRequest $request, Assessment $assessment, string $type): JsonResponse
     {
-        $this->authorize('verifyAsParent', $assessment);
+        $this->authorize('viewAssessment', $assessment);
 
         $valid_types = ['umum_parent', 'wicara_parent', 'paedagog_parent', 'okupasi_parent', 'fisio_parent'];
         if (!in_array($type, $valid_types)) {
@@ -101,7 +101,7 @@ class AssessmentController extends Controller
     // Displaying the type of assessment the child has
     public function show(Assessment $assessment)
     {
-        $this->authorize('verifyAsParent', $assessment);
+        $this->authorize('viewAssessment', $assessment);
 
         $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin']);
 

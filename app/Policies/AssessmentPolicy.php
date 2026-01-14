@@ -10,20 +10,22 @@ class AssessmentPolicy
 {
     use HandlesAuthorization;
 
-    public function verifyAsParent(User $user, Assessment $assessment): bool
+    public function viewAssessment(User $user, Assessment $assessment): bool
     {
-        $assessment->loadMissing('child.family.guardians.user');
+        if ($user->hasAnyRole(['admin', 'asesor'])) {
+            return true;
+        }
 
-        return $assessment->child
-            ->family
-            ->guardians
-            ->pluck('user_id')
-            ->contains($user->id);
+        if ($user->hasRole('user') && $user->guardian) {
+            return $user->guardian->family_id === $assessment->child->family_id;
+        }
+
+        return false;
     }
 
     public function downloadReport(User $user, Assessment $assessment): bool
     {
-        return $assessment->report_file !== null && $this->verifyAsParent($user, $assessment);
+        return $assessment->report_file !== null && $this->viewAssessment($user, $assessment);
     }
 
     public function fillAssessor(User $user, Assessment $assessment, string $type): bool
