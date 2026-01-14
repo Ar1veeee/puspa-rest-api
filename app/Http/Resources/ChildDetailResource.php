@@ -83,7 +83,7 @@ class ChildDetailResource extends JsonResource
                     $response['guardian_identity_number'] = $guardian->guardian_identity_number ?? '-';
                     $response['guardian_name'] = $guardian->guardian_name;
                     $response['guardian_phone'] = $guardian->guardian_phone;
-                    $response['mother_birth_date'] = $guardian->guardian_birth_date ? $guardian->guardian_birth_date->translatedFormat('d F Y') : '-';
+                    $response['guardian_birth_date'] = $guardian->guardian_birth_date ? $guardian->guardian_birth_date->translatedFormat('d F Y') : '-';
                     $response['guardian_age'] = $age;
                     $response['guardian_occupation'] = $guardian->guardian_occupation ?? '-';
                     $response['guardian_relationship'] = $guardian->relationship_with_child ?? '-';
