@@ -62,6 +62,8 @@ class ChildController extends Controller
 
     public function updateChild(ChildFamilyUpdateRequest $request, Child $child): JsonResponse
     {
+        $this->authorize('manageChild', $child);
+
         $data = $request->validated();
         $this->childService->update($data, $child);
         return $this->successResponse([], 'Update Anak Berhasil', 200);
@@ -69,6 +71,8 @@ class ChildController extends Controller
 
     public function destroyChild(Child $child): JsonResponse
     {
+        $this->authorize('manageChild', $child);
+
         $this->childService->destroy($child);
 
         return $this->successResponse(
