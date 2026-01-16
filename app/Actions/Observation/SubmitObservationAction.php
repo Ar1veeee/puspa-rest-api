@@ -78,6 +78,7 @@ class SubmitObservationAction
         $assessment = Assessment::create([
             'observation_id' => $observation->id,
             'child_id' => $observation->child_id,
+            'status' => 'pending',
         ]);
 
         $types = ['umum'];
@@ -89,7 +90,6 @@ class SubmitObservationAction
         $details = collect($types)->map(fn($type) => [
             'assessment_id' => $assessment->id,
             'type' => $type,
-            'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
         ])->toArray();

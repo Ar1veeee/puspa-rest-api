@@ -15,45 +15,58 @@ class AssessmentListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $scheduled_date_formatted = $this->scheduled_date instanceof Carbon
+        $child = $this->child;
+        $guardian = $this->child?->family?->guardians?->first();
+        $details = $this->assessmentDetails;
+
+        $scheduled = $this->scheduled_date instanceof Carbon
             ? $this->scheduled_date
             : Carbon::parse($this->scheduled_date);
 
-        $completed_at_formatted = null;
-        if ($this->completed_at) {
-            $completed_at_formatted = $this->completed_at instanceof Carbon
-                ? $this->completed_at
-                : Carbon::parse($this->completed_at);
+        $completedDetail = $details->whereNotNull('completed_at')->first();
+        $completedAtStr = 'Belum Selesai';
+
+        if ($completedDetail) {
+            $date = $completedDetail->completed_at instanceof Carbon
+                ? $completedDetail->completed_at
+                : Carbon::parse($completedDetail->completed_at);
+            $completedAtStr = $date->format('H.i');
         }
 
-        $child    = $this->assessment?->child;
-        $guardian = $this->assessment?->child?->family?->guardians?->first();
+        $types = $details->map(function ($detail) {
+            return match ($detail->type) {
+                'fisio'     => 'Assessment Fisio',
+                'okupasi'   => 'Assessment Okupasi',
+                'wicara'    => 'Assessment Wicara',
+                'paedagog'  => 'Assessment Paedagog',
+                'umum'      => 'Assessment Umum',
+                default     => 'Assessment Tidak Dikenal',
+            };
+        })->unique()->values()->toArray();
 
-        $typeLabel = match ($this->type) {
-            'fisio'     => 'Assessment Fisio',
-            'okupasi'   => 'Assessment Okupasi',
-            'wicara'    => 'Assessment Wicara',
-            'paedagog'  => 'Assessment Paedagog',
-            'umum'      => 'Assessment Umum',
-            default     => 'Assessment Umum',
-        };
+        $assessors = $details->map(fn($detail) => $detail->therapist?->therapist_name)
+            ->filter()
+            ->unique()
+            ->implode(', ');
+
+        $adminName = $details->first()?->admin?->admin_name;
+
+        $firstDetailId = $details->first()?->id;
 
         return [
-            'assessment_detail_id' => $this->id,
-            'assessment_id'   => $this->assessment->id,
-            'child_id'        => $child?->id,
-            'child_name'      => $child?->child_name,
-            'guardian_name'   => $guardian?->guardian_name,
-            'guardian_phone'  => $guardian?->guardian_phone,
-            'type'            => $typeLabel,
-            'administrator'   => $this->admin?->admin_name,
-            'assessor'        => $this->therapist?->therapist_name,
-            'scheduled_date'  => $scheduled_date_formatted->format('d/m/Y'),
-            'scheduled_time'  => $scheduled_date_formatted->format('H.i'),
-            'completed_at'    => $completed_at_formatted
-                ? $completed_at_formatted->format('H.i')
-                : 'Belum Selesai',
-            'status'          => $this->status,
+            'assessment_detail_id' => $firstDetailId,
+            'assessment_id' => $this->id,
+            'child_id' => $child?->id,
+            'child_name' => $child?->child_name,
+            'guardian_name' => $guardian?->guardian_name,
+            'guardian_phone' => $guardian?->guardian_phone,
+            'type' => $types,
+            'administrator' => $adminName,
+            'assessor' => $assessors ?: null,
+            'scheduled_date' => $scheduled->format('d/m/Y'),
+            'scheduled_time' => $scheduled->format('H.i'),
+            'completed_at' => $completedAtStr,
+            'status' => $this->status,
         ];
     }
 }

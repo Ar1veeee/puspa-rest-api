@@ -23,7 +23,7 @@ class AssessmentScheduledDetailResource extends JsonResource
             ?? $this->assessmentDetails->first()?->admin
             ?? null;
 
-        $scheduledDate = $this->assessmentDetails->first()?->scheduled_date;
+        $scheduledDate = $this->scheduled_date;
 
         $scheduled_date_formatted = $scheduledDate
             ? (is_string($scheduledDate) ? Carbon::parse($scheduledDate) : $scheduledDate)
@@ -54,7 +54,7 @@ class AssessmentScheduledDetailResource extends JsonResource
             'scheduled_time'    => $scheduled_date_formatted?->format('H:i'),
             'parent_type'       => $guardian?->guardian_type,
             'parent_name'       => $guardian?->guardian_name,
-            'relationship'      => $guardian?->relationship_with_child,
+            'relationship'      => $guardian?->relationship_with_child ?? '-',
             'parent_phone'      => $guardian?->guardian_phone,
             'admin_name'        => $admin?->admin_name ?? 'Belum ditentukan',
             'type'              => $typesString ?: 'Belum ditentukan',

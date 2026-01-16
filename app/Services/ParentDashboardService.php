@@ -37,13 +37,11 @@ class ParentDashboardService
         ', [$lastMonth])
             ->first();
 
-        $assStats = DB::table('assessment_details as ad')
-            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
-            ->whereIn('a.child_id', $childIds)
+        $assStats = Assessment::whereIn('child_id', $childIds)
             ->selectRaw('
-            COUNT(*) as total,
-            COUNT(CASE WHEN ad.created_at <= ? THEN 1 END) as last_month
-        ', [$lastMonth])
+                COUNT(*) as total,
+                COUNT(CASE WHEN created_at <= ? THEN 1 END) as last_month
+            ', [$lastMonth])
             ->first();
 
         return [
@@ -80,11 +78,9 @@ class ParentDashboardService
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        $assessments = DB::table('assessment_details as ad')
-            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
-            ->whereIn('a.child_id', $childIds)
-            ->whereBetween('ad.created_at', [$start, $end])
-            ->selectRaw('DATE_FORMAT(ad.created_at, "%Y-%m") as month, COUNT(*) as count')
+        $assessments = Assessment::whereIn('child_id', $childIds)
+            ->whereBetween('created_at', [$start, $end])
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');
 
@@ -132,22 +128,22 @@ class ParentDashboardService
             $obsQuery->where('c.child_name', 'like', "%{$search}%");
         }
 
-        $assQuery = DB::table('assessment_details as ad')
-            ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
+        $assQuery = DB::table('assessments as a')
+            ->join('assessment_details as ad', 'a.id', '=', 'ad.assessment_id')
             ->join('children as c', 'a.child_id', '=', 'c.id')
             ->leftJoin('therapists as t', 'ad.therapist_id', '=', 't.id')
             ->select([
-                'ad.id as id',
+                'a.id as id',
                 DB::raw("'assessment' as source_type"),
                 'ad.type as sub_type',
-                'ad.scheduled_date',
-                'ad.status',
+                'a.scheduled_date',
+                'a.status',
                 'c.child_name',
                 't.therapist_name',
             ])
             ->where('c.family_id', $familyId)
-            ->where('ad.status', 'scheduled')
-            ->where('ad.scheduled_date', '>=', now());
+            ->where('a.status', 'scheduled')
+            ->where('a.scheduled_date', '>=', now());
 
         if ($search) {
             $assQuery->where('c.child_name', 'like', "%{$search}%");

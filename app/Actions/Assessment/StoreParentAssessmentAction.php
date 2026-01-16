@@ -4,6 +4,7 @@ namespace App\Actions\Assessment;
 
 use App\Models\Assessment;
 use App\Models\AssessmentAnswer;
+use App\Models\AssessmentDetail;
 use App\Models\AssessmentQuestion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +17,7 @@ class StoreParentAssessmentAction
 
         $detail = $assessment->assessmentDetails()->where('type', $detailType)->firstOrFail();
 
-        DB::transaction(function () use ($detail, $payload, $type) {
+        DB::transaction(function () use ($assessment, $detail, $payload, $type) {
             $this->validateConditional($payload['answers']);
 
             AssessmentAnswer::where('assessment_detail_id', $detail->id)->delete();
@@ -42,9 +43,18 @@ class StoreParentAssessmentAction
             AssessmentAnswer::insert($answers);
 
             $detail->update([
-                'parent_completed_status' => 'completed',
-                'parent_completed_at'     => now(),
+                'parent_completed_at' => now(),
             ]);
+
+            $hasIncompleteDetails = AssessmentDetail::where('assessment_id', $assessment->id)
+                ->whereNull('parent_completed_at')
+                ->exists();
+
+            if (!$hasIncompleteDetails) {
+                $assessment->update([
+                    'parent_status' => 'completed',
+                ]);
+            }
         });
     }
 

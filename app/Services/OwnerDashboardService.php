@@ -61,20 +61,20 @@ class OwnerDashboardService
 
     private function getCompletionRate(Carbon $current, Carbon $previous): array
     {
-        $currentData = DB::table('assessment_details')
+        $currentData = DB::table('assessments')
             ->selectRaw('
-            COUNT(*) AS total,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
-        ', ['completed'])
+                COUNT(*) AS total,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
+            ', ['completed'])
             ->whereYear('created_at', $current->year)
             ->whereMonth('created_at', $current->month)
             ->first();
 
-        $previousData = DB::table('assessment_details')
+        $previousData = DB::table('assessments')
             ->selectRaw('
-            COUNT(*) AS total,
-            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
-        ', ['completed'])
+                COUNT(*) AS total,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS completed
+            ', ['completed'])
             ->whereYear('created_at', $previous->year)
             ->whereMonth('created_at', $previous->month)
             ->first();
@@ -97,6 +97,8 @@ class OwnerDashboardService
 
     private function getUnansweredQuestions(Carbon $current, Carbon $previous): array
     {
+        // Logic ini masih valid karena menggunakan join yang benar
+        // dan filter created_at pada parent (a.created_at)
         $currentCount = DB::table('assessment_answers as aa')
             ->join('assessment_details as ad', 'aa.assessment_detail_id', '=', 'ad.id')
             ->join('assessments as a', 'ad.assessment_id', '=', 'a.id')
@@ -138,7 +140,7 @@ class OwnerDashboardService
         $completions = DB::table('assessment_details')
             ->selectRaw('DATE_FORMAT(completed_at, "%Y-%m") as period, COUNT(*) as count')
             ->whereBetween('completed_at', [$startDate, $endDate])
-            ->where('status', 'completed')
+            ->whereNotNull('completed_at') // Filter berdasarkan timestamp
             ->groupBy('period')
             ->orderBy('period')
             ->pluck('count', 'period');

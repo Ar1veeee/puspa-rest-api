@@ -32,6 +32,7 @@ class AssessmentController extends Controller
         }
 
         $validated = $request->validate([
+            'type' => ['nullable', 'string', 'in:fisio,okupasi,wicara,paedagog'],
             'date' => ['nullable', 'date', 'date_format:Y-m-d'],
             'search' => ['nullable', 'string', 'max:100'],
         ]);

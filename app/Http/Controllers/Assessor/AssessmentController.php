@@ -84,6 +84,7 @@ class AssessmentController extends Controller
         if (isset($validated['type'])) {
             $message .= ' ' . ucfirst($validated['type']);
         }
+
         return $this->successResponse(
             AssessmentListResource::collection($assessments),
             $message,
@@ -112,7 +113,8 @@ class AssessmentController extends Controller
 
         $assessments = $this->assessmentService->getAssessments($validated);
 
-        $message = 'Daftar Asesmen Orang Tua';
+        $message = 'Daftar Asesmen Orang Tua ' . ucfirst($status);
+
         return $this->successResponse(
             ParentAssessmentResource::collection($assessments),
             $message,

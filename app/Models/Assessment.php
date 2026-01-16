@@ -24,11 +24,16 @@ class Assessment extends Model
     protected $fillable = [
         'observation_id',
         'child_id',
+        'status',
+        'parent_status',
+        'scheduled_date',
         'report_file',
         'report_uploaded_at',
+        'admin_id',
     ];
 
     protected $casts = [
+        'scheduled_date' => 'datetime',
         'observation_id' => 'integer',
         'report_uploaded_at' => 'datetime',
     ];

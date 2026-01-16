@@ -28,12 +28,10 @@ class AdminDashboardService
 
     private function getAssessmentToday(Carbon $date): int
     {
-        return DB::table('assessment_details')
-            ->join('assessments', 'assessment_details.assessment_id', '=', 'assessments.id')
-            ->where('assessment_details.status', 'scheduled')
-            ->whereDate('assessment_details.scheduled_date', $date)
-            ->distinct()
-            ->count('assessments.id');
+        return DB::table('assessments')
+            ->where('status', 'scheduled')
+            ->whereDate('scheduled_date', $date)
+            ->count();
     }
 
     private function getObservationToday(Carbon $date): int
@@ -75,7 +73,7 @@ class AdminDashboardService
                 'ad.type',
                 DB::raw('COUNT(DISTINCT a.child_id) as count')
             )
-            ->whereIn('ad.status', ['scheduled', 'completed'])
+            ->whereIn('a.status', ['scheduled', 'completed'])
             ->groupBy('ad.type')
             ->get();
 
@@ -108,13 +106,14 @@ class AdminDashboardService
                 'a.id as assessment_id',
                 'c.child_name',
                 'ad.type',
-                'ad.scheduled_date',
-                DB::raw("DATE(ad.scheduled_date) as schedule_date"),
-                DB::raw("TIME_FORMAT(TIME(ad.scheduled_date), '%H:%i') as waktu")
+                'a.scheduled_date',
+                DB::raw("DATE(a.scheduled_date) as schedule_date"),
+                DB::raw("TIME_FORMAT(TIME(a.scheduled_date), '%H:%i') as waktu"),
+                't.therapist_name'
             )
-            ->where('ad.status', 'scheduled')
-            ->whereDate('ad.scheduled_date', $date)
-            ->orderBy('ad.scheduled_date')
+            ->where('a.status', 'scheduled')
+            ->whereDate('a.scheduled_date', $date)
+            ->orderBy('a.scheduled_date')
             ->get();
 
         $grouped = $raw->groupBy('assessment_id');

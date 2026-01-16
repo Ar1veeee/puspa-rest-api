@@ -4,6 +4,7 @@ namespace App\Actions\Assessment;
 
 use App\Models\Assessment;
 use App\Models\AssessmentAnswer;
+use App\Models\AssessmentDetail;
 use App\Models\AssessmentQuestion;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -20,28 +21,37 @@ class StoreAssessorAssessmentAction
             ->firstOrFail();
 
         if ($detailType === 'wicara') {
-            $child = $assessment->child;
+            $firstQuestionId = $payload['answers'][0]['question_id'] ?? null;
 
-            $birthDate = Carbon::parse($child->child_birth_date);
-            $ageInMonths = $birthDate->diffInMonths(now());
+            if ($firstQuestionId) {
+                $questionCheck = AssessmentQuestion::select('assessment_type')
+                    ->where('id', $firstQuestionId)
+                    ->first();
 
-            $expectedSection = $this->determineAgeSection($ageInMonths);
+                if ($questionCheck && $questionCheck->assessment_type === 'wicara_bahasa') {
+                    $child = $assessment->child;
+                    $birthDate = Carbon::parse($child->child_birth_date);
+                    $ageInMonths = $birthDate->diffInMonths(now());
 
-            $validQuestionIds = AssessmentQuestion::where('assessment_type', $detailType)
-                ->where('section', $expectedSection)
-                ->pluck('id')
-                ->toArray();
+                    $expectedSection = $this->determineAgeSection($ageInMonths);
 
-            foreach ($payload['answers'] as $answer) {
-                if (!in_array($answer['question_id'], $validQuestionIds)) {
-                    throw ValidationException::withMessages([
-                        'answers' => "Pertanyaan ID {$answer['question_id']} tidak sesuai dengan usia anak ({$ageInMonths} bulan - Section: {$expectedSection})."
-                    ]);
+                    $validQuestionIds = AssessmentQuestion::where('assessment_type', 'wicara_bahasa')
+                        ->where('section', $expectedSection)
+                        ->pluck('id')
+                        ->toArray();
+
+                    foreach ($payload['answers'] as $answer) {
+                        if (!in_array($answer['question_id'], $validQuestionIds)) {
+                            throw ValidationException::withMessages([
+                                'answers' => "Pertanyaan ID {$answer['question_id']} tidak sesuai dengan usia anak ({$ageInMonths} bulan - Section: {$expectedSection})."
+                            ]);
+                        }
+                    }
                 }
             }
         }
 
-        DB::transaction(function () use ($detail, $payload, $type) {
+        DB::transaction(function () use ($assessment, $detail, $payload, $type) {
             $answers = collect($payload['answers'])->map(function ($a) use ($detail, $type) {
                 $answerValue = $a['answer'];
 
@@ -63,10 +73,20 @@ class StoreAssessorAssessmentAction
             AssessmentAnswer::insert($answers);
 
             $detail->update([
-                'status' => 'completed',
                 'completed_at' => now(),
                 'therapist_id' => auth()->user()->therapist->id,
             ]);
+
+            $hasIncompleteDetails = AssessmentDetail::where('assessment_id', $assessment->id)
+                ->whereNull('completed_at')
+                ->where('type', '!=', 'umum')
+                ->exists();
+
+            if (!$hasIncompleteDetails) {
+                $assessment->update([
+                    'status' => 'completed',
+                ]);
+            }
         });
     }
 

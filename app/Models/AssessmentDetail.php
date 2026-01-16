@@ -23,16 +23,12 @@ class AssessmentDetail extends Model
         'type',
         'admin_id',
         'therapist_id',
-        'scheduled_date',
-        'status',
         'completed_at',
-        'parent_completed_status',
         'parent_completed_at',
     ];
 
     protected $casts = [
         'assessment_id' => 'integer',
-        'scheduled_date' => 'datetime',
     ];
 
     public $timestamps = true;

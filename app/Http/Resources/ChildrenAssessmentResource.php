@@ -14,27 +14,26 @@ class ChildrenAssessmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $detail = $this->assessment?->assessmentDetails
-            ->where('status', 'scheduled')
-            ->sortBy('scheduled_date')
-            ->first();
+        $assessment = $this->assessment;
 
-        $reportData = [
-            'available' => false,
-            'uploaded_at' => null,
-            'download_url' => null
-        ];
-
-        if ($this->assessment && $this->assessment->report_file) {
+        if ($assessment && $assessment->report_file) {
             $reportData = [
                 'available' => true,
-                'uploaded_at' => $this->assessment->report_uploaded_at?->format('d/m/Y H:i'),
-                'download_url' => route('parent.assessment.report.download', $this->assessment->id)
+                'uploaded_at' => $assessment->report_uploaded_at?->format('d/m/Y H:i'),
+                'download_url' => route('parent.assessment.report.download', $assessment->id)
             ];
         }
 
+        $scheduledDate = $assessment?->scheduled_date instanceof \Carbon\Carbon
+            ? $assessment->scheduled_date
+            : \Carbon\Carbon::parse($assessment?->scheduled_date);
+
         return [
-            'assessment_id' => $detail?->assessment_id,
+            'assessment_id' => $assessment?->id,
+            'scheduled_date' => $assessment ? $scheduledDate->toDateString() : null,
+            'status' => $assessment?->status,
+            'created_at' => $assessment?->created_at?->format('d F Y H:i:s'),
+            'updated_at' => $assessment?->updated_at?->format('d F Y H:i:s'),
             'child_id' => $this->id,
             'family_id' => $this->family_id,
             'child_name' => $this->child_name,
@@ -42,11 +41,6 @@ class ChildrenAssessmentResource extends JsonResource
             'child_age' => $this->child_birth_date->diff(now())->format('%y Tahun %m Bulan'),
             'child_gender' => $this->child_gender,
             'child_school' => $this->child_school,
-            'scheduled_date' => $detail?->scheduled_date?->toDateString(),
-            'status' => $detail?->status,
-            'created_at' => $detail?->created_at?->format('d F Y H:i:s'),
-            'updated_at' => $detail?->updated_at?->format('d F Y H:i:s'),
-            'report' => $reportData,
         ];
     }
 }

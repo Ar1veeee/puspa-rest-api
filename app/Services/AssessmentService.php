@@ -24,13 +24,6 @@ class AssessmentService
 
     public function getAssessments(array $filters = [])
     {
-        $date = $filters['date'] ?? null;
-        $search = $filters['search'] ?? null;
-
-        if ($date || $search) {
-            return $this->queryAssessments($filters);
-        }
-
         return $this->queryAssessments($filters);
     }
 
@@ -42,57 +35,58 @@ class AssessmentService
                 'child.family.guardians:id,family_id,guardian_name,guardian_phone,guardian_type',
                 'assessmentDetails' => function ($q) use ($filters) {
                     $q->with(['therapist:id,therapist_name', 'admin:id,admin_name'])
-                        ->where('parent_completed_status', $filters['status'] ?? null)
-                        ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
-                        ->when($filters['type'] ?? null, fn($q, $type) => $q->where('type', $type));
+                        ->when($filters['type'] ?? null, fn($sub) => $sub->where('type', $filters['type']));
                 },
             ])
-            ->whereHas('assessmentDetails', function ($q) use ($filters) {
-                $q->where('parent_completed_status', $filters['status'] ?? null)
-                    ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
-                    ->when($filters['type'] ?? null, fn($q, $type) => $q->where('type', $type));
+            ->whereNotNull('scheduled_date')
+            ->when($filters['status'] ?? null, function ($q, $status) {
+                $q->where('parent_status', $status);
             })
-            ->when(
-                $filters['search'] ?? null,
-                fn($q, $search) =>
-                $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
+            ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
+            ->when($filters['search'] ?? null, fn($q, $search) =>
+            $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
             )
-            ->addSelect([
-                'earliest_scheduled_date' => AssessmentDetail::select('scheduled_date')
-                    ->whereColumn('assessment_id', 'assessments.id')
-                    ->where('parent_completed_status', $filters['status'] ?? null)
-                    ->orderBy('scheduled_date', 'asc')
-                    ->limit(1)
-            ])
-            ->orderBy('earliest_scheduled_date', 'asc')
+            ->when($filters['type'] ?? null, function ($q, $type) {
+                $q->whereHas('assessmentDetails', fn($d) => $d->where('type', $type));
+            })
+            ->orderBy('scheduled_date', 'asc')
             ->get();
     }
 
     public function getAssessmentsByType(array $filters = [])
     {
-        return AssessmentDetail::query()
+        return Assessment::query()
             ->with([
-                'assessment.child:id,family_id,child_name',
-                'assessment.child.family:id',
-                'assessment.child.family.guardians',
-                'therapist:id,therapist_name',
-                'admin:id,admin_name',
+                'assessmentDetails' => function($q) use ($filters) {
+                    $q->with(['therapist:id,therapist_name', 'admin:id,admin_name'])
+                        ->when(isset($filters['type']), fn($sub) => $sub->where('type', $filters['type']));
+                },
+                'child:id,family_id,child_name',
+                'child.family:id',
+                'child.family.guardians',
             ])
-            ->where('status', $filters['status'])
-            ->when(isset($filters['type']), fn($q) => $q->where('type', $filters['type']))
+            ->whereNotNull('scheduled_date')
+            ->whereHas('assessmentDetails', function ($q) use ($filters) {
+
+                if (isset($filters['type'])) {
+                    $q->where('type', $filters['type']);
+                }
+
+                if (isset($filters['status'])) {
+                    if ($filters['status'] === 'scheduled') {
+                        $q->whereNull('completed_at');
+                    } elseif ($filters['status'] === 'completed') {
+                        $q->whereNotNull('completed_at');
+                    }
+                }
+            })
             ->when(isset($filters['date']), fn($q) => $q->whereDate('scheduled_date', $filters['date']))
+
             ->when(isset($filters['search']), function ($q) use ($filters) {
-                $q->whereHas('assessment.child', fn($c) => $c->where('child_name', 'like', "%{$filters['search']}%"));
+                $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$filters['search']}%"));
             })
             ->orderBy('scheduled_date', 'asc')
-            ->get()
-            ->groupBy('assessment_id')
-            ->map(function ($details) {
-                $first = $details->first();
-                $first->grouped_details = $details;
-                return $first;
-            })
-            ->values();
+            ->get();
     }
 
     public function getQuestionsByType(string $type): array
@@ -170,12 +164,13 @@ class AssessmentService
     public function getChildrenAssessment(string $userId)
     {
         return Cache::remember("guardian_{$userId}_children_assessments", 300, function () use ($userId) {
-            return Guardian::where('user_id', $userId)
-                ->firstOrFail()
-                ->family
-                ->children()
-                ->whereHas('assessment.assessmentDetails', fn($q) => $q->where('status', 'scheduled'))
-                ->with(['assessment.assessmentDetails' => fn($q) => $q->where('status', 'scheduled')])
+            $guardian = Guardian::where('user_id', $userId)->firstOrFail();
+
+            return $guardian->family->children()
+                ->whereHas('assessment')
+                ->with(['assessment' => function ($query) {
+                    $query->orderBy('scheduled_date', 'asc');
+                }])
                 ->get();
         });
     }

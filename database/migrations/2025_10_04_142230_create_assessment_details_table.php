@@ -16,10 +16,7 @@ return new class extends Migration {
             $table->enum('type', ['umum', 'fisio', 'okupasi', 'wicara', 'paedagog']);
             $table->char('admin_id', 26)->nullable();
             $table->char('therapist_id', 26)->nullable();
-            $table->enum('status', ['pending', 'scheduled', 'completed'])->default('pending');
-            $table->dateTime('scheduled_date')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->enum('parent_completed_status', ['pending', 'completed'])->default('pending');
             $table->timestamp('parent_completed_at')->nullable();
             $table->timestamps();
 
@@ -28,10 +25,9 @@ return new class extends Migration {
             $table->foreign('therapist_id')->references('id')->on('therapists')->onDelete('set null');
 
             $table->index('assessment_id');
-            $table->index(['status', 'scheduled_date']);
-            $table->index('scheduled_date');
-            $table->index(['parent_completed_status', 'scheduled_date']);
-            $table->index(['type', 'status']);
+            $table->index(['type', 'completed_at']);
+            $table->unique(['assessment_id', 'type'], 'unique_assessment_detail_type');
+            $table->index(['assessment_id', 'completed_at'], 'idx_details_status_check');
             $table->index('created_at');
             $table->index('completed_at');
             $table->index('therapist_id');

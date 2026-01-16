@@ -28,7 +28,7 @@ class ParentAssessmentResource extends JsonResource
             ->sortByDesc(fn($g) => in_array($g->guardian_type, ['ayah', 'ibu']) ? 1 : 0)
             ->first();
 
-        $earliestDate = $details->min('scheduled_date');
+        $earliestDate = $this->min('scheduled_date');
         $formattedScheduledDate = $earliestDate ? Carbon::parse($earliestDate)->format('d/m/Y') : null;
         $formattedScheduledTime = $earliestDate ? Carbon::parse($earliestDate)->format('H:i') : null;
 
