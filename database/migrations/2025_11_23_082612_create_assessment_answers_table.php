@@ -31,6 +31,8 @@ return new class extends Migration {
             $table->foreign('question_id')->references('id')->on('assessment_questions')->onDelete('cascade');
 
             $table->index('assessment_detail_id');
+            $table->index('type');
+            $table->index('question_id');
         });
     }
 
