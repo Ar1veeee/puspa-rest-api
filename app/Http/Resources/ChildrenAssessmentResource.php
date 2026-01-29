@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,21 +17,14 @@ class ChildrenAssessmentResource extends JsonResource
     {
         $assessment = $this->assessment;
 
-        if ($assessment && $assessment->report_file) {
-            $reportData = [
-                'available' => true,
-                'uploaded_at' => $assessment->report_uploaded_at?->format('d/m/Y H:i'),
-                'download_url' => route('parent.assessment.report.download', $assessment->id)
-            ];
-        }
-
-        $scheduledDate = $assessment?->scheduled_date instanceof \Carbon\Carbon
+        $scheduled = $assessment?->scheduled_date instanceof Carbon
             ? $assessment->scheduled_date
-            : \Carbon\Carbon::parse($assessment?->scheduled_date);
+            : Carbon::parse($assessment?->scheduled_date);
 
         return [
             'assessment_id' => $assessment?->id,
-            'scheduled_date' => $assessment ? $scheduledDate->toDateString() : null,
+            'scheduled_date' => $scheduled->format('d/m/Y'),
+            'scheduled_time' => $scheduled->format('H.i'),
             'status' => $assessment?->status,
             'created_at' => $assessment?->created_at?->format('d F Y H:i:s'),
             'updated_at' => $assessment?->updated_at?->format('d F Y H:i:s'),

@@ -98,12 +98,11 @@ class AssessmentController extends Controller
         return $this->successResponse([], 'Jawaban Asesmen Berhasil Disimpan', 201);
     }
 
-    // Displaying the type of assessment the child has
     public function show(Assessment $assessment)
     {
         $this->authorize('viewAssessment', $assessment);
 
-        $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin']);
+        $assessment->load(['assessmentDetails.therapist', 'assessmentDetails.admin', 'assessmentDetails.assessmentAnswers']);
 
         return $this->successResponse(
             new AssessmentsDetailResource($assessment),

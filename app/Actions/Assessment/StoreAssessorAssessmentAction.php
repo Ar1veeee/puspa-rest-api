@@ -18,40 +18,42 @@ class StoreAssessorAssessmentAction
 
         $detail = $assessment->assessmentDetails()
             ->where('type', $detailType)
-            ->firstOrFail();
+            ->first();
+
+        if (!$detail) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'type' => ["Layanan {$detailType} tidak dijadwalkan untuk asesmen ini."]
+            ]);
+        }
 
         if ($detailType === 'wicara') {
-            $firstQuestionId = $payload['answers'][0]['question_id'] ?? null;
+            $questionIds = collect($payload['answers'])->pluck('question_id')->unique();
+            $bahasaQuestions = AssessmentQuestion::whereIn('id', $questionIds)
+                ->where('assessment_type', 'wicara_bahasa')
+                ->get();
 
-            if ($firstQuestionId) {
-                $questionCheck = AssessmentQuestion::select('assessment_type')
-                    ->where('id', $firstQuestionId)
-                    ->first();
+            if ($bahasaQuestions->isNotEmpty()) {
+                $child = $assessment->child;
+                $birthDate = Carbon::parse($child->child_birth_date);
+                $ageInMonths = $birthDate->diffInMonths(now());
 
-                if ($questionCheck && $questionCheck->assessment_type === 'wicara_bahasa') {
-                    $child = $assessment->child;
-                    $birthDate = Carbon::parse($child->child_birth_date);
-                    $ageInMonths = $birthDate->diffInMonths(now());
+                $expectedSection = $this->determineAgeSection($ageInMonths);
 
-                    $expectedSection = $this->determineAgeSection($ageInMonths);
-
-                    $validQuestionIds = AssessmentQuestion::where('assessment_type', 'wicara_bahasa')
-                        ->where('section', $expectedSection)
-                        ->pluck('id')
-                        ->toArray();
-
-                    foreach ($payload['answers'] as $answer) {
-                        if (!in_array($answer['question_id'], $validQuestionIds)) {
-                            throw ValidationException::withMessages([
-                                'answers' => "Pertanyaan ID {$answer['question_id']} tidak sesuai dengan usia anak ({$ageInMonths} bulan - Section: {$expectedSection})."
-                            ]);
-                        }
+                foreach ($bahasaQuestions as $question) {
+                    if ($question->section !== $expectedSection) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'answers' => "Pertanyaan ID {$question->id} tidak sesuai dengan usia anak ({$ageInMonths} bulan - Kategori: " . str_replace('_', ' ', $expectedSection) . ")."
+                        ]);
                     }
                 }
             }
         }
 
         DB::transaction(function () use ($assessment, $detail, $payload, $type) {
+            AssessmentAnswer::where('assessment_detail_id', $detail->id)
+                ->where('type', $type)
+                ->delete();
+
             $answers = collect($payload['answers'])->map(function ($a) use ($detail, $type) {
                 $answerValue = $a['answer'];
 
@@ -87,6 +89,9 @@ class StoreAssessorAssessmentAction
                     'status' => 'completed',
                 ]);
             }
+
+            // Clear Cache
+            \Illuminate\Support\Facades\Cache::forget("guardian_" . $assessment->child->family->guardians->first()->user_id . "_children_assessments");
         });
     }
 
