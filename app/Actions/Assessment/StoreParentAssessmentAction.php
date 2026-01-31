@@ -24,7 +24,7 @@ class StoreParentAssessmentAction
         }
 
         DB::transaction(function () use ($assessment, $detail, $payload, $type, $detailType) {
-            $this->validateConditional($payload['answers']);    
+            $this->validateConditional($payload['answers']);
 
             // Validasi: Pastikan semua question_id sesuai dengan tipe kuesioner
             $questionIds = collect($payload['answers'])->pluck('question_id')->unique();
@@ -42,8 +42,13 @@ class StoreParentAssessmentAction
                 ]);
             }
 
+            $subTypes = AssessmentQuestion::whereIn('id', $questionIds)->pluck('assessment_type')->unique();
+
             AssessmentAnswer::where('assessment_detail_id', $detail->id)
                 ->where('type', $type)
+                ->whereHas('question', function ($q) use ($subTypes) {
+                    $q->whereIn('assessment_type', $subTypes);
+                })
                 ->delete();
 
             $answers = collect($payload['answers'])->map(function ($a) use ($detail, $type) {
