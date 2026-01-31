@@ -146,6 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/therapists/{therapist}', [AdminUserManagement::class, 'destroyTherapist'])
             ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
 
+        Route::post('/children', [AdminUserManagement::class, 'storeChild']);
         Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild'])
             ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
         Route::delete('/children/{child}', [AdminUserManagement::class, 'destroyChild'])
