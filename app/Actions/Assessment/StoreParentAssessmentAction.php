@@ -23,13 +23,17 @@ class StoreParentAssessmentAction
             ]);
         }
 
-        DB::transaction(function () use ($assessment, $detail, $payload, $type) {
-            $this->validateConditional($payload['answers']);
+        DB::transaction(function () use ($assessment, $detail, $payload, $type, $detailType) {
+            $this->validateConditional($payload['answers']);    
 
             // Validasi: Pastikan semua question_id sesuai dengan tipe kuesioner
             $questionIds = collect($payload['answers'])->pluck('question_id')->unique();
+
+            // Mapping: sesuaikan nama tipe submit dengan nama tipe di database questions
+            $expectedQuestionType = ($type === 'umum_parent') ? 'parent_general' : 'parent_' . $detailType;
+
             $invalidQuestions = AssessmentQuestion::whereIn('id', $questionIds)
-                ->where('assessment_type', '!=', $type)
+                ->where('assessment_type', '!=', $expectedQuestionType)
                 ->exists();
 
             if ($invalidQuestions) {
