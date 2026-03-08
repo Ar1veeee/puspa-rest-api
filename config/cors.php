@@ -19,8 +19,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://puspa-web-app.vercel.app',
-        'http://localhost:3000',
+        'https://klinik-puspa.alfirdausina.com',
+        'https://dev-puspa.alfirdausina.com',
+        'http://localhost:3000'
     ],
 
     'allowed_origins_patterns' => [],
