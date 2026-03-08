@@ -38,6 +38,7 @@ return [
 
         'public' => [
             'driver' => 'local',
+            // 'root' => '/home/u101331555/domains/puspa-api.alfirdausina.com/public_html/storage',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
