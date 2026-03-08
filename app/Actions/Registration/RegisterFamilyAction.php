@@ -16,7 +16,7 @@ class RegisterFamilyAction
         return DB::transaction(function () use ($data) {
             $family = Family::create();
 
-            Guardian::create([
+            $guardian = Guardian::create([
                 'family_id' => $family->id,
                 'temp_email' => $data['email'],
                 'guardian_name' => $data['guardian_name'],
@@ -43,8 +43,13 @@ class RegisterFamilyAction
                 'status' => 'pending',
             ]);
 
-            DB::afterCommit(function () {
+            DB::afterCommit(function () use ($child) {
                 event(new ObservationUpdated());
+
+                // Kirim notifikasi ke semua Admin
+                $admins = \App\Models\User::role('admin')->get();
+                $child->load('family.guardians'); // pastikan data keluarga ter-load untuk notifikasi
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewRegistrationNotification($child));
             });
 
             return $child->load('family.children.observation');

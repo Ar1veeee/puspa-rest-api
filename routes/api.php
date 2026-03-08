@@ -98,6 +98,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/profile/update-password', [AuthController::class, 'updatePassword']);
 
+    // ================== NOTIFICATIONS ==================
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index']);
+        Route::get('/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll']);
+        Route::get('/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read']);
+        Route::delete('/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+        Route::delete('/', [\App\Http\Controllers\NotificationController::class, 'destroyAll']);
+    });
+
 
     // ================== ROLE OWNER ==================
     Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
