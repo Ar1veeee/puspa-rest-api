@@ -98,6 +98,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/profile/update-password', [AuthController::class, 'updatePassword']);
 
+    // ================== NOTIFICATIONS ==================
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index']);
+        Route::get('/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll']);
+        Route::get('/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read']);
+        Route::delete('/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+        Route::delete('/', [\App\Http\Controllers\NotificationController::class, 'destroyAll']);
+    });
+
 
     // ================== ROLE OWNER ==================
     Route::middleware(['role:owner', 'throttle:authenticated'])->group(function () {
@@ -146,6 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/therapists/{therapist}', [AdminUserManagement::class, 'destroyTherapist'])
             ->whereUlid('therapist', '[0-9A-HJ-NP-TV-Z]{26}');
 
+        Route::post('/children', [AdminUserManagement::class, 'storeChild']);
         Route::put('/children/{child}', [AdminUserManagement::class, 'updateChild'])
             ->whereUlid('child', '[0-9A-HJ-NP-TV-Z]{26}');
         Route::delete('/children/{child}', [AdminUserManagement::class, 'destroyChild'])

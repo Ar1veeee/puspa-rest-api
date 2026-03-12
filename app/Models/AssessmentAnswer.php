@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AssessmentAnswer extends Model
 {
     protected $fillable = [
+        'assessment_detail_id',
         'assessment_id',
         'question_id',
         'type',
@@ -15,6 +16,7 @@ class AssessmentAnswer extends Model
     ];
 
     protected $casts = [
+        'assessment_detail_id' => 'integer',
         'assessment_id' => 'integer',
         'question_id' => 'integer',
         'answer_value' => 'json',
@@ -27,6 +29,6 @@ class AssessmentAnswer extends Model
 
     public function assessment()
     {
-        return $this->belongsTo(Assessment::class);
+        return $this->belongsTo(AssessmentDetail::class);
     }
 }

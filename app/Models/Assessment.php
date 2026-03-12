@@ -50,6 +50,6 @@ class Assessment extends Model
 
     public function child(): BelongsTo
     {
-        return $this->belongsTo(Child::class, 'child_id', 'id');
+        return $this->belongsTo(Child::class, 'child_id', 'id')->withTrashed();
     }
 }

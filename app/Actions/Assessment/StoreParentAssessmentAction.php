@@ -15,12 +15,41 @@ class StoreParentAssessmentAction
     {
         $detailType = str_replace('_parent', '', $type);
 
-        $detail = $assessment->assessmentDetails()->where('type', $detailType)->firstOrFail();
+        $detail = $assessment->assessmentDetails()->where('type', $detailType)->first();
 
-        DB::transaction(function () use ($assessment, $detail, $payload, $type) {
+        if (!$detail) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'type' => ["Layanan {$detailType} tidak dijadwalkan untuk asesmen ini."]
+            ]);
+        }
+
+        DB::transaction(function () use ($assessment, $detail, $payload, $type, $detailType) {
             $this->validateConditional($payload['answers']);
 
-            AssessmentAnswer::where('assessment_detail_id', $detail->id)->delete();
+            // Validasi: Pastikan semua question_id sesuai dengan tipe kuesioner
+            $questionIds = collect($payload['answers'])->pluck('question_id')->unique();
+
+            // Mapping: sesuaikan nama tipe submit dengan nama tipe di database questions
+            $expectedQuestionType = ($type === 'umum_parent') ? 'parent_general' : 'parent_' . $detailType;
+
+            $invalidQuestions = AssessmentQuestion::whereIn('id', $questionIds)
+                ->where('assessment_type', '!=', $expectedQuestionType)
+                ->exists();
+
+            if ($invalidQuestions) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'answers' => ["Terdapat pertanyaan yang tidak sesuai dengan kategori " . str_replace('_', ' ', $type)]
+                ]);
+            }
+
+            $subTypes = AssessmentQuestion::whereIn('id', $questionIds)->pluck('assessment_type')->unique();
+
+            AssessmentAnswer::where('assessment_detail_id', $detail->id)
+                ->where('type', $type)
+                ->whereHas('question', function ($q) use ($subTypes) {
+                    $q->whereIn('assessment_type', $subTypes);
+                })
+                ->delete();
 
             $answers = collect($payload['answers'])->map(function ($a) use ($detail, $type) {
                 $answerValue = $a['answer'];
@@ -55,6 +84,9 @@ class StoreParentAssessmentAction
                     'parent_status' => 'completed',
                 ]);
             }
+
+            // Clear cache daftar asesmen orang tua
+            \Illuminate\Support\Facades\Cache::forget("guardian_" . auth()->id() . "_children_assessments");
         });
     }
 

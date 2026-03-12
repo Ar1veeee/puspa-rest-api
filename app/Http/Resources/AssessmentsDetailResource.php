@@ -14,7 +14,7 @@ class AssessmentsDetailResource extends JsonResource
             : null;
 
         $currentStatus = $this->status;
-        $parentStatus  = $this->parent_status;
+        $parentStatus = $this->parent_status;
 
         return [
             'assessment_id' => $this->id,
@@ -26,31 +26,32 @@ class AssessmentsDetailResource extends JsonResource
                     : null;
 
                 return [
-                    'assessment_detail_id'    => $d->id,
-                    'type'                    => $d->type,
+                    'assessment_detail_id' => $d->id,
+                    'type' => $d->type,
 
-                    'status'                  => $currentStatus,
-                    'scheduled_date'          => $scheduled?->format('d/m/Y'),
-                    'scheduled_time'          => $scheduled?->format('H.i'),
+                    'status' => $currentStatus,
+                    'is_filled' => $d->assessmentAnswers->filter(fn($a) => str_contains($a->type, '_parent'))->isNotEmpty(),
+                    'scheduled_date' => $scheduled?->format('d/m/Y'),
+                    'scheduled_time' => $scheduled?->format('H.i'),
                     'parent_completed_status' => $parentStatus,
 
-                    'completed_at'            => $d->completed_at,
-                    'parent_completed_at'     => $parentCompletedAt?->format('H:i'),
-                    'therapist_id'            => $d->therapist_id,
-                    'admin_id'                => $d->admin_id,
+                    'completed_at' => $d->completed_at,
+                    'parent_completed_at' => $parentCompletedAt?->format('H:i'),
+                    'therapist_id' => $d->therapist_id,
+                    'admin_id' => $d->admin_id,
                 ];
             }),
 
             'report' => $this->when($this->report_file, function () {
                 return [
-                    'available'    => true,
-                    'uploaded_at'  => $this->report_uploaded_at?->format('d/m/Y H:i'),
-                    'download_url' => route('parent.assessment.report.download', $this->id)
+                    'available' => true,
+                    'uploaded_at' => $this->report_uploaded_at?->format('d/m/Y H:i'),
+                    'download_url' => route('parent.assessment.report.download', $this->id),
                 ];
             }, [
-                'available'    => false,
-                'uploaded_at'  => null,
-                'download_url' => null
+                'available' => false,
+                'uploaded_at' => null,
+                'download_url' => null,
             ]),
         ];
     }

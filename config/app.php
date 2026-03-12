@@ -54,8 +54,8 @@ return [
     |
     */
 
-    'frontend_url' => env('APP_FRONTEND_URL', 'http://localhost:3000'),
-    'url' => env('APP_URL', 'http://localhost'),
+    'frontend_url' => env('APP_FRONTEND_URL', 'https://klinik-puspa.alfirdausina.com'),
+    'url' => env('APP_URL', 'https://klinik-puspa.alfirdausina.com'),
 
     'asset_url' => env('ASSET_URL'),
     /*

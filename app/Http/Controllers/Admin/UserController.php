@@ -7,6 +7,7 @@ use App\Http\Helpers\ResponseFormatter;
 use App\Http\Requests\AdminCreateRequest;
 use App\Http\Requests\AdminUpdateRequest;
 use App\Http\Requests\ChildFamilyUpdateRequest;
+use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\TherapistCreateRequest;
 use App\Http\Requests\TherapistUpdateRequest;
 use App\Http\Resources\AdminResource;
@@ -100,6 +101,14 @@ class UserController extends Controller
         $data = $request->validated();
         $this->childService->update($data, $child);
         return $this->successResponse([], 'Update Anak Berhasil', 200);
+    }
+
+    public function storeChild(StorePatientRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $this->childService->store($data);
+
+        return $this->successResponse([], 'Tambah Pasien Berhasil', 201);
     }
 
     public function destroyChild(Child $child): JsonResponse

@@ -28,9 +28,11 @@ class VerificationController extends Controller
     {
         try {
             $this->verificationService->verifyEmail($id, $hash);
-            return redirect($this->frontendUrl . '/auth/email-verify');
-        } catch (ModelNotFoundException $e) {
-            return redirect($this->frontendUrl . '/auth/email-verify?status=invalid');
+            return redirect($this->frontendUrl . '/auth/email-verify?status=success');
+        } catch (\App\Exceptions\AlreadyVerifiedException $e) {
+            return redirect($this->frontendUrl . '/auth/email-verify?status=already_verified');
+        } catch (\Exception $e) {
+            return redirect($this->frontendUrl . '/auth/email-verify?status=error&message=' . urlencode($e->getMessage()));
         }
     }
 
@@ -68,7 +70,6 @@ class VerificationController extends Controller
                     : "Tunggu {$statusData['remaining_seconds']} detik lagi.");
 
             return $this->successResponse($statusData, $message);
-
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('Pengguna tidak ditemukan.', [], 404);
         } catch (Exception $e) {

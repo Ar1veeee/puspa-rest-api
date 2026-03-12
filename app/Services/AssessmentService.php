@@ -7,7 +7,6 @@ use App\Actions\Assessment\StoreParentAssessmentAction;
 use App\Actions\Assessment\UpdateScheduledDateAction;
 use App\Models\Assessment;
 use App\Models\AssessmentAnswer;
-use App\Models\AssessmentDetail;
 use App\Models\AssessmentQuestionGroup;
 use App\Models\Guardian;
 use Illuminate\Support\Facades\Cache;
@@ -43,8 +42,10 @@ class AssessmentService
                 $q->where('parent_status', $status);
             })
             ->when($filters['date'] ?? null, fn($q, $date) => $q->whereDate('scheduled_date', $date))
-            ->when($filters['search'] ?? null, fn($q, $search) =>
-            $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
+            ->when(
+                $filters['search'] ?? null,
+                fn($q, $search) =>
+                $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$search}%"))
             )
             ->when($filters['type'] ?? null, function ($q, $type) {
                 $q->whereHas('assessmentDetails', fn($d) => $d->where('type', $type));
@@ -57,7 +58,7 @@ class AssessmentService
     {
         return Assessment::query()
             ->with([
-                'assessmentDetails' => function($q) use ($filters) {
+                'assessmentDetails' => function ($q) use ($filters) {
                     $q->with(['therapist:id,therapist_name', 'admin:id,admin_name'])
                         ->when(isset($filters['type']), fn($sub) => $sub->where('type', $filters['type']));
                 },
@@ -66,22 +67,13 @@ class AssessmentService
                 'child.family.guardians',
             ])
             ->whereNotNull('scheduled_date')
-            ->whereHas('assessmentDetails', function ($q) use ($filters) {
-
-                if (isset($filters['type'])) {
-                    $q->where('type', $filters['type']);
-                }
-
-                if (isset($filters['status'])) {
-                    if ($filters['status'] === 'scheduled') {
-                        $q->whereNull('completed_at');
-                    } elseif ($filters['status'] === 'completed') {
-                        $q->whereNotNull('completed_at');
-                    }
-                }
+            ->when(isset($filters['status']), function ($q) use ($filters) {
+                $q->where('status', $filters['status']);
+            })
+            ->when(isset($filters['type']), function ($q) use ($filters) {
+                $q->whereHas('assessmentDetails', fn($d) => $d->where('type', $filters['type']));
             })
             ->when(isset($filters['date']), fn($q) => $q->whereDate('scheduled_date', $filters['date']))
-
             ->when(isset($filters['search']), function ($q) use ($filters) {
                 $q->whereHas('child', fn($c) => $c->where('child_name', 'like', "%{$filters['search']}%"));
             })
