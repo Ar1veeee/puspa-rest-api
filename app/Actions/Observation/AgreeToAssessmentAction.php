@@ -24,13 +24,13 @@ class AgreeToAssessmentAction
 
         if (!$date) {
             throw ValidationException::withMessages([
-                'Format tanggal dan waktu tidak valid.'
+                'scheduled_date' => ['Format tanggal dan waktu tidak valid.']
             ]);
         }
 
         if ($date->isPast()) {
             throw ValidationException::withMessages([
-                'Jadwal assessment tidak bisa di bawah dari waktu sekarang.'
+                'scheduled_date' => ['Jadwal assessment tidak bisa di bawah dari waktu sekarang.']
             ]);
         }
 
@@ -75,8 +75,10 @@ class AgreeToAssessmentAction
                 ->format('d/m/Y H:i');
 
             throw ValidationException::withMessages([
-                "Jadwal assessment harus memiliki jeda minimal 2 jam dengan assessment lain. " .
-                "Terdapat assessment pada {$conflictTime}."
+                'scheduled_date' => [
+                    "Jadwal assessment harus memiliki jeda minimal 2 jam dengan assessment lain. " .
+                    "Terdapat assessment pada {$conflictTime}."
+                ]
             ]);
         }
     }

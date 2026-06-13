@@ -61,7 +61,9 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'success' => false,
                     'message' => 'Bad Request',
-                    'errors' => $e->getMessage(),
+                    'errors' => [
+                        'message' => [$e->getMessage()],
+                    ],
                 ], 400);
             }
         });

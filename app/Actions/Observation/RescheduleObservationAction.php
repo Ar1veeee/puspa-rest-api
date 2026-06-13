@@ -13,7 +13,7 @@ class RescheduleObservationAction
     {
         if (!in_array($observation->status, ['pending', 'scheduled'])) {
             throw ValidationException::withMessages([
-                'Observation hanya dapat di-reschedule jika statusnya pending atau scheduled.'
+                'status' => ['Observation hanya dapat di-reschedule jika statusnya pending atau scheduled.']
             ]);
         }
 
@@ -26,13 +26,13 @@ class RescheduleObservationAction
 
         if (!$newDate) {
             throw ValidationException::withMessages([
-                'Format tanggal dan waktu tidak valid.'
+                'scheduled_date' => ['Format tanggal dan waktu tidak valid.']
             ]);
         }
 
         if ($newDate->isPast()) {
             throw ValidationException::withMessages([
-                'Jadwal observasi tidak bisa di bawah dari waktu sekarang.'
+                'scheduled_date' => ['Jadwal observasi tidak bisa di bawah dari waktu sekarang.']
             ]);
         }
 
@@ -69,7 +69,7 @@ class RescheduleObservationAction
                 ->format('d/m/Y H:i');
 
             throw ValidationException::withMessages([
-                "Jadwal observasi bentrok, berikan jeda 2 jam dengan observasi lain. Terdapat observasi pada {$conflictTime}."
+                'scheduled_date' => ["Jadwal observasi bentrok, berikan jeda 2 jam dengan observasi lain. Terdapat observasi pada {$conflictTime}."]
             ]);
         }
     }
