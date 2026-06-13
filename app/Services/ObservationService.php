@@ -49,7 +49,9 @@ class ObservationService
                 fn($c) => $c->where('child_name', 'like', "%{$search}%")
             ))
             ->when(!empty($date), fn($q) => $q->whereDate('scheduled_date', $date))
-            ->orderBy('scheduled_date', 'asc')
+            ->when($status === 'pending', fn($q) => $q->orderBy('created_at', 'desc'))
+            ->when($status === 'completed', fn($q) => $q->orderBy('scheduled_date', 'desc'))
+            ->when(!in_array($status, ['pending', 'completed']), fn($q) => $q->orderBy('scheduled_date', 'asc'))
             ->get();
     }
 

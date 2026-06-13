@@ -70,6 +70,7 @@ class AssessmentService
             ->when(isset($filters['status']), function ($q) use ($filters) {
                 $q->where('status', $filters['status']);
             })
+            ->when(isset($filters['status']) && $filters['status'] === 'completed', fn($q) => $q->orderBy('scheduled_date', 'desc'))
             ->when(isset($filters['type']), function ($q) use ($filters) {
                 $q->whereHas('assessmentDetails', fn($d) => $d->where('type', $filters['type']));
             })
